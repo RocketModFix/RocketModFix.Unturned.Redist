@@ -26,6 +26,12 @@
             respecting aspect ratio.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemGlassesAsset.isNightvisionAllowedInThirdPerson">
+            <summary>
+            If true, NVGs work in third-person, not just first-person.
+            Defaults to false.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.NetInvokableGeneratedClassAttribute.targetType">
             <summary>
             Type the annotated class was generated for.
@@ -1207,6 +1213,26 @@
             Called on both client and server, as well as by storage itself when destroyed.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.EServerListGoldFilter">
+            <summary>
+            Filter for whether the Permanent Gold Upgrade DLC is required to join a server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListGoldFilter.Any">
+            <summary>
+            All servers pass the filter.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListGoldFilter.DoesNotRequireGold">
+            <summary>
+            Only non-gold servers pass the filter.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListGoldFilter.RequiresGold">
+            <summary>
+            Only gold servers pass the filter.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.NpcGlobalEventHook">
             <summary>
             Can be added to any GameObject to listen for the Event NPC reward type.
@@ -1384,6 +1410,11 @@
             Editor-only helper to read all text/dialogue.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LightingManager.SAVEDATA_VERSION_INITIAL">
+            <summary>
+            Version before named version constants were introduced. (2023-11-07)
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.LightingManager.onDayNightUpdated_ModHook">
             <summary>
             Delegate not reset when level reset.
@@ -1402,6 +1433,13 @@
         <member name="F:SDG.Unturned.LightingManager.onSnowUpdated_ModHook">
             <summary>
             Delegate not reset when level reset.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LightingManager.DateCounter">
+            <summary>
+            Number of in-game days this world has run.
+            Incremented each time night ends.
+            Saved between sessions.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LightingManager.EScheduledWeatherStage.None">
@@ -2810,6 +2848,13 @@
             Should holiday (Halloween and Christmas) content like NPC outfits and decorations be loaded?
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Allow_Freeform_Buildables">
+            <summary>
+            Can "freeform" barricades be crafted and placed?
+            Defaults to true in singleplayer, false in multiplayer.
+            These barricades are highly controversial because they are easy to grief with.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Explosion_Launch_Speed_Multiplier">
             <summary>
             Scales velocity added to players by explosion knock-back.
@@ -4105,9 +4150,15 @@
             also consider that useable might have a menu open.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.MenuPlayServersUI.updateAll">
+        <member name="M:SDG.Unturned.MenuPlayServersUI.SynchronizeFilterButtons">
             <summary>
             Synchronize widgets with their values.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.LevelIconCache">
+            <summary>
+            Each level should have a 380x80 Icon.png file.
+            This class caches them so that the server list can show them quickly.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ArenaPlayer.lastAreaDamage">
@@ -4455,6 +4506,24 @@
         <member name="P:SDG.Unturned.ItemClothingAsset.skinOverride">
             <summary>
             If set, find a child meshrenderer with this name and change its material to the character skin material.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemClothingAsset.TakesPriorityOverCosmetic">
+            <summary>
+            The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
+            If true, the real item is shown rather than the cosmetic item. For example, night vision goggles
+            are shown over any glasses cosmetic because of their gameplay-related green glow.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride">
+            <summary>
+            Overrides value of TakesPriorityOverCosmetic if <see cref="F:SDG.Unturned.ItemClothingAsset.hasPriorityOverCosmeticOverride"/> is true.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ItemClothingAsset.hasPriorityOverCosmeticOverride">
+            <summary>
+            If true, the value of <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> is used rather than <see cref="M:SDG.Unturned.ItemClothingAsset.GetDefaultTakesPriorityOverCosmetic"/>.
+            Defaults to false. True if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> is set.
             </summary>
         </member>
         <member name="M:SDG.Unturned.OneShotAudioDefinition.ShuffleClips(System.Collections.Generic.List{UnityEngine.AudioClip})">
@@ -5311,6 +5380,37 @@
             Default flags set when player spawns.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.EPlayerAdminUsageFlags">
+            <summary>
+            32-bit mask indicating to the server which admin powers are being used.
+            Does not control which admin powers are available.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerAdminUsageFlags.Freecam">
+            <summary>
+            Player is using spectator camera.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerAdminUsageFlags.Workzone">
+            <summary>
+            Player is using barricade/structure transform tools.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerAdminUsageFlags.SpectatorStatsOverlay">
+            <summary>
+            Player is using overlay showing player names and positions.
+            </summary>
+        </member>
+        <member name="E:SDG.Unturned.Player.OnAdminUsageChanged">
+            <summary>
+            Per-player event invoked when admin usage flags change.
+            </summary>
+        </member>
+        <member name="E:SDG.Unturned.Player.OnAnyPlayerAdminUsageChanged">
+            <summary>
+            Event invoked when any player's admin usage flags change.
+            </summary>
+        </member>
         <member name="E:SDG.Unturned.Player.onPlayerStatIncremented">
             <summary>
             Used by plugins.
@@ -5354,6 +5454,24 @@
             <summary>
             Tell the client whether to be in plugin modal mode or not.
             Kept from prior to introduction of pluginWidgetFlags.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.Player.AdminUsageFlags">
+            <summary>
+            Which admin powers are currently in use by the client.
+            Reported to the server by the client.
+            Does not control which admin powers are available.
+            Note: Hacks can prevent this notification from being sent.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Player.ClientSetAdminUsageFlags(SDG.Unturned.EPlayerAdminUsageFlags)">
+            <summary>
+            Called on the client to notify the server of admin usage changes (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Player.ClientSetAdminUsageFlagActive(SDG.Unturned.EPlayerAdminUsageFlags,System.Boolean)">
+            <summary>
+            Called on the client to notify the server of admin usage changes (if any).
             </summary>
         </member>
         <member name="M:SDG.Unturned.Player.teleportToRandomSpawnPoint">
@@ -5455,6 +5573,11 @@
         <member name="F:SDG.Unturned.EPlayerMessage.PLACEMENT_OBSTRUCTED_BY">
             <summary>
             Popup when structure is blocked by something named we can format into the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.FREEFORM_BUILDABLE_NOT_ALLOWED">
+            <summary>
+            Notice that freeform buildables are blocked by <see cref="F:SDG.Unturned.GameplayConfigData.Allow_Freeform_Buildables">Allow_Freeform_Buildables</see>.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGunAsset.fireDelaySound">
@@ -6297,6 +6420,23 @@
             Callback to draw in the Unity editor scene view.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.RegionList`1.GetList(UnityEngine.Vector3)">
+            <summary>
+            Can be null if nothing has been added at position.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.RegionList`1.EnumerateListsInSquare(UnityEngine.Vector3,System.Single)">
+            <summary>
+            Does not add new lists to empty cells.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.RegionList`1.LIST_POOL_SIZE">
+            <summary>
+            Number of Lists to preallocate in batches.
+            (GRID_SIZE * GRID_SIZE) % LIST_POOL_SIZE should be zero leftover.
+            Reduces constructor performance cost. (public issue #4209)
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.LegacyInputOutput">
             <summary>
             Matches the console behavior prior to command IO refactor.
@@ -6986,6 +7126,11 @@
             Ensures workshop files are not refreshed more than once per main menu load.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.MenuPlayServerListFiltersUI.SynchronizeFilterButtons">
+            <summary>
+            Synchronize widgets with their values.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.VendorBuying">
             <summary>
             Represents an item the vendor is buying from players.
@@ -7028,6 +7173,56 @@
         <member name="F:SDG.Unturned.ItemShirtAsset.characterMaterialOverride">
             <summary>
             Replacement for the main character material that typically has clothes and skin color.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_NameAscending">
+            <summary>
+            Sort servers by name A to Z.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_NameDescending">
+            <summary>
+            Sort servers by name Z to A.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_MapAscending">
+            <summary>
+            Sort servers by map name A to Z.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_MapDescending">
+            <summary>
+            Sort servers by map name Z to A.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_PlayersDefault">
+            <summary>
+            Sort servers by player count high to low.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_PlayersInverted">
+            <summary>
+            Sort servers by player count low to high.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_MaxPlayersDefault">
+            <summary>
+            Sort servers by max player count high to low.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_MaxPlayersInverted">
+            <summary>
+            Sort servers by max player count low to high.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_PingAscending">
+            <summary>
+            Sort servers by ping low to high.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_PingDescending">
+            <summary>
+            Sort servers by ping high to low.
             </summary>
         </member>
         <member name="F:SDG.Unturned.SteamServerInfo.EInfoSource.DirectConnect">
@@ -7387,6 +7582,11 @@
             Most asset classes end in "Asset", so in debug strings if asset is clear from context we can remove the unnecessary suffix.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Asset.GetTypeFriendlyName">
+            <summary>
+            Remove "Asset" suffix and convert to title case.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Asset.OnCreatedAtRuntime">
             <summary>
             Perform any initialization required when PopulateAsset won't be called.
@@ -7485,6 +7685,11 @@
         <member name="P:SDG.Unturned.LevelInfo.isFromWorkshop">
             <summary>
             Only used for play menu categories at the moment.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelInfo.hash">
+            <summary>
+            SHA1 hash of the Level.dat file.
             </summary>
         </member>
         <member name="P:SDG.Unturned.LevelInfo.isCurated">
@@ -10327,9 +10532,22 @@
             Used in a test scene to quickly test UI Toolkit implementation.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.FilterSettings.filterNotFull">
+        <member name="F:SDG.Unturned.ServerListFilters.presetId">
+            <summary>
+            Assigned when a named preset is created.
+            0 is the default and should be replaced by a preset when loaded.
+            -1 indicates the preset was modified.
+            -2 and below are the default presets.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerListFilters.notFull">
             <summary>
             If true, only servers with available player slots are shown.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FilterSettings.SAVEDATA_VERSION_INITIAL">
+            <summary>
+            Version before named version constants were introduced. (2023-11-13)
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerQuests.serverDefaultNextDialogueAsset">
@@ -10544,7 +10762,7 @@
             Version string of the currently loaded level packed into an integer.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.Level.loadLevelInfo(System.String,System.Boolean,System.UInt64)">
+        <member name="M:SDG.Unturned.Level.ReadLevelInfo(System.String,System.UInt64)">
             <summary>
             Load level details from Level.dat in directory path.
             </summary>
@@ -10553,6 +10771,11 @@
             <summary>
             Server list allows player to enter a map name when searching, so we try to find a local
             copy of the level for version number comparison. (Server map version might differ.)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Level.ScanKnownLevels">
+            <summary>
+            Search all map folders to add any previously unregistered maps.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayerDashboardUI.OnDestroy">
@@ -10745,7 +10968,17 @@
             so removing legacy effect id would break their content.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.SleekButtonState.useContentTooltip">
+        <member name="F:SDG.Unturned.PlaySettings.SAVEDATA_VERSION_INITIAL">
+            <summary>
+            Version before named version constants were introduced. (2023-11-08)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlaySettings.SAVEDATA_VERSION_REMOVED_SERVER_NAME_FILTER">
+            <summary>
+            Moved into ServerListFilters.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SleekButtonState.UseContentTooltip">
             <summary>
             If true, button tooltip will be overridden with tooltip from states array.
             </summary>
