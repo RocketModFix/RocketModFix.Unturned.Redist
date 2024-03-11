@@ -187,9 +187,22 @@
             Unfortunately the version which added hitmarker style saved but didn't actually load (sigh).
             </summary>
         </member>
+        <member name="F:SDG.Unturned.OptionsSettings.SAVEDATA_VERSION_RESET_VOICE_ALWAYS_RECORDING">
+            <summary>
+            Nelson 2023-12-28: this option was causing players to crash in the 3.23.14.0 update. Hopefully
+            it's resolved for the patch, but to be safe it will default to false.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.OptionsSettings.GetZoomBaseFieldOfView">
             <summary>
             Prior to 3.22.8.0 all scopes/optics had a base fov of 90 degrees.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.OptionsSettings.VoiceAlwaysRecording">
+            <summary>
+            If false, call Start and Stop recording before and after push-to-talk key is pressed. This was the
+            original default behavior, but causes a hitch for some players. As a workaround we can always keep
+            the microphone rolling and only send data when the push-to-talk key is held. (public issue #4248)
             </summary>
         </member>
         <member name="F:SDG.Unturned.OptionsSettings.hitmarkerStyle">
@@ -904,7 +917,7 @@
         </member>
         <member name="M:SDG.Unturned.DedicatedWorkshopUpdateMonitorFactory.createDefaultForLevel(SDG.Unturned.LevelInfo)">
             <summary>
-            Create vanilla update monitor that watches for changes to workshop level file.
+            Create vanilla update monitor that watches for changes to workshop level file and any other mods.
             </summary>
         </member>
         <member name="M:SDG.Unturned.DedicatedWorkshopUpdateMonitorFactory.getCachedInitialTimestamp(Steamworks.PublishedFileId_t,System.UInt32@)">
@@ -1015,6 +1028,13 @@
         <member name="T:SDG.Unturned.MenuMapVisibility.HelperClass">
             <summary>
             Prevents static member from being initialized during MonoBehaviour construction. (Unity warning)
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.InteractableObjectTriggerableBase">
+            <summary>
+            Nelson 2024-02-06: when looking into resolving public issue #3703 I figured since there is a common behavior
+            between InteractableObjectQuest, InteractableObjectNote, and InteractableObjectDropper (in that they all
+            request the server to do X) we may as well support a "mod hook" that works with all three.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemSightAsset.zoom">
@@ -2512,6 +2532,12 @@
             Battery increase per second.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.VehicleAsset.defaultBatteryGuid">
+            <summary>
+            Battery item given to the player when a specific battery hasn't been manually
+            installed yet. Defaults to the vanilla car battery (098b13be34a7411db7736b7f866ada69).
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.VehicleAsset.fuelBurnRate">
             <summary>
             Fuel decrease per second.
@@ -2734,6 +2760,12 @@
             Should the EconInfo.json hash be checked by the server?
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerConfigData.Use_FakeIP">
+            <summary>
+            If true, opt-in to SteamNetworkingSockets "FakeIP" system.
+            https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#1
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ServerConfigData.MAX_TIMEOUT_QUEUE_SECONDS">
             <summary>
             Limit max queue timeout duration so that if server encounters an error or doesn't
@@ -2850,9 +2882,14 @@
         </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Allow_Freeform_Buildables">
             <summary>
-            Can "freeform" barricades be crafted and placed?
-            Defaults to true in singleplayer, false in multiplayer.
-            These barricades are highly controversial because they are easy to grief with.
+            Can "freeform" barricades be placed in the world?
+            Defaults to true.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Allow_Freeform_Buildables_On_Vehicles">
+            <summary>
+            Can "freeform" barricades be placed on vehicles?
+            Defaults to true.
             </summary>
         </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Explosion_Launch_Speed_Multiplier">
@@ -3098,6 +3135,36 @@
             The network identity in the ticket does not match the server authenticating the ticket.
             This can happen if server's Steam ID has changed from what the client thinks it is.
             For example, joining a stale entry in the server list. (public issue #4101)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_MAP_ADVERTISEMENT_MISMATCH">
+            <summary>
+            Level name advertised on server list does not match during connect.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_VAC_ADVERTISEMENT_MISMATCH">
+            <summary>
+            VAC status advertised on server list does not match during connect.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_BATTLEYE_ADVERTISEMENT_MISMATCH">
+            <summary>
+            BattlEye status advertised on server list does not match during connect.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_MAXPLAYERS_ADVERTISEMENT_MISMATCH">
+            <summary>
+            Max players advertised on server list does not match during connect.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_CAMERAMODE_ADVERTISEMENT_MISMATCH">
+            <summary>
+            Camera mode advertised on server list does not match during connect.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_PVP_ADVERTISEMENT_MISMATCH">
+            <summary>
+            Combat mode advertised on server list does not match during connect.
             </summary>
         </member>
         <member name="F:SDG.Unturned.SleekChatEntryV2.shouldFadeOutWithAge">
@@ -3693,7 +3760,7 @@
             Holds tooltip text
             </summary>
         </member>
-        <member name="F:SDG.Unturned.PlayerVoice.COMPRESSED_VOICE_BUFFER">
+        <member name="F:SDG.Unturned.PlayerVoice.compressedVoiceBuffer">
             <summary>
             Speaker writes compressed audio to this buffer.
             Listener copies network buffer here for decompression.
@@ -3846,6 +3913,17 @@
         <member name="M:SDG.Unturned.PlayerVoice.ReceivePlayVoiceChat(SDG.Unturned.ClientInvocationContext@)">
             <summary>
             Called by server to relay voice data from clients.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerVoice.isBeingDestroyed">
+            <summary>
+            Set to true during OnDestroy to make sure we don't start recording again.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.PlayerVoice.SteamIsRecording">
+            <summary>
+            If true, SteamUser.StartVoiceRecording has been called without a corresponding call to
+            SteamUser.StopVoiceRecording yet.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerVoice._inputWantsToRecord">
@@ -4492,6 +4570,17 @@
             Multiplier to explosive damage. Defaults to <see cref="P:SDG.Unturned.ItemClothingAsset.armor"/> value if Armor_Explosion isn't specified.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemClothingAsset.fallingDamageMultiplier">
+            <summary>
+            Armor against falling damage. Defaults to 1.0, i.e., take the normal amount of damage.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemClothingAsset.preventsFallingBrokenBones">
+            <summary>
+            If true on any worn clothing item, bones never break when falling.
+            Defaults to false.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ItemClothingAsset.shouldMirrorLeftHandedModel">
             <summary>
             Left-handed character skeleton is mirrored, so most item models are mirrored again to preserve appearance.
@@ -4587,6 +4676,27 @@
         <member name="M:SDG.Unturned.Provider.updateRichPresence">
             <summary>
             Call whenever something impacting rich presence changes for example loading a server or changing lobbies.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.Provider.CurrentServerAdvertisement">
+            <summary>
+            Only used on client.
+            Information about current game server retrieved through Steam's "A2S" query system.
+            Available when joining using the Steam server list API (in-game server browser)
+            or querying the Server's A2S port directly (connect by IP menu), but not when
+            joining by Steam ID.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.Provider.IsVacActiveOnCurrentServer">
+            <summary>
+            On client, is current server protected by VAC?
+            Set after initial response is received.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.Provider.IsBattlEyeActiveOnCurrentServer">
+            <summary>
+            On client, is current server protected by BattlEye?
+            Set after initial response is received.
             </summary>
         </member>
         <member name="P:SDG.Unturned.Provider.players">
@@ -4698,7 +4808,7 @@
             Manages server to client communication.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.Provider.connect(SDG.Unturned.SteamServerInfo,System.String,System.Collections.Generic.List{Steamworks.PublishedFileId_t})">
+        <member name="M:SDG.Unturned.Provider.connect(SDG.Unturned.ServerConnectParameters,SDG.Unturned.SteamServerAdvertisement,System.Collections.Generic.List{Steamworks.PublishedFileId_t})">
             <summary>
             Connect to server entry point on client.
             Requests workshop details for download prior to loading level.
@@ -4725,6 +4835,20 @@
         <member name="E:SDG.Unturned.Provider.onCommenceShutdown">
             <summary>
             Event for plugins prior to kicking players during shutdown.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.isVacActive">
+            <summary>
+            Set on the server when initializing Steam API.
+            Used to notify pending clients whether VAC is active.
+            Set on clients after initial response is received.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.isBattlEyeActive">
+            <summary>
+            Set on the server when initializing BattlEye API.
+            Used to notify pending clients whether BE is active.
+            Set on clients after initial response is received.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Provider.disconnect">
@@ -4796,6 +4920,26 @@
         <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.holiday">
             <summary>
             This information is needed before the level is loaded.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.serverName">
+            <summary>
+            Advertised server name. e.g., "Nelson's Unturned Server"
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.levelName">
+            <summary>
+            Name of map to load.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.gameMode">
+            <summary>
+            Legacy difficulty mode that should be removed eventually.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.cameraMode">
+            <summary>
+            Perspective settings.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Provider.CachedWorkshopResponse.ip">
@@ -4944,6 +5088,12 @@
             <summary>
             Open URL in the steam overlay, or if disabled use the default browser instead.
             Warning: any third party url should be checked by WebUtils.ParseThirdPartyUrl.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.Provider.CanFavoriteCurrentServer">
+            <summary>
+            Steam's favorites list requires that we know the server's IPv4 address and port,
+            so we can't favorite when joining by Steam ID.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Provider.toggleCurrentServerFavorited">
@@ -5580,6 +5730,11 @@
             Notice that freeform buildables are blocked by <see cref="F:SDG.Unturned.GameplayConfigData.Allow_Freeform_Buildables">Allow_Freeform_Buildables</see>.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.PLACEMENT_OBSTRUCTED_BY_GROUND">
+            <summary>
+            Popup when structure is blocked by terrain.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemGunAsset.fireDelaySound">
             <summary>
             Sound to play when input is pressed but weapon has a fire delay.
@@ -5806,6 +5961,16 @@
             <summary>
             Higher values reduce bounciness and settle at the target position faster.
             e.g. a value of zero will bounce back and forth for a long time (indefinitely?)
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.InteractableObjectQuestEventHook">
+            <summary>
+            Can be added to any GameObject with a Dropper, Note, or Quest interactable object in its parents.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectQuestEventHook.OnUsed">
+            <summary>
+            Invoked on authority when interactable object is used successfully.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ClaimManager.canBuildOnVehicle(UnityEngine.Transform,Steamworks.CSteamID,Steamworks.CSteamID)">
@@ -6128,6 +6293,12 @@
         <member name="F:SDG.Unturned.EHousingPlacementResult.MissingGround">
             <summary>
             Floors must be placed touching the terrain, or a fake-terrain object like a grassy cliff model.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EHousingPlacementResult.ObstructedByGround">
+            <summary>
+            Pillars can be partly underground or inside a designated allowed underground area. Otherwise,
+            if the very top of the pillar is underground placement is blocked. (public issue #4250)
             </summary>
         </member>
         <member name="F:SDG.Unturned.HousingConnections.EDGE_LENGTH">
@@ -7225,22 +7396,30 @@
             Sort servers by ping high to low.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.SteamServerInfo.EInfoSource.DirectConnect">
+        <member name="T:SDG.Unturned.SteamServerAdvertisement">
+            <summary>
+            Information about a game server retrieved through Steam's "A2S" query system.
+            Available when joining using the Steam server list API (in-game server browser)
+            or querying the Server's A2S port directly (connect by IP menu), but not when
+            joining by Steam ID.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamServerAdvertisement.EInfoSource.DirectConnect">
             <summary>
             Join server by IP.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.SteamServerInfo.networkTransport">
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.networkTransport">
             <summary>
             ID of network transport implementation to use.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.SteamServerInfo.pluginFramework">
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.pluginFramework">
             <summary>
             Known plugin systems.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.SteamServerInfo.parseTagValue(System.String,System.String,System.String)">
+        <member name="M:SDG.Unturned.SteamServerAdvertisement.parseTagValue(System.String,System.String,System.String)">
             <summary>
             Parses value between two keys <stuff>thing</stuff> would parse thing
             </summary>
@@ -7270,11 +7449,6 @@
             <summary>
             UITK implementation consists of a container element which respects the regular position and size
             properties, and a child content element which fits itself in the container.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ChatPreferenceData.Enable_Fade_Out">
-            <summary>
-            If true, messages in the HUD will fade out after Fade_Delay.
             </summary>
         </member>
         <member name="M:SDG.Unturned.BezierTool.getPosition(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Single)">
@@ -7700,11 +7874,6 @@
         <member name="P:SDG.Unturned.LevelInfo.feedbackUrl">
             <summary>
             Web URL to map feedback discussions.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelInfo.resolveAsset">
-            <summary>
-            Cache level's asset, if any.
             </summary>
         </member>
         <member name="M:SDG.Unturned.LevelInfo.GetPreviewImageFilePath">
@@ -9112,6 +9281,42 @@
             - Ensure LayoutElement is destroyed before returning to pool.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ServerConnectParameters">
+             <summary>
+             Parameters for connecting to a game server.
+            
+             Admittedly there are other parameters to the Connect method,
+             but those are for detecting advertisement discrepencies and can be null.
+             </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerConnectParameters.address">
+            <summary>
+            Server's public IP address of a Steam "Fake IP" address.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerConnectParameters.queryPort">
+            <summary>
+            Port for Steam's "A2S" query system. This the port we refer to when
+            sharing a server's address (e.g., 127.0.0.1:queryport).
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerConnectParameters.connectionPort">
+            <summary>
+            Port for game traffic. i.e., Steam manages the query port socket while
+            we manage the connection port socket. The game assumes it's the query
+            port plus one. NOTE HOWEVER after the introduction of "Fake IP" support
+            (2023-12-07) the connection port is the same as the query port for fake
+            IPs. In keeping with the spirit of fake values to simplify existing code,
+            we act as if the connection port is plus one except in the appropriate
+            ClientTransport code when the fake IP is detected.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerConnectParameters.steamId">
+            <summary>
+            Referred to as "Server Code" in menus.
+            Used if address is zero.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.EffectSpawner">
             <summary>
             Allows Unity events to spawn effects.
@@ -9505,6 +9710,11 @@
             Equivalent to the "armor" parameter of the legacy damage function.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.DamageZombieParameters.AlertPosition">
+            <summary>
+            If not null and damage is applied, <see cref="M:SDG.Unturned.Zombie.alert(SDG.Unturned.Player)"/> is called with this position (startle: true).
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ObjectNPCAsset.playerKnowsNameFlagId">
             <summary>
             If non-zero, NPC name is shown as ??? until bool flag is true.
@@ -9539,7 +9749,7 @@
         </member>
         <member name="T:SDG.Unturned.DedicatedWorkshopUpdateMonitor">
             <summary>
-            If using a map from the workshop, this class monitors it for changes so the server can be restarted.
+            If using a map or mods from the workshop, this class monitors them for changes so the server can be restarted.
             </summary>
         </member>
         <member name="M:SDG.Unturned.DedicatedWorkshopUpdateMonitor.submitQueryRequest(Steamworks.PublishedFileId_t[])">
@@ -9731,6 +9941,17 @@
              add the Interactability_Remote flag to its asset to indicate only mod hooks should control it.
              </summary>
         </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.EListenServerHostMode.RequestAsClient">
+            <summary>
+            When a state change is requested in singleplayer it should be treated as if running as a client on a server.
+            This is the default to match behavior from before this option was added.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.EListenServerHostMode.OverrideState">
+            <summary>
+            When a state change is requested in singleplayer it should be treated as if running as a dedicated server.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.OnStateEnabled">
             <summary>
             Invoked when interactable object enters the Used / On / Enabled state.
@@ -9746,6 +9967,15 @@
             Should the OnStateEnabled and OnStateDisabled events be invoked when the object is loaded, becomes relevant
             in multiplayer, and is reset? True is useful when visuals need to be kept in sync with the state, whereas
             false is useful for transient interactions.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.ListenServerHostMode">
+            <summary>
+            Controls how state change requests are performed when running as both client and server ("listen server").
+            On the dedicated server, requesting a state change overrides the current state without processing NPC
+            conditions, whereas when a client requests a state change NPC conditions apply. This option fixes the
+            inconsistency in singleplayer of whether to treat as server or client. (public issue #4298)
+            At the time of writing (2024-01-29) listen server only applies to singleplayer.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableObjectBinaryStateEventHook.GotoEnabledState">
@@ -9866,6 +10096,12 @@
         <member name="M:SDG.Unturned.PlayerLook.GetEyesPositionWithoutLeaning">
             <summary>
             Get point of view in worldspace without the left/right leaning modifier.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerLook.RestoreSavedLightingVision">
+            <summary>
+            This is only used after capturing dual-render scope, not when exiting scope overlay.
+            Otherwise the lighting vision may have changed between entering and exiting the scope.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayerLook.clampPitch">
@@ -11092,6 +11328,11 @@
             Should game mode config damage multiplier be factored in?
             </summary>
         </member>
+        <member name="P:SDG.Unturned.DamageAnimalParameters.AlertPosition">
+            <summary>
+            If not null and damage is applied, <see cref="M:SDG.Unturned.Animal.alertDamagedFromPoint(UnityEngine.Vector3)"/> is called with this position.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
             <summary>
             In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
@@ -11555,6 +11796,11 @@
         <member name="M:SDG.Unturned.UndergroundAllowlist.IsPositionWithinValidHeight(UnityEngine.Vector3,System.Single)">
             <summary>
             Used by animals and zombies to teleport to a spawnpoint if outside the map.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.UndergroundAllowlist.IsPositionBuildable(UnityEngine.Vector3)">
+            <summary>
+            Used by housing validation to check item isn't placed underground.
             </summary>
         </member>
         <member name="T:SDG.Unturned.SleekFullscreenBox">
@@ -12452,6 +12698,11 @@
             Ignored if not running in CI mode, otherwise exits the server with error code 1.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemGeneratorAsset.burn">
+            <summary>
+            Seconds to wait between burning one unit of fuel.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.InteractableFarm.growth">
             <summary>
             Number of seconds to finish growing.
@@ -12567,6 +12818,11 @@
         <member name="M:SDG.Unturned.UseableConsumeable.performUseOnSelf(SDG.Unturned.ItemConsumeableAsset)">
             <summary>
             Called by owner and server when using consumeable on self.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableMelee.playUseSoundTime">
+            <summary>
+            For non-repeat weapons the "Use" audio clip is played once time reaches this point.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableGenerator.updatePowerableIsWired(SDG.Unturned.InteractablePower,System.Boolean)">
@@ -14352,6 +14608,16 @@
         <member name="F:SDG.NetTransport.SteamNetworkingSockets.TransportBase_SteamNetworkingSockets.clLogSteamNetworkingSockets">
             <summary>
             Does host want extra debug output?
+            </summary>
+        </member>
+        <member name="F:SDG.NetTransport.SteamNetworkingSockets.TransportBase_SteamNetworkingSockets.clSendBufferSize">
+            <summary>
+            Overrides k_ESteamNetworkingConfig_SendBufferSize.
+            </summary>
+        </member>
+        <member name="F:SDG.NetTransport.SteamNetworkingSockets.TransportBase_SteamNetworkingSockets.clEnableDiagnosticsUI">
+            <summary>
+            Overrides k_ESteamNetworkingConfig_EnableDiagnosticsUI.
             </summary>
         </member>
         <member name="T:SDG.NetTransport.SystemSockets.ServerTransport_SystemSockets">

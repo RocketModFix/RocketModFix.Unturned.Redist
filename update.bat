@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-rem Prompt the user for the target directory containing replacement DLLs
-set /p "sourceDirectory=Enter the path to the Unturned Managed directory to replace DLLs from: "
+rem Prompt the user for the target directory containing replacement files
+set /p "sourceDirectory=Enter the path to the directory with replacement files: "
 
-rem Set the destination directory where the DLLs will be replaced
+rem Set the destination directory where the files will be replaced
 set "destinationDirectory=.\redist"
 
 rem Ensure the destination directory exists
@@ -13,11 +13,11 @@ if not exist "%destinationDirectory%" (
     exit /b 1
 )
 
-rem Loop through all DLL files in the source directory
-for %%F in ("%sourceDirectory%\*.dll") do (
-    rem Check if the DLL file exists in the destination directory
+rem Loop through all files in the source directory
+for %%F in ("%sourceDirectory%\*.*") do (
+    rem Check if the file exists in the destination directory
     if exist "%destinationDirectory%\%%~nxF" (
-        rem Replace the DLL file in the destination directory
+        rem Replace the file in the destination directory
         copy /y "%%F" "%destinationDirectory%"
         echo %%~nxF replaced.
     ) else (
