@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 rem Prompt the user for the target directory containing replacement files
-set /p "sourceDirectory=Enter the path to the directory with replacement files: "
+set /p "sourceDirectory=Enter the path to the directory Unturned Managed directory to update files: "
 
 rem Set the destination directory where the files will be replaced
 set "destinationDirectory=.\redist"
