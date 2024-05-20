@@ -114,14 +114,11 @@ path = args[0];
         }
 
         var unturnedDirectory = Path.Combine(executableDirectory, "steamapps", "common", "U3DS");
-        if (Directory.Exists(executableDirectory) == false)
+        if (Directory.Exists(unturnedDirectory) == false)
         {
             Console.WriteLine($"Unturned Directory not found: \"{unturnedDirectory}\"");
             return 1;
         }
-
-        var dirs = Directory.GetDirectories(unturnedDirectory);
-        Console.WriteLine(string.Join(", ", dirs));
         var unturnedDataDirectoryName = GetUnturnedDataDirectoryName();
         var managedDirectory = Path.Combine(unturnedDirectory, unturnedDataDirectoryName, "Managed");
         if (Directory.Exists(managedDirectory) == false)
