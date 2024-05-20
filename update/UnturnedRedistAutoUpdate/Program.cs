@@ -62,6 +62,7 @@ path = args[0];
         var data = await httpClient.GetByteArrayAsync(downloadUrl);
 
         var executableDirectory = Path.Combine(path, "steamcmd");
+        Directory.CreateDirectory(executableDirectory);
         ExtractData(data, executableDirectory);
 
         var executablePath = GetExecutablePath(executableDirectory);
