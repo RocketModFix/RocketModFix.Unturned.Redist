@@ -11,6 +11,7 @@ internal class Program
 {
     private static bool DedicatedServer { get; set; }
     private static string AppId { get; set; }
+    private static bool Force { get; set; }
 
     public static async Task<int> Main(string[] args)
     {
@@ -57,6 +58,7 @@ path = args[0];
         }
 
         DedicatedServer = !args.Any(x => x.Equals("--client", StringComparison.OrdinalIgnoreCase));
+        Force = !args.Any(x => x.Equals("--force", StringComparison.OrdinalIgnoreCase));
         AppId = GetAppId().ToString();
 
         var archiveName = GetArchiveName();
@@ -142,7 +144,10 @@ path = args[0];
 
         UpdateRedist(managedDirectory);
 
-        await File.WriteAllTextAsync(Path.Combine(path, ".commit"), $"{DateTime.UtcNow:dd MMMM yyyy} - Version {version} ({buildId})");
+        var forcedNote = Force ? " [Forced]" : "";
+
+        await File.WriteAllTextAsync(Path.Combine(path, ".commit"),
+            $"{DateTime.UtcNow:dd MMMM yyyy} - Version {version} ({buildId})" + forcedNote);
 
         return 0;
 
