@@ -88,31 +88,19 @@ path = args[0];
         {
             var startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
-            if (linux)
-            {
-                startInfo.UseShellExecute = true;
-            }
-            else
-            {
-                startInfo.UseShellExecute = false;
-            }
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
+
             startInfo.FileName = executablePath;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.Arguments = $"+login anonymous +app_update {AppId} validate +quit";
-            using var process = Process.Start(startInfo);
-            var output = await process.StandardOutput.ReadToEndAsync();
-            var error = await process.StandardError.ReadToEndAsync();
+            using var process = new Process();
+            process.StartInfo = startInfo;
+            process.OutputDataReceived += OutputHandler;
+            process.ErrorDataReceived += OutputHandler;
+
+            process.Start();
             await process.WaitForExitAsync();
-
-            Console.WriteLine(output);
-            if (!string.IsNullOrEmpty(error))
-            {
-                await Console.Error.WriteLineAsync(error);
-            }
-
-
         }
         catch (Exception ex)
         {
@@ -265,6 +253,10 @@ path = args[0];
 
         var buildId1 = obj["buildid"].ToString();
         return (version, buildId1);
+    }
+    static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
+    {
+        Console.WriteLine(outLine.Data);
     }
 
 }
