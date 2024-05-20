@@ -18,32 +18,33 @@ internal class Program
 
         AssertPlatformSupported();
 
-        string redistPath;
+        string path;
 #if DEBUG
-        redistPath = @"C:\Me\Git Repos\RocketModFix.Unturned.Redist\redist";
+        path = Directory.GetCurrentDirectory();
 #else
 if (args.Length == 0)
 {
     Console.WriteLine("Wrong usage. Specify path to the redist.");
     return 1;
 }
-redistPath = args[0];
+path = args[0];
 #endif
 
-        if (Path.Exists(redistPath) == false)
+        if (Path.Exists(path) == false)
         {
-            Console.WriteLine($"Redist path doesn't exists: \"{redistPath}\".");
+            Console.WriteLine($"Path doesn't exists: \"{path}\".");
             return 1;
         }
+        var redistPath = Path.Combine(path, "redist");
         var nuspecFilePath = Directory.GetFiles(redistPath, "*.nuspec").FirstOrDefault();
         if (nuspecFilePath == null)
         {
-            Console.WriteLine($".nuspec file cannot be found in redist folder: \"{redistPath}\".");
+            Console.WriteLine($".nuspec file cannot be found in redist folder: \"{path}\".");
             return 1;
         }
         if (File.Exists(nuspecFilePath) == false)
         {
-            Console.WriteLine($".nuspec file doesn't exists in redist folder: \"{redistPath}\".");
+            Console.WriteLine($".nuspec file doesn't exists in redist folder: \"{path}\".");
             return 1;
         }
 
@@ -54,8 +55,6 @@ redistPath = args[0];
 
         var httpClient = new HttpClient();
         var data = await httpClient.GetByteArrayAsync(downloadUrl);
-
-        var path = Directory.GetCurrentDirectory();
 
         var executableDirectory = Path.Combine(path, "steamcmd");
         ExtractData(data, executableDirectory);
@@ -177,7 +176,7 @@ redistPath = args[0];
 
             foreach (var fileInfo in managedFiles)
             {
-                var redistFilePath = Path.Combine(redistPath, fileInfo.Name);
+                var redistFilePath = Path.Combine(path, fileInfo.Name);
                 if (File.Exists(redistFilePath))
                 {
                     fileInfo.CopyTo(redistFilePath, true);
