@@ -78,6 +78,11 @@ path = args[0];
         ExtractExecutableData(data, executableDirectory);
 
         var executablePath = GetExecutablePath(executableDirectory);
+        if (File.Exists(executablePath) == false)
+        {
+            Console.WriteLine($"Executable cannot be found: {executablePath}");
+            return 1;
+        }
         var startInfo = new ProcessStartInfo
         {
             CreateNoWindow = false,
