@@ -129,6 +129,7 @@ path = args[0];
             Console.WriteLine($"common Directory not found: \"{commonDirectory}\"");
             return 1;
         }
+        Console.WriteLine("Common dirs: " + string.Join(", ", Directory.GetDirectories(executableDirectory)));
         var unturnedDirectory = Path.Combine(commonDirectory, "U3DS");
         if (Directory.Exists(unturnedDirectory) == false)
         {
