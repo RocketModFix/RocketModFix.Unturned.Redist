@@ -83,11 +83,6 @@ path = args[0];
             return 1;
         }
 
-        if (linux)
-        {
-            MakeFullPermissionsForLinuxFile(executablePath);
-        }
-
         try
         {
             var startInfo = new ProcessStartInfo();
@@ -130,8 +125,8 @@ path = args[0];
             return 1;
         }
         Console.WriteLine("Common dirs: " + string.Join(", ", Directory.GetDirectories(commonDirectory)));
-        var unturnedDirectory = Path.Combine(commonDirectory, "U3DS");
-        if (Directory.Exists(unturnedDirectory) == false)
+        var unturnedDirectory = GetUnturnedDirectory(commonDirectory);
+        if (unturnedDirectory == null || Directory.Exists(unturnedDirectory) == false)
         {
             Console.WriteLine($"Unturned Directory not found: \"{unturnedDirectory}\"");
             return 1;
@@ -269,30 +264,21 @@ path = args[0];
         }
     }
 
-    [DllImport("libc", SetLastError = true)]
-    private static extern int chmod(string pathname, int mode);
-    private static void MakeFullPermissionsForLinuxFile(string file)
+    private static string? GetUnturnedDirectory(string commonDirectory)
     {
-        try
+        var unturnedDirectory = Path.Combine(commonDirectory, "Unturned");
+        if (Directory.Exists(unturnedDirectory))
         {
-            int mode = Convert.ToInt32("777", 8); // Convert octal permissions to decimal
-
-            int result = chmod(file, mode);
-            if (result != 0)
-            {
-                Console.WriteLine("Failed to set file permissions.");
-                Console.WriteLine($"Error code: {Marshal.GetLastWin32Error()}");
-            }
-            else
-            {
-                Console.WriteLine("File permissions set successfully.");
-            }
+            return unturnedDirectory;
         }
-        catch (Exception ex)
+        unturnedDirectory = Path.Combine(commonDirectory, "U3DS");
+        if (Directory.Exists(unturnedDirectory))
         {
-            Console.WriteLine($"An error occurred: {ex.Message}");
+            return unturnedDirectory;
         }
+        return null;
     }
+
     private static int GetAppId()
     {
         return DedicatedServer ? 1110390 : 304930;
