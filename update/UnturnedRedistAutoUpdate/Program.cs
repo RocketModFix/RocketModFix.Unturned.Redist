@@ -113,7 +113,22 @@ path = args[0];
             return 1;
         }
 
-        var unturnedDirectory = Path.Combine(executableDirectory, "steamapps", "common", "U3DS");
+        var dirs = Directory.GetDirectories(executableDirectory);
+        Console.WriteLine(string.Join(", ", dirs));
+
+        var steamappsDirectory = Path.Combine(executableDirectory, "steamapps");
+        if (Directory.Exists(steamappsDirectory) == false)
+        {
+            Console.WriteLine($"steamapps Directory not found: \"{steamappsDirectory}\"");
+            return 1;
+        }
+        var commonDirectory = Path.Combine(steamappsDirectory, "common");
+        if (Directory.Exists(commonDirectory) == false)
+        {
+            Console.WriteLine($"common Directory not found: \"{commonDirectory}\"");
+            return 1;
+        }
+        var unturnedDirectory = Path.Combine(commonDirectory, "U3DS");
         if (Directory.Exists(unturnedDirectory) == false)
         {
             Console.WriteLine($"Unturned Directory not found: \"{unturnedDirectory}\"");
