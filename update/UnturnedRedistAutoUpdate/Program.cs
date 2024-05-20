@@ -107,8 +107,8 @@ path = args[0];
             return 1;
         }
 
-        var unturnedDirectory = Path.Combine(executableDirectory, @"steamapps\common\U3DS");
-        var managedDirectory = Path.Combine(unturnedDirectory, @"Unturned_Data\Managed");
+        var unturnedDirectory = Path.Combine(executableDirectory, "steamapps", "common", "U3DS");
+        var managedDirectory = Path.Combine(unturnedDirectory, "Unturned_Data", "Managed");
 
         const string statusFileName = "Status.json";
         var statusFilePath = Path.Combine(unturnedDirectory, statusFileName);
