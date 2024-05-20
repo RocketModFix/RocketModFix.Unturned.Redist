@@ -25,11 +25,11 @@ jobs:
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release $GITHUB_WORKSPACE --client --force
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE --client --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release $GITHUB_WORKSPACE --client
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE --client
 
     - name: Generate Commit Message
       run: |
