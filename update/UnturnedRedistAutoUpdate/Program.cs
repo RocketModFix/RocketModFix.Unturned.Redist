@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
-using System.Formats.Tar;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
+using ICSharpCode.SharpZipLib.Tar;
 using ValveKeyValue;
+using TarEntry = System.Formats.Tar.TarEntry;
 
 internal class Program
 {
@@ -16,11 +18,13 @@ internal class Program
         var linux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+        linux = true;
+        windows = false;
         AssertPlatformSupported();
 
         string path;
 #if DEBUG
-        path = Directory.GetCurrentDirectory();
+        path = @"C:\Me\Git Repos\RocketModFix.Unturned.Redist";
 #else
 if (args.Length == 0)
 {
@@ -56,14 +60,22 @@ path = args[0];
         DedicatedServer = !args.Any(x => x.Equals("--client", StringComparison.OrdinalIgnoreCase));
         AppId = GetAppId().ToString();
 
-        var downloadUrl = GetDownloadUrl();
+        var archiveName = GetArchiveName();
+        var downloadUrl = GetDownloadUrl(archiveName);
 
         var httpClient = new HttpClient();
-        var data = await httpClient.GetByteArrayAsync(downloadUrl);
+        var response = await httpClient.GetAsync(downloadUrl);
+        response.EnsureSuccessStatusCode();
+        var data = await response.Content.ReadAsByteArrayAsync();
+        if (data.Length == 0)
+        {
+            Console.WriteLine("Downloaded data was empty");
+            return 1;
+        }
 
         var executableDirectory = Path.Combine(path, "steamcmd");
         Directory.CreateDirectory(executableDirectory);
-        ExtractData(data, executableDirectory);
+        ExtractExecutableData(data, executableDirectory);
 
         var executablePath = GetExecutablePath(executableDirectory);
         var startInfo = new ProcessStartInfo
@@ -132,29 +144,31 @@ path = args[0];
                 throw new PlatformNotSupportedException();
             }
         }
-        string GetDownloadUrl()
+        string GetArchiveName()
         {
-            string archiveName;
             if (windows)
             {
-                archiveName = "steamcmd.zip";
+                return "steamcmd.zip";
             }
             else if (linux)
             {
-                archiveName = "steamcmd_linux.tar.gz";
+                return "steamcmd_linux.tar.gz";
             }
             else
             {
                 throw new PlatformNotSupportedException();
             }
-            return $"https://steamcdn-a.akamaihd.net/client/installer/{archiveName}";
+        }
+        string GetDownloadUrl(string fileName)
+        {
+            return $"https://steamcdn-a.akamaihd.net/client/installer/{fileName}";
         }
         string GetExecutablePath(string directory)
         {
             var extension = windows ? "exe" : "sh";
             return Path.Combine(directory, "steamcmd." + extension);
         }
-        void ExtractData(byte[] bytes, string destination)
+        void ExtractExecutableData(byte[] bytes, string destination)
         {
             if (windows)
             {
@@ -164,8 +178,12 @@ path = args[0];
             }
             else if (linux)
             {
-                using var stream = new MemoryStream(bytes);
-                TarFile.ExtractToDirectory(stream, destination, true);
+                using (var memoryStream = new MemoryStream(bytes))
+                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                using (var tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.UTF8))
+                {
+                    tarArchive.ExtractContents(destination);
+                }
             }
             else
             {
@@ -174,7 +192,7 @@ path = args[0];
         }
         void UpdateRedist(string unturnedManagedDirectory)
         {
-            var managedFiles = new DirectoryInfo(unturnedManagedDirectory).GetFiles();;
+            var managedFiles = new DirectoryInfo(unturnedManagedDirectory).GetFiles();
             if (managedFiles.Length == 0)
             {
                 throw new InvalidOperationException($"{nameof(managedFiles)} was empty");
