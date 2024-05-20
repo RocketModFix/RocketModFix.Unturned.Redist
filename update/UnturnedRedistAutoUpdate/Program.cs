@@ -18,8 +18,7 @@ internal class Program
         var linux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        linux = true;
-        windows = false;
+        //linux = true;
         AssertPlatformSupported();
 
         string path;
@@ -89,19 +88,23 @@ path = args[0];
         {
             var startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
-            if (linux)
-            {
-                startInfo.UseShellExecute = true;
-            }
-            else
-            {
-                startInfo.UseShellExecute = false;
-            }
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
             startInfo.FileName = executablePath;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.Arguments = $"+login anonymous +app_update {AppId} validate +quit";
             using var process = Process.Start(startInfo);
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
             await process.WaitForExitAsync();
+
+            Console.WriteLine(output);
+            if (!string.IsNullOrEmpty(error))
+            {
+                await Console.Error.WriteLineAsync(error);
+            }
+
+
         }
         catch (Exception ex)
         {
