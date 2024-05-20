@@ -88,6 +88,14 @@ path = args[0];
         {
             var startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
+            if (linux)
+            {
+                startInfo.UseShellExecute = true;
+            }
+            else
+            {
+                startInfo.UseShellExecute = false;
+            }
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
             startInfo.FileName = executablePath;
