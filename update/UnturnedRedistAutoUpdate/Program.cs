@@ -302,7 +302,6 @@ path = args[0];
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }
-
     private static int GetAppId()
     {
         return DedicatedServer ? 1110390 : 304930;
@@ -330,7 +329,7 @@ path = args[0];
     {
         if (string.IsNullOrEmpty(outLine.Data) == false)
         {
-            Console.WriteLine(outLine.Data);
+            Console.WriteLine($"[Output Handler]: {outLine.Data}");
         }
     }
 }
