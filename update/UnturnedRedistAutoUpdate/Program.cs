@@ -36,15 +36,20 @@ path = args[0];
             return 1;
         }
         var redistPath = Path.Combine(path, "redist");
+        if (Path.Exists(redistPath) == false)
+        {
+            Console.WriteLine($"Redist path doesn't exists: \"{redistPath}\".");
+            return 1;
+        }
         var nuspecFilePath = Directory.GetFiles(redistPath, "*.nuspec").FirstOrDefault();
         if (nuspecFilePath == null)
         {
-            Console.WriteLine($".nuspec file cannot be found in redist folder: \"{path}\".");
+            Console.WriteLine($".nuspec file cannot be found in redist folder: \"{redistPath}\".");
             return 1;
         }
         if (File.Exists(nuspecFilePath) == false)
         {
-            Console.WriteLine($".nuspec file doesn't exists in redist folder: \"{path}\".");
+            Console.WriteLine($".nuspec file doesn't exists in redist folder: \"{redistPath}\".");
             return 1;
         }
 
