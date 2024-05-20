@@ -18,7 +18,6 @@ internal class Program
         var linux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        linux = true;
         AssertPlatformSupported();
 
         string path;
