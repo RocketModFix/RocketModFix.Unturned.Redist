@@ -109,9 +109,6 @@ path = args[0];
             return 1;
         }
 
-        var dirs = Directory.GetDirectories(executableDirectory);
-        Console.WriteLine(string.Join(", ", dirs));
-
         var steamappsDirectory = Path.Combine(executableDirectory, "steamapps");
         if (Directory.Exists(steamappsDirectory) == false)
         {
@@ -124,13 +121,14 @@ path = args[0];
             Console.WriteLine($"common Directory not found: \"{commonDirectory}\"");
             return 1;
         }
-        Console.WriteLine("Common dirs: " + string.Join(", ", Directory.GetDirectories(commonDirectory)));
         var unturnedDirectory = GetUnturnedDirectory(commonDirectory);
         if (unturnedDirectory == null || Directory.Exists(unturnedDirectory) == false)
         {
             Console.WriteLine($"Unturned Directory not found: \"{unturnedDirectory}\"");
             return 1;
         }
+        Console.WriteLine("unturnedDirectory: " + string.Join(", ", Directory.GetDirectories(unturnedDirectory)));
+
         var unturnedDataDirectoryName = GetUnturnedDataDirectoryName();
         var managedDirectory = Path.Combine(unturnedDirectory, unturnedDataDirectoryName, "Managed");
         if (Directory.Exists(managedDirectory) == false)
