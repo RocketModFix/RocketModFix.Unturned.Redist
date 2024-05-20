@@ -26,7 +26,7 @@ internal class Program
 #else
 if (args.Length == 0)
 {
-    Console.WriteLine("Wrong usage. Specify path to the redist.");
+    Console.WriteLine("Wrong usage. Specify the path.");
     return 1;
 }
 path = args[0];
