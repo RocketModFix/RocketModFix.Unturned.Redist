@@ -18,7 +18,7 @@ internal class Program
         var linux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        //linux = true;
+        linux = true;
         AssertPlatformSupported();
 
         string path;
@@ -105,6 +105,8 @@ path = args[0];
             process.ErrorDataReceived += OutputHandler;
 
             process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
             await process.WaitForExitAsync();
         }
         catch (Exception ex)
@@ -285,6 +287,8 @@ path = args[0];
             process.ErrorDataReceived += OutputHandler;
 
             process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             process.WaitForExit();
 
@@ -324,7 +328,9 @@ path = args[0];
     }
     static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
     {
-        Console.WriteLine(outLine.Data);
+        if (string.IsNullOrEmpty(outLine.Data) == false)
+        {
+            Console.WriteLine(outLine.Data);
+        }
     }
-
 }
