@@ -23,13 +23,13 @@ jobs:
     - name: Install dependencies
       run: dotnet restore ./update/UnturnedRedistAutoUpdate/
 
-    - name: Run tool
+    - name: Run auto-updater
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
-    - name: Run tool
+    - name: Run auto-updater
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
     - name: Generate Commit Message
       run: |
