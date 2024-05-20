@@ -110,11 +110,20 @@ path = args[0];
         }
 
         var unturnedDirectory = Path.Combine(executableDirectory, "steamapps", "common", "U3DS");
+        if (Directory.Exists(executableDirectory) == false)
+        {
+            Console.WriteLine($"Unturned Directory not found: \"{executableDirectory}\"");
+            return 1;
+        }
         var managedDirectory = Path.Combine(unturnedDirectory, "Unturned_Data", "Managed");
-
+        if (Directory.Exists(managedDirectory) == false)
+        {
+            Console.WriteLine($"Unturned Managed Directory not found: \"{managedDirectory}\"");
+            return 1;
+        }
         const string statusFileName = "Status.json";
         var statusFilePath = Path.Combine(unturnedDirectory, statusFileName);
-        if (!File.Exists(statusFilePath))
+        if (File.Exists(statusFilePath) == false)
         {
             throw new FileNotFoundException("Required file is not found", statusFilePath);
         }
