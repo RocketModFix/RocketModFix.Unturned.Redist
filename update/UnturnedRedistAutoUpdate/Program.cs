@@ -119,7 +119,9 @@ path = args[0];
             Console.WriteLine($"Unturned Directory not found: \"{unturnedDirectory}\"");
             return 1;
         }
-        var managedDirectory = Path.Combine(unturnedDirectory, "Unturned_Data", "Managed");
+
+        var unturnedDataDirectoryName = GetUnturnedDataDirectoryName();
+        var managedDirectory = Path.Combine(unturnedDirectory, unturnedDataDirectoryName, "Managed");
         if (Directory.Exists(managedDirectory) == false)
         {
             Console.WriteLine($"Unturned Managed Directory not found: \"{managedDirectory}\"");
@@ -217,6 +219,21 @@ path = args[0];
                 throw new PlatformNotSupportedException();
             }
         }
+        string GetUnturnedDataDirectoryName()
+        {
+            if (linux)
+            {
+                return "Unturned_Headless_Data";
+            }
+            else if (windows)
+            {
+                return "Unturned_Data";
+            }
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
+        }
         void UpdateRedist(string unturnedManagedDirectory)
         {
             var managedFiles = new DirectoryInfo(unturnedManagedDirectory).GetFiles();
@@ -236,23 +253,20 @@ path = args[0];
         }
     }
 
-    private static void MakeFullPermissionsForLinuxFile(string executablePath)
+    private static void MakeFullPermissionsForLinuxFile(string file)
     {
         try
         {
-            using var process = new Process
+            using var process = new Process();
+            process.StartInfo = new ProcessStartInfo
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "chmod",
-                    Arguments = "+x " + executablePath, // +x to add execute permission
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
+                FileName = "chmod",
+                Arguments = "+x " + file, // +x to add execute permission
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
-
             process.OutputDataReceived += OutputHandler;
             process.ErrorDataReceived += OutputHandler;
 
@@ -262,7 +276,7 @@ path = args[0];
 
             if (process.ExitCode != 0)
             {
-                Console.WriteLine($"error occured while setting chmod for {executablePath}");
+                Console.WriteLine($"error occured while setting chmod for {file}");
             }
         }
         catch (Exception ex)
