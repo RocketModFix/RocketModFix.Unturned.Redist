@@ -21,11 +21,11 @@ jobs:
 
     - name: Run tool
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
     - name: Run tool
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
     - name: Generate Commit Message
       run: |
