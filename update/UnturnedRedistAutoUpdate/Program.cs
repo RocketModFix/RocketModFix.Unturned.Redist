@@ -130,7 +130,13 @@ path = args[0];
         Console.WriteLine("unturnedDirectory: " + string.Join(", ", Directory.GetDirectories(unturnedDirectory)));
 
         var unturnedDataDirectoryName = GetUnturnedDataDirectoryName();
-        var managedDirectory = Path.Combine(unturnedDirectory, unturnedDataDirectoryName, "Managed");
+        var unturnedDataPath = Path.Combine(unturnedDirectory, unturnedDataDirectoryName);
+        if (Directory.Exists(unturnedDataPath) == false)
+        {
+            Console.WriteLine($"Unturned Data Directory not found: \"{unturnedDataPath}\"");
+            return 1;
+        }
+        var managedDirectory = Path.Combine(unturnedDataPath, "Managed");
         if (Directory.Exists(managedDirectory) == false)
         {
             Console.WriteLine($"Unturned Managed Directory not found: \"{managedDirectory}\"");
