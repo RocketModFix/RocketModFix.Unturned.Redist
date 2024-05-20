@@ -15,20 +15,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - uses: actions/setup-dotnet@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.x'
 
     - name: Install dependencies
-      run: dotnet restore /update/UnturnedRedistAutoUpdate/
+      run: dotnet restore ./update/UnturnedRedistAutoUpdate/
 
     - name: Run tool
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
     - name: Run tool
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run /update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
+      run: dotnet run ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj -c Release -- $GITHUB_WORKSPACE --client
 
     - name: Generate Commit Message
       run: |
