@@ -55,8 +55,8 @@ path = args[0];
             return 1;
         }
 
-        DedicatedServer = !args.Any(x => x.Equals("--client", StringComparison.OrdinalIgnoreCase));
-        Force = !args.Any(x => x.Equals("--force", StringComparison.OrdinalIgnoreCase));
+        DedicatedServer = args.Any(x => x.Equals("--client", StringComparison.OrdinalIgnoreCase));
+        Force = args.Any(x => x.Equals("--force", StringComparison.OrdinalIgnoreCase));
         AppId = GetAppId().ToString();
 
         var archiveName = GetArchiveName();
