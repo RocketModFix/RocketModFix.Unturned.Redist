@@ -120,6 +120,8 @@ path = args[0];
             return 1;
         }
 
+        var dirs = Directory.GetDirectories(unturnedDirectory);
+        Console.WriteLine(string.Join(", ", dirs));
         var unturnedDataDirectoryName = GetUnturnedDataDirectoryName();
         var managedDirectory = Path.Combine(unturnedDirectory, unturnedDataDirectoryName, "Managed");
         if (Directory.Exists(managedDirectory) == false)
