@@ -84,6 +84,11 @@ path = args[0];
             return 1;
         }
 
+        if (linux)
+        {
+            MakeFullPermissionsForLinuxFile(executablePath);
+        }
+
         try
         {
             var startInfo = new ProcessStartInfo();
@@ -228,6 +233,41 @@ path = args[0];
                     fileInfo.CopyTo(redistFilePath, true);
                 }
             }
+        }
+    }
+
+    private static void MakeFullPermissionsForLinuxFile(string executablePath)
+    {
+        try
+        {
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "chmod",
+                    Arguments = "+x " + executablePath, // +x to add execute permission
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.OutputDataReceived += OutputHandler;
+            process.ErrorDataReceived += OutputHandler;
+
+            process.Start();
+
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                Console.WriteLine($"error occured while setting chmod for {executablePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }
 
