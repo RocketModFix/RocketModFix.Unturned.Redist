@@ -6,7 +6,6 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Tar;
 using ValveKeyValue;
-using TarEntry = System.Formats.Tar.TarEntry;
 
 internal class Program
 {
@@ -83,17 +82,22 @@ path = args[0];
             Console.WriteLine($"Executable cannot be found: {executablePath}");
             return 1;
         }
-        var startInfo = new ProcessStartInfo
-        {
-            CreateNoWindow = false,
-            UseShellExecute = false,
-            FileName = executablePath,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            Arguments = $"+login anonymous +app_update {AppId} validate +quit"
-        };
 
         try
         {
+            var startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            if (linux)
+            {
+                startInfo.UseShellExecute = true;
+            }
+            else
+            {
+                startInfo.UseShellExecute = false;
+            }
+            startInfo.FileName = executablePath;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.Arguments = $"+login anonymous +app_update {AppId} validate +quit";
             using var process = Process.Start(startInfo);
             await process.WaitForExitAsync();
         }
