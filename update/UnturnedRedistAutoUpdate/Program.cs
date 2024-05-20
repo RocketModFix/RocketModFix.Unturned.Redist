@@ -269,11 +269,24 @@ path = args[0];
         }
     }
 
+    [DllImport("libc", SetLastError = true)]
+    private static extern int chmod(string pathname, int mode);
     private static void MakeFullPermissionsForLinuxFile(string file)
     {
         try
         {
-            File.SetUnixFileMode(file, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            int mode = Convert.ToInt32("777", 8); // Convert octal permissions to decimal
+
+            int result = chmod(file, mode);
+            if (result != 0)
+            {
+                Console.WriteLine("Failed to set file permissions.");
+                Console.WriteLine($"Error code: {Marshal.GetLastWin32Error()}");
+            }
+            else
+            {
+                Console.WriteLine("File permissions set successfully.");
+            }
         }
         catch (Exception ex)
         {
