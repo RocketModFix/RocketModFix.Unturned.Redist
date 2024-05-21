@@ -31,7 +31,7 @@ jobs:
       uses: CyberAndrii/setup-steamcmd@v1
 
     - name: Update app
-      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
+      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
