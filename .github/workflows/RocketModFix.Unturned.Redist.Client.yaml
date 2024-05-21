@@ -1,6 +1,10 @@
 name: RocketModFix.Unturned.Redist.Client
 
 on:
+  workflow_run:
+    workflows: ["Update Unturned Redist for Client"]
+    types:
+      - completed
   push:
     branches: [ master ]
     paths:
