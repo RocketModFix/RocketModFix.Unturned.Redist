@@ -15,8 +15,10 @@ jobs:
 
     steps:
 
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v3
+      with:
+        ref: linux-client-preview
 
     - name: Setup SteamCMD
       id: setup-steamcmd
