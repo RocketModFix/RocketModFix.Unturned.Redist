@@ -2,13 +2,13 @@
 # We must ignore most of the files, because Auto-Redist update might commit files which we don't need to have, in case if you want to add new file/directory, anything, then make sure to remove ignore of all files (below)
 
 # Ignore all files
-#*
+*
 
 # Allow tracking of the .gitignore file itself
-#!.gitignore
+!.gitignore
 
 # Allow tracking of existing files (optional)
-#!*/
+!*/
 
 # Allow tracking of existing directories (optional)
-#!.gitkeep
+!.gitkeep
