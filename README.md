@@ -19,6 +19,11 @@ However, it depends on which side you work, Client, Server, and Maybe Client Pre
 [![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
 
 
+## Credits
+
+Huge thanks to existing tools: [Unturned-Datamining](https://github.com/Unturned-Datamining), and [setup-steamcmd](https://github.com/CyberAndrii/setup-steamcmd) which saved us a lot of time while making this magic auto-updating tool.
+
+
 
 
 
