@@ -2,7 +2,7 @@ name: "Update Unturned Redist for Server Preview"
 
 on:
   schedule:
-    - cron: '*/60 * * * *'
+    - cron: "*/12 * * * *"
   workflow_dispatch:
 
 permissions:
