@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'redist/client-preview-redist/**'
+      - 'redist/redist-server/**'
 
 jobs:
   build:
