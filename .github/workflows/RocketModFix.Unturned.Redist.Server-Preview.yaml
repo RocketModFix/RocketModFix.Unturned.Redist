@@ -1,6 +1,10 @@
 name: RocketModFix.Unturned.Redist.Server-Preview
 
 on:
+  workflow_run:
+    workflows: ["Update Unturned Redist for Server Preview"]
+    types:
+      - completed
   push:
     branches: [ master ]
     paths:
