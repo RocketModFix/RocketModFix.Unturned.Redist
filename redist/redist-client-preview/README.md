@@ -1,4 +1,4 @@
-# RocketModFix Unturned Redistributables
+# RocketModFix Unturned Redistributables for Client Side Preview
 
 This package contains the Unturned assemblies required for RocketModFix for Unturned and it's plugins.
 

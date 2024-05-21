@@ -1,4 +1,4 @@
-name: "Auto-update redist"
+name: "Update Unturned Redist for Client Preview"
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   update_redist:
-    name: "Run Redist auto-updater"
+    name: "Run Updater"
     runs-on: ubuntu-latest
 
     env:
@@ -31,7 +31,7 @@ jobs:
       uses: CyberAndrii/setup-steamcmd@v1
 
     - name: Update app
-      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
+      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -43,11 +43,11 @@ jobs:
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client --force
+      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-client-preview $APP_ID --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./tools/UnturnedRedistAutoUpdate/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client
+      run: dotnet run --project ./tools/UnturnedRedistAutoUpdate/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-client-preview $APP_ID
 
     - name: Generate Commit Message
       run: |

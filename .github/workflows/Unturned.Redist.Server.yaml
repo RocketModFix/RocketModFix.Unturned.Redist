@@ -1,0 +1,65 @@
+name: "Update Unturned Redist for Server"
+
+on:
+  schedule:
+    - cron: '*/60 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update_redist:
+    name: "Run Updater"
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ID: 1110390
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: master
+
+    - name: Checkout tools
+      uses: actions/checkout@v3
+      with:
+        repository: RocketModFix/UnturnedRedistUpdateTool
+        path: tools
+
+    - name: Setup SteamCMD
+      id: setup-steamcmd
+      uses: CyberAndrii/setup-steamcmd@v1
+
+    - name: Update app
+      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.x'
+
+    - name: Install dependencies
+      run: dotnet restore tools/UnturnedRedistUpdateTool/
+
+    - name: Run auto-updater (force)
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-server $APP_ID --force
+
+    - name: Run auto-updater (schedule)
+      if: ${{ github.event_name == 'schedule' }}
+      run: dotnet run --project ./tools/UnturnedRedistAutoUpdate/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-server $APP_ID
+
+    - name: Generate Commit Message
+      run: |
+        msg=$( cat .commit )
+        echo "message=$msg" >> "$GITHUB_OUTPUT"
+      id: generate_commit_message
+
+    - run: |
+        git config --global user.email "sunnamed@users.noreply.github.com"
+        git config --global user.name "sunnamed434"
+
+        git add -A
+        git status
+        git commit -m "${{ steps.generate_commit_message.outputs.message }}"
+        git push

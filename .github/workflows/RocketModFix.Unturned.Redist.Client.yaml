@@ -1,14 +1,14 @@
-name: RocketModFix.Unturned.Redist
+name: RocketModFix.Unturned.Redist.Client
 
 on:
   push:
     branches: [ master ]
     paths:
-      - 'redist/**'
+      - 'redist/redist-client/**'
 
 jobs:
   build:
-    name: "RocketModFix.Unturned.Redist Pack"
+    name: "RocketModFix.Unturned.Redist Pack for Client"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -24,6 +24,6 @@ jobs:
     - uses: ./.github/actions/nuget-pack
       id: nuget-pack
       with:
-        nuspec_path: redist/RocketModFix.Unturned.Redist.nuspec
+        nuspec_path: redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true
