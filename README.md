@@ -16,7 +16,7 @@ However, it depends on which side you work, Client, Server, and Maybe Client Pre
 
 [![RocketModFix.Unturned.Redist.Client-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview)
 
-![RocketModFix.Unturned.Redist.Server-Preview][badge_RocketModFix.Unturned.Redist.Server-Preview]
+[![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
 
 
 
@@ -27,11 +27,3 @@ However, it depends on which side you work, Client, Server, and Maybe Client Pre
 [nuget_package_RocketModFix.Unturned.Redist.Server]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server
 [nuget_package_RocketModFix.Unturned.Redist.Client-Preview]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview
 [nuget_package_RocketModFix.Unturned.Redist.Server-Preview]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview
-
-[badge_RocketModFix.Unturned.Redist.Client]: https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client?label=RocketModFix.Unturned.Redist.Client&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client
-
-[badge_RocketModFix.Unturned.Redist.Server]: https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server?label=RocketModFix.Unturned.Redist.Server&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server
-
-[badge_RocketModFix.Unturned.Redist.Client-Preview]: https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview
-
-[badge_RocketModFix.Unturned.Redist.Server-Preview]: https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview
