@@ -8,12 +8,22 @@ on:
 jobs:
   update_redist:
     name: "Run Redist auto-updater"
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ID: 304930
 
     steps:
 
     - name: Checkout code
       uses: actions/checkout@v3
+
+    - name: Setup SteamCMD
+      id: setup-steamcmd
+      uses: CyberAndrii/setup-steamcmd@v1
+
+    - name: Update app
+      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -25,11 +35,11 @@ jobs:
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- "${{ github.workspace }}" --client --force
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- "${{ github.workspace }}" --client
+      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client
 
     - name: Generate Commit Message
       run: |

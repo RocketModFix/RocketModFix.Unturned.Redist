@@ -9,7 +9,6 @@ using ValveKeyValue;
 
 internal class Program
 {
-    private static bool DedicatedServer { get; set; }
     private static string AppId { get; set; }
     private static bool Force { get; set; }
 
@@ -21,17 +20,20 @@ internal class Program
         AssertPlatformSupported();
 
         string path;
-#if DEBUG
-        path = @"C:\Me\Git Repos\RocketModFix.Unturned.Redist";
-#else
-if (args.Length == 0)
-{
-    Console.WriteLine("Wrong usage. Specify the path.");
-    return 1;
-}
-path = args[0];
-#endif
+        if (args.Length < 3)
+        {
+            Console.WriteLine("Wrong usage. Correct usage: UnturnedRedistAutoUpdate.exe <path> <app_id> [args]");
+            return 1;
+        }
+        path = args[0];
+        AppId = args[1];
+        Force = !args.Any(x => x.Equals("--force", StringComparison.OrdinalIgnoreCase));
 
+        if (string.IsNullOrWhiteSpace(AppId))
+        {
+            Console.WriteLine("AppId is not specified.");
+            return 1;
+        }
         if (Path.Exists(path) == false)
         {
             Console.WriteLine($"Path doesn't exists: \"{path}\".");
@@ -55,60 +57,14 @@ path = args[0];
             return 1;
         }
 
-        DedicatedServer = !args.Any(x => x.Equals("--client", StringComparison.OrdinalIgnoreCase));
-        Force = !args.Any(x => x.Equals("--force", StringComparison.OrdinalIgnoreCase));
-        AppId = GetAppId().ToString();
-
-        var archiveName = GetArchiveName();
-        var downloadUrl = GetDownloadUrl(archiveName);
-
-        var httpClient = new HttpClient();
-        var response = await httpClient.GetAsync(downloadUrl);
-        response.EnsureSuccessStatusCode();
-        var data = await response.Content.ReadAsByteArrayAsync();
-        if (data.Length == 0)
-        {
-            Console.WriteLine("Downloaded data was empty");
-            return 1;
-        }
+        Console.WriteLine("Preparing to run tool...");
 
         var executableDirectory = Path.Combine(path, "steamcmd");
-        Directory.CreateDirectory(executableDirectory);
-        ExtractExecutableData(data, executableDirectory);
-
-        var executablePath = GetExecutablePath(executableDirectory);
-        if (File.Exists(executablePath) == false)
+        if (Directory.Exists(executableDirectory) == false)
         {
-            Console.WriteLine($"Executable cannot be found: {executablePath}");
+            Console.WriteLine($"executable Directory not found: \"{executableDirectory}\"");
             return 1;
         }
-
-        try
-        {
-            var startInfo = new ProcessStartInfo();
-            startInfo.CreateNoWindow = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-
-            startInfo.FileName = executablePath;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = $"+login anonymous +app_update {AppId} validate +quit";
-            using var process = new Process();
-            process.StartInfo = startInfo;
-            process.OutputDataReceived += OutputHandler;
-            process.ErrorDataReceived += OutputHandler;
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            await process.WaitForExitAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occured while running app: \n{ex}");
-            return 1;
-        }
-
         var steamappsDirectory = Path.Combine(executableDirectory, "steamapps");
         if (Directory.Exists(steamappsDirectory) == false)
         {
@@ -150,7 +106,7 @@ path = args[0];
         }
         var (version, buildId) = await GetInfo(unturnedDirectory, executableDirectory, AppId);
 
-        Console.WriteLine($"Installed Unturned v{version} ({buildId})");
+        Console.WriteLine($"Found Unturned v{version} ({buildId})");
 
         var doc = XDocument.Load(nuspecFilePath);
         XNamespace ns = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
@@ -184,52 +140,6 @@ path = args[0];
         void AssertPlatformSupported()
         {
             if (!(linux || windows))
-            {
-                throw new PlatformNotSupportedException();
-            }
-        }
-        string GetArchiveName()
-        {
-            if (windows)
-            {
-                return "steamcmd.zip";
-            }
-            else if (linux)
-            {
-                return "steamcmd_linux.tar.gz";
-            }
-            else
-            {
-                throw new PlatformNotSupportedException();
-            }
-        }
-        string GetDownloadUrl(string fileName)
-        {
-            return $"https://steamcdn-a.akamaihd.net/client/installer/{fileName}";
-        }
-        string GetExecutablePath(string directory)
-        {
-            var extension = windows ? "exe" : "sh";
-            return Path.Combine(directory, "steamcmd." + extension);
-        }
-        void ExtractExecutableData(byte[] bytes, string destination)
-        {
-            if (windows)
-            {
-                using var stream = new MemoryStream(bytes);
-                using var zipArchive = new ZipArchive(stream);
-                zipArchive.ExtractToDirectory(destination, true);
-            }
-            else if (linux)
-            {
-                using (var memoryStream = new MemoryStream(bytes))
-                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                using (var tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.UTF8))
-                {
-                    tarArchive.ExtractContents(destination);
-                }
-            }
-            else
             {
                 throw new PlatformNotSupportedException();
             }
@@ -283,10 +193,6 @@ path = args[0];
         return null;
     }
 
-    private static int GetAppId()
-    {
-        return DedicatedServer ? 1110390 : 304930;
-    }
     private static async Task<(string version, string buildId)> GetInfo(string unturnedDirectory, string executablePath, string appId)
     {
         var node = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(unturnedDirectory, "Status.json")))!["Game"]!;
@@ -305,12 +211,5 @@ path = args[0];
 
         var buildId1 = obj["buildid"].ToString();
         return (version, buildId1);
-    }
-    static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
-    {
-        if (string.IsNullOrEmpty(outLine.Data) == false)
-        {
-            Console.WriteLine($"[Output Handler]: {outLine.Data}");
-        }
     }
 }
