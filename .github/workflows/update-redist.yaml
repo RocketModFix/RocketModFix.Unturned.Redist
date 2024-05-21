@@ -20,6 +20,12 @@ jobs:
       with:
         ref: linux-client-preview
 
+    - name: Checkout tools
+      uses: actions/checkout@v3
+      with:
+        repository: RocketModFix/UnturnedRedistUpdateTool
+        path: tools
+
     - name: Setup SteamCMD
       id: setup-steamcmd
       uses: CyberAndrii/setup-steamcmd@v1
@@ -33,15 +39,15 @@ jobs:
         dotnet-version: '8.x'
 
     - name: Install dependencies
-      run: dotnet restore ./update/UnturnedRedistAutoUpdate/
+      run: dotnet restore tools/UnturnedRedistUpdateTool/
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client --force
+      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./update/UnturnedRedistAutoUpdate/UnturnedRedistAutoUpdate.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client
+      run: dotnet run --project ./tools/UnturnedRedistAutoUpdate/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $APP_ID --client
 
     - name: Generate Commit Message
       run: |
