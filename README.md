@@ -16,7 +16,7 @@ However, it depends on which side you work, Client, Server, and Maybe Client Pre
 
 [![RocketModFix.Unturned.Redist.Client-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview)
 
-[RocketModFix.Unturned.Redist.Server-Preview][badge_RocketModFix.Unturned.Redist.Server-Preview]
+![RocketModFix.Unturned.Redist.Server-Preview][badge_RocketModFix.Unturned.Redist.Server-Preview]
 
 
 
