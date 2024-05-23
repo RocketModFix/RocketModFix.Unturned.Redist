@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 permissions:
-    contents: write
-    packages: write
+  contents: write
+  packages: write
 
 jobs:
   update_redist:
@@ -51,7 +51,7 @@ jobs:
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./tools/UnturnedRedistAutoUpdate/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-server-preview $APP_ID
+      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $GITHUB_WORKSPACE/redist/redist-server-preview $APP_ID
 
     - name: Generate Commit Message
       run: |
