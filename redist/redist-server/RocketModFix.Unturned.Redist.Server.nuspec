@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>RocketModFix.Unturned.Redist.Server</id>
-    <version>3.24.3.0</version>
+    <version>3.24.3.1</version>
     <description>Unturned 3 Server-side redistributables.</description>
     <authors>SmartlyDressedGames;RocketModFix</authors>
     <license type="file">LICENSE.txt</license>

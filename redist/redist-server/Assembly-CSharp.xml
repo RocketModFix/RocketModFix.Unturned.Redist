@@ -2216,6 +2216,11 @@
             Export JSON report of Unturned's assets for economy usage.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EconAssetsReport.Item.HasEffectTransform">
+            <summary>
+            If true, contains child transform named Effect for mythical attachment. 
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.EconAssetsReport.Skin.SecondaryItemIDs">
             <summary>
             Attachment item IDs that get skinned specially.
@@ -2602,6 +2607,31 @@
             Favorite and bookmark buttons can be hidden depending whether the necessary server details are set.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.EVehicleBuildablePlacementRule">
+            <summary>
+            Controls whether vehicle allows barricades to be attached to it.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EVehicleBuildablePlacementRule.None">
+            <summary>
+            Vehicle does not override placement. This means, by default, that barricades can be placed on the vehicle
+            unless the barricade sets Allow_Placement_On_Vehicle to false. (e.g., beds and sentry guns) Note that
+            gameplay config Bypass_Buildable_Mobility, if true, takes priority.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EVehicleBuildablePlacementRule.AlwaysAllow">
+            <summary>
+            Vehicle allows any barricade to be placed on it, regardless of the barricade's Allow_Placement_On_Vehicle
+            setting. The legacy option for this was the Supports_Mobile_Buildables flag. Vanilla trains originally
+            used this option, but it was exploited to move beds into tunnel walls.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EVehicleBuildablePlacementRule.Block">
+            <summary>
+            Vehicle prevents any barricade from being placed on it. Note that gameplay config Bypass_Buildable_Mobility,
+            if true, takes priority.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.VehicleAsset.hasLoadedModel">
             <summary>
             Prevents calling getOrLoad redundantly if asset does not exist.
@@ -2765,6 +2795,11 @@
         <member name="F:SDG.Unturned.LevelGround.hasLegacyDataForConversion">
             <summary>
             If true then level should convert old terrain.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.doesLegacyDataIncludeSplatmapWeights">
+            <summary>
+            If true, splatmap conversion should use weights as-is.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LevelGround.legacyMaterialGuids">
@@ -7075,6 +7110,12 @@
             Relatively efficiently find mesh components, and log an error if their mesh is missing, among other checks.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.AssetValidation.InternalValidateRendererMultiLodRegistration(SDG.Unturned.Asset)">
+            <summary>
+            Unity warns about renderers registered with more than one LOD group, so we do our own validation as part of
+            asset loading to make it easier to find these.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ESteamCall.SERVER">
             <summary>
             Replaced by ServerMethodHandle.
@@ -7646,6 +7687,12 @@
         <member name="F:SDG.Unturned.PoolReference.excludeFromDestroyAll">
             <summary>
             Enabled for effects held by guns and sentries.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PoolReference.OnDestroy">
+            <summary>
+            Listen for OnDestroy callback because mods may be destroying themselves in unexpected ways (e.g., Grenade
+            component) and still need to be cleaned up.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ItemTrapAsset.trapSetupDelay">
@@ -10594,6 +10641,11 @@
             Icon saved for community members in Extras folder.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ItemDefIconInfo.hasSmall">
+            <summary>
+            Has the small icon been captured yet?
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ItemDefIconInfo.hasLarge">
             <summary>
             Has the large icon been captured yet?
@@ -13267,6 +13319,11 @@
         <member name="T:SDG.Unturned.ItemStoreSavedata">
             <summary>
             Tracks whether we should show the "NEW" label on listings and item store button.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ItemStoreSavedata.MarkNewCraftingPageSeen">
+            <summary>
+            Track that player has seen the new crafting blueprints.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ItemStoreSavedata.MarkNewListingsPageSeen">
