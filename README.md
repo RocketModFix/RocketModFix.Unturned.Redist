@@ -4,6 +4,13 @@
 
 Do you find it annoying to copy libraries from the Managed directory every time Unturned updates? With this NuGet package, you get all the necessary libraries for Unturned, and they update automatically. You don't need to wait for us to update them manually. This package is like a "redistributable" that stays current.
 
+You get:
+
+- **Assembly-CSharp.dll**
+- **com.rlabrecque.steamworks.net.dll**
+- **UnturnedDat.dll**
+- and many more, including XML docs for the Unturned API and more.
+
 ## How to Install
 
 These libraries (or "redists") update by themselves, so you don’t have to worry about manual updates.
