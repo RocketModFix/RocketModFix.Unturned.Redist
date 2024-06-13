@@ -1,14 +1,23 @@
 # RocketModFix.Unturned.Redist
 
-Why? What's that? We sure that you have i.e. copy Libraries from Managed directory every new Unturned update, in any tool that you develop for Unturned right? Don't you tired of that? This is a NuGet package with contains all the Libraries you need for Unturned and also auto-updated, so you don't need to wait while we update the Libraries, in more known words Redist.
+## Why Use This?
 
-## Installation
+Do you find it annoying to copy libraries from the Managed directory every time Unturned updates? With this NuGet package, you get all the necessary libraries for Unturned, and they update automatically. You don't need to wait for us to update them manually. This package is like a "redistributable" that stays current.
 
-Important to note: those redists (libraries) are updated automatically, it means you/us don't need to update them manually here.
+## How to Install
 
-Installation is done by using the [RocketModFix.Unturned.Redist.Client][nuget_package_RocketModFix.Unturned.Redist.Client] NuGet package.
+These libraries (or "redists") update by themselves, so you don’t have to worry about manual updates.
 
-However, it depends on which side you work, Client, Server, and Maybe Client Preview, or maybe Server Preview, not a problem at all.
+Choose the package that fits your need:
+
+- **Client:** For tools that run on the Unturned client.
+- **Server:** For tools that run on the Unturned server.
+- **Client Preview:** For early versions of the client-side libraries.
+- **Server Preview:** For early versions of the server-side libraries.
+
+### Installation Links
+
+Click the links below to get the package you need:
 
 [![RocketModFix.Unturned.Redist.Client](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client?label=RocketModFix.Unturned.Redist.Client&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client)
 
@@ -18,17 +27,10 @@ However, it depends on which side you work, Client, Server, and Maybe Client Pre
 
 [![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
 
-
 ## Credits
 
-Huge thanks to existing tools: [Unturned-Datamining](https://github.com/Unturned-Datamining), and [setup-steamcmd](https://github.com/CyberAndrii/setup-steamcmd) which saved us a lot of time while making this magic auto-updating tool.
+Special thanks to these projects that helped us build this auto-updating tool:
 
+- [Unturned-Datamining](https://github.com/Unturned-Datamining)
 
-
-
-
-
-[nuget_package_RocketModFix.Unturned.Redist.Client]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client
-[nuget_package_RocketModFix.Unturned.Redist.Server]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server
-[nuget_package_RocketModFix.Unturned.Redist.Client-Preview]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview
-[nuget_package_RocketModFix.Unturned.Redist.Server-Preview]: https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview
+- [setup-steamcmd](https://github.com/CyberAndrii/setup-steamcmd)
