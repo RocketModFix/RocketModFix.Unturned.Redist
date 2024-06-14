@@ -3125,6 +3125,12 @@
             Hack for previewing the "aura" cosmetic items.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.CharacterAnimator.GetAnimationLength(System.String,System.Boolean)">
+            <param name="scaled">If true, include current animation speed modifier.</param>
+        </member>
+        <member name="M:SDG.Unturned.CharacterAnimator.play(System.String,System.Boolean)">
+            <returns>True if an animation was found and started playing.</returns>
+        </member>
         <member name="F:SDG.Unturned.GraphicsSettings.planarReflectionUpdateIndex">
             <summary>
             Planar reflection component updates its culling distance and culling mask when this is incremented.
@@ -3178,12 +3184,6 @@
             If default resolution is zero, try falling back to a higher one.
             Used when restoring defaults and validating loaded settings.
             </summary>
-        </member>
-        <member name="M:SDG.Unturned.CharacterAnimator.GetAnimationLength(System.String,System.Boolean)">
-            <param name="scaled">If true, include current animation speed modifier.</param>
-        </member>
-        <member name="M:SDG.Unturned.CharacterAnimator.play(System.String,System.Boolean)">
-            <returns>True if an animation was found and started playing.</returns>
         </member>
         <member name="F:SDG.Unturned.EPhysicsMaterialCharacterFrictionMode.ImmediatelyResponsive">
             <summary>
