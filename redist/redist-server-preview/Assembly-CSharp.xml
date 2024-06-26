@@ -182,6 +182,16 @@
             whereas most only need the collider for general-purpose selection in the level editor.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EVehicleThirdPersonCameraMode.RotationDetached">
+            <summary>
+            Camera does not rotate when the car rotates.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EVehicleThirdPersonCameraMode.RotationAttached">
+            <summary>
+            Camera rotates when the car rotates.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.OptionsSettings.SAVEDATA_VERSION_ADDED_HITMARKER_STYLE_FIX">
             <summary>
             Unfortunately the version which added hitmarker style saved but didn't actually load (sigh).
@@ -214,6 +224,11 @@
         <member name="F:SDG.Unturned.OptionsSettings.hitmarkerStyle">
             <summary>
             Controls whether hitmarkers are animated outward (newer) or just a static image ("classic"). 
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.vehicleThirdPersonCameraMode">
+            <summary>
+            Determines how camera follows vehicle in third-person view.
             </summary>
         </member>
         <member name="E:SDG.Unturned.OptionsSettings.OnCustomColorsChanged">
@@ -6003,6 +6018,31 @@
             Server list filter for plugin usage.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ClientTextChatMessenger">
+            <summary>
+            Allows Unity events to send text chat messages from the client, for example to execute commands.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
+            <summary>
+            Text to use when SendDefaultTextChatMessage is invoked.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
+            <summary>
+            All players on the server will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
+            <summary>
+            Only nearby players will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
+            <summary>
+            Chat mode to send request in.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ELightingRain.NONE">
             <summary>
             Corresponds to not active and not blending with new weather system. 
@@ -6096,31 +6136,6 @@
         <member name="M:SDG.Unturned.LevelLighting.resetForMainMenu">
             <summary>
             Reset any global shader properties that may affect the main menu.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.ClientTextChatMessenger">
-            <summary>
-            Allows Unity events to send text chat messages from the client, for example to execute commands.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
-            <summary>
-            Text to use when SendDefaultTextChatMessage is invoked.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
-            <summary>
-            All players on the server will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
-            <summary>
-            Only nearby players will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
-            <summary>
-            Chat mode to send request in.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ZombieDifficultyAsset.Allow_Horde_Beacon">
