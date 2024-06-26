@@ -105,6 +105,12 @@
             For example bitCount of 7 allows range [-64, +64).
             </summary>
         </member>
+        <member name="M:SDG.NetPak.SystemNetPakWriterEx.WriteUnsignedClampedFloat(SDG.NetPak.NetPakWriter,System.Single,System.Int32,System.Int32)">
+            <summary>
+            Values outside the range are clamped into range.
+            For example intBitCount of 7 allows range [0, 128).
+            </summary>
+        </member>
         <member name="M:SDG.NetPak.SystemNetPakWriterEx.WriteClampedFloat(SDG.NetPak.NetPakWriter,System.Single,System.Int32,System.Int32)">
             <summary>
             Values outside the range are clamped into range.
@@ -144,6 +150,12 @@
         <member name="M:SDG.NetPak.SystemNetPakReaderEx.ReadSignedInt(SDG.NetPak.NetPakReader,System.Int32,System.Int32@)">
             <summary>
             For example bitCount of 7 allows range [-64, +64).
+            </summary>
+        </member>
+        <member name="M:SDG.NetPak.SystemNetPakReaderEx.ReadUnsignedClampedFloat(SDG.NetPak.NetPakReader,System.Int32,System.Int32,System.Single@)">
+            <summary>
+            Values outside the range are clamped into range.
+            For example intBitCount of 7 allows range [0, 128).
             </summary>
         </member>
         <member name="M:SDG.NetPak.SystemNetPakReaderEx.ReadClampedFloat(SDG.NetPak.NetPakReader,System.Int32,System.Int32,System.Single@)">
