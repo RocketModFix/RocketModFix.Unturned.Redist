@@ -7370,6 +7370,12 @@
             Ensure pillar fits in an empty slot.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.HousingConnections.GetModelYaw(UnityEngine.Transform)">
+            <summary>
+            Nelson 2024-06-26: With structure rotation replicated as a quaternion we need to be smarter about extracting
+            yaw from model transform. Quaternion.eulerAngles.y isn't necessarily the yaw anymore.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.HousingConnections.ignoreDrops">
             <summary>
             Working buffer for placement overlap tests.
@@ -8024,6 +8030,12 @@
         <member name="F:SDG.Unturned.StructureManager.MIN_INSTANTIATIONS_PER_FRAME">
             <summary>
             Instantiate at least this many structures per frame even if we exceed our time budget.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.StructureManager.YAW_BIT_COUNT">
+            <summary>
+            Sending yaw only costs 1 bit (flag) plus yaw bits, so compared to the old 24-bit rotation we may as well
+            make it high-precision. Quaternion mode uses 1+27 bits!
             </summary>
         </member>
         <member name="F:SDG.Unturned.StructureManager.NETIDS_PER_STRUCTURE">
