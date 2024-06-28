@@ -13166,6 +13166,17 @@
             World-space direction to orient the Z axis along. Defaults to up.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.IAssetReference.GUID">
             <summary>
             GUID of the asset this is referring to.
@@ -13189,17 +13200,6 @@
         <member name="M:SDG.Unturned.AssetReference`1.Find">
             <summary>
             Resolve reference with asset manager.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
             </summary>
         </member>
         <member name="F:SDG.Unturned.InteractableCharge.explosion2">
