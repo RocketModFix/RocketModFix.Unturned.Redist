@@ -3471,7 +3471,7 @@
             <summary>
             Original option for disabling item quality. Defaults to true. If false, items spawn at 100% quality and
             their quality doesn't decrease. For backwards compatibility, the newer per-item-type durability options
-            turn off if this is off.
+            are ignored if this is off.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ItemsConfigData.Food_Spawns_At_Full_Quality">
@@ -4839,6 +4839,11 @@
             <summary>
             Returned asset is not necessarily a vehicle asset yet: It can also be a VehicleRedirectorAsset which the
             vehicle spawner requires to properly set paint color.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VendorSellingVehicle.paintColor">
+            <summary>
+            If set, takes priority over VehicleRedirectorAsset's paint color and over VehicleAsset's default paint color.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerDashboardInventoryUI.dragOutsideHandler">
@@ -6963,9 +6968,21 @@
             Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleV2(System.UInt16,UnityEngine.Vector3,UnityEngine.Quaternion,System.Nullable{UnityEngine.Color32})">
+            <summary>
+            Supports redirects by VehicleRedirectorAsset. If paintColor is set that takes priority, otherwise if
+            redirector's SpawnPaintColor is set, that color is used,
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.VehicleManager.spawnLockedVehicleForPlayerV2(System.UInt16,UnityEngine.Vector3,UnityEngine.Quaternion,SDG.Unturned.Player)">
             <summary>
             Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleManager.spawnLockedVehicleForPlayerV2(System.UInt16,UnityEngine.Vector3,UnityEngine.Quaternion,SDG.Unturned.Player,System.Nullable{UnityEngine.Color32})">
+            <summary>
+            Supports redirects by VehicleRedirectorAsset. If paintColor is set that takes priority, otherwise if
+            redirector's SpawnPaintColor is set, that color is used,
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleManager.spawnVehicleV2(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion)">
@@ -6973,9 +6990,21 @@
             Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleV2(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,System.Nullable{UnityEngine.Color32})">
+            <summary>
+            Supports redirects by VehicleRedirectorAsset. If paintColor is set that takes priority, otherwise if
+            redirector's SpawnPaintColor is set, that color is used,
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.VehicleManager.spawnLockedVehicleForPlayerV2(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,SDG.Unturned.Player)">
             <summary>
             Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleManager.spawnLockedVehicleForPlayerV2(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,SDG.Unturned.Player,System.Nullable{UnityEngine.Color32})">
+            <summary>
+            Supports redirects by VehicleRedirectorAsset. If paintColor is set that takes priority, otherwise if
+            redirector's SpawnPaintColor is set, that color is used,
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleManager.SpawnVehicleV3(SDG.Unturned.VehicleAsset,System.UInt16,System.UInt16,System.Single,UnityEngine.Vector3,UnityEngine.Quaternion,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.UInt16,System.UInt16,System.UInt16,Steamworks.CSteamID,Steamworks.CSteamID,System.Boolean,System.Byte[][],System.Byte,UnityEngine.Color32)">
@@ -6991,10 +7020,11 @@
             </summary>
             <param name="batteryCharge">zero spawns without a battery, ushort.MaxValue indicates the battery should be randomly spawned according to asset configuration, other values force a battery to spawn.</param>
         </member>
-        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleInternal(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,Steamworks.CSteamID)">
+        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleInternal(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,Steamworks.CSteamID,System.Nullable{UnityEngine.Color32})">
             <summary>
             Used by external spawn vehicle methods.
-            Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used.
+            Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used,
+            unless preferredColor.a is byte.MaxValue.
             </summary>
             <param name="owner">Owner to lock vehicle for by default. Used to lock vehicles to the player who purchased them.</param>
         </member>
@@ -10175,9 +10205,44 @@
             Handles VehicleRedirectorAsset (if any) and returns actual vehicle asset (if any).
             </summary>
         </member>
+        <member name="M:SDG.Unturned.VehicleTool.FindVehicleByLegacyIdAndHandleRedirectsWithLoadColor(System.UInt16,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning load paint color override (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.FindVehicleByLegacyIdAndHandleRedirectsWithSpawnColor(System.UInt16,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning spawn paint color override (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.VehicleTool.FindVehicleByGuidAndHandleRedirects(System.Guid)">
             <summary>
             Handles VehicleRedirectorAsset (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.FindVehicleByGuidAndHandleRedirectsWithLoadColor(System.Guid,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning load paint color override (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.FindVehicleByGuidAndHandleRedirectsWithSpawnColor(System.Guid,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning spawn paint color override (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.HandleRedirects(SDG.Unturned.Asset)">
+            <summary>
+            Handles VehicleRedirectorAsset (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.HandleRedirectsWithLoadColor(SDG.Unturned.Asset,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning load paint color override (if any) and returns actual vehicle asset (if any).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleTool.HandleRedirectsWithSpawnColor(SDG.Unturned.Asset,UnityEngine.Color32@)">
+            <summary>
+            Handles VehicleRedirectorAsset returning spawn paint color override (if any) and returns actual vehicle asset (if any).
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleTool.SpawnVehicleForPlayer(SDG.Unturned.Player,SDG.Unturned.Asset)">
