@@ -2098,6 +2098,11 @@
             Front steering column of bicycles and motorcycles.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.InteractableVehicle.needsReplicationUpdate">
+            <summary>
+            If true, server should replicate latest state to clients.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.InteractableVehicle.inputTargetVelocity">
             <summary>
             Used by several engine modes to represent an interpolated velocity target according to input.
@@ -2119,6 +2124,14 @@
             <summary>
             Rigidbody on the Vehicle prefab.
             (not called "rigidbody" because as of 2024-02-28 the deprecated "rigidbody" property still exists)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.MarkForReplicationUpdate">
+            <summary>
+            Primarily for backwards compatibility with plugins. Previously, multiple "updates" could be queued per
+            vehicle and sent to clients. This list was public, unfortunately, so plugins may rely on submitting vehicle
+            updates. After making it obsolete each vehicle can only be flagged as needing a replication update, and
+            this is reset after each server replication update.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableVehicle.canPlayerRepair(SDG.Unturned.Player)">
@@ -2241,21 +2254,21 @@
             Dedicated server simulate driving input.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.InteractableVehicle.gearNumber">
+        <member name="P:SDG.Unturned.InteractableVehicle.GearNumber">
             <summary>
             -1 is reverse.
             0 is neutral.
             +1 is index 0 in gear ratios list.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.InteractableVehicle.replicatedEngineRpm">
+        <member name="P:SDG.Unturned.InteractableVehicle.ReplicatedEngineRpm">
             <summary>
             Engine RPM replicated by current simulation owner.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.InteractableVehicle.animatedEngineRpm">
+        <member name="P:SDG.Unturned.InteractableVehicle.AnimatedEngineRpm">
             <summary>
-            Animated toward replicatedEngineRpm.
+            Animated toward ReplicatedEngineRpm.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableVehicle.GetShiftUpGearNumber(System.Single)">
@@ -2317,6 +2330,11 @@
         <member name="M:SDG.Unturned.InteractableVehicle.initCenterCollider">
             <summary>
             Find collider with the largest volume to use for exit physics queries.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.ApplyDepthMaskMaterial">
+            <summary>
+            Set material on DepthMask child renderer responsible for hiding water when interior of vehicle is submerged.
             </summary>
         </member>
         <member name="F:SDG.Unturned.InteractableVehicle.skinMaterialToDestroy">
@@ -3218,49 +3236,49 @@
             Used for engine RPM calculation.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.gearShiftDownThresholdRpm">
+        <member name="P:SDG.Unturned.VehicleAsset.GearShiftDownThresholdRpm">
             <summary>
             When engine RPM dips below this value shift to the next lower gear if available.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.gearShiftUpThresholdRpm">
+        <member name="P:SDG.Unturned.VehicleAsset.GearShiftUpThresholdRpm">
             <summary>
             When engine RPM exceeds this value shift to the next higher gear if available.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.gearShiftDuration">
+        <member name="P:SDG.Unturned.VehicleAsset.GearShiftDuration">
             <summary>
             How long after changing gears before throttle is engaged again.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.gearShiftInterval">
+        <member name="P:SDG.Unturned.VehicleAsset.GearShiftInterval">
             <summary>
             How long between changing gears to allow another automatic gear change.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.engineIdleRpm">
+        <member name="P:SDG.Unturned.VehicleAsset.EngineIdleRpm">
             <summary>
             Minimum engine RPM.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.engineMaxRpm">
+        <member name="P:SDG.Unturned.VehicleAsset.EngineMaxRpm">
             <summary>
             Maximum engine RPM.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.engineRpmIncreaseRate">
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmIncreaseRate">
             <summary>
             How quickly RPM can increase in RPM/s.
             e.g., 1000 will take 2 seconds to go from 2000 to 4000 RPM.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.engineRpmDecreaseRate">
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmDecreaseRate">
             <summary>
             How quickly RPM can decrease in RPM/s.
             e.g., 1000 will take 2 seconds to go from 4000 to 2000 RPM.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.VehicleAsset.engineMaxTorque">
+        <member name="P:SDG.Unturned.VehicleAsset.EngineMaxTorque">
             <summary>
             Maximum torque (multiplied by output of torque curve).
             </summary>
@@ -3303,6 +3321,24 @@
             
             Certain vehicles may support paint colors without also being paintable by players. For example, the creator
             of a vehicle may want to use color variants without also allowing players to make it bright pink.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleAsset.GetEngineGearRatio(System.Int32)">
+            <summary>
+            Returns reverseGearRatio for negative gears, actual value for valid gear number, otherwise zero.
+            Exposed for plugin use.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.ReverseGearsCount">
+            <summary>
+            Get number of reverse gear ratios.
+            Exposed for plugin use.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.ForwardGearsCount">
+            <summary>
+            Get number of forward gear ratios.
+            Exposed for plugin use.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.numSteeringTires">
@@ -9136,6 +9172,12 @@
             Object.prefab
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ObjectAsset.ShouldExcludeFromSatelliteCapture">
+            <summary>
+            If true, object will be hidden when rendering GPS/satellite view.
+            Defaults to true if <see cref="P:SDG.Unturned.ObjectAsset.holidayRestriction"/> is set.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ObjectAsset.causesFallDamage">
             <summary>
             Should landing on this object inflict fall damage?
@@ -10680,6 +10722,11 @@
             <summary>
             Synchronize control colors with background/text/image etc. colors.
             Called when custom UI colors are changed, and after constructor.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCVehicleReward.paintColor">
+            <summary>
+            If set, takes priority over VehicleRedirectorAsset's paint color and over VehicleAsset's default paint color.
             </summary>
         </member>
         <member name="M:SDG.Unturned.NPCVehicleReward.FindAsset">
@@ -12592,6 +12639,11 @@
         <member name="F:SDG.Unturned.LevelBatching.wantsToPreviewTextureAtlas">
             <summary>
             If true, don't assign texture atlas to material so batched materials are obvious.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelBatching.wantsToPreviewUniqueMaterials">
+            <summary>
+            If true, replace each unique material with a colored one before static batching.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LevelBatching.shouldLogTextureAtlasExclusions">
