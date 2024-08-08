@@ -10111,11 +10111,6 @@
             Optional parameter for error logging and responding to the invoker.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.NetTransportFactory">
-            <summary>
-            Not extendable until transport API is better finalized.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -10151,6 +10146,11 @@
         <member name="M:SDG.Unturned.AudioSourcePool.PlayCoroutine(SDG.Unturned.PooledAudioSource,System.Int32,System.Single)">
             <summary>
             Timer needs playId as well in case source has been recycled by the time duration expires.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.NetTransportFactory">
+            <summary>
+            Not extendable until transport API is better finalized.
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCHintReward.duration">
@@ -14488,11 +14488,6 @@
             around the guid naming, simplified by overriding name.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -14534,6 +14529,11 @@
         <member name="T:SDG.Unturned.SleekEditorLevel">
             <summary>
             Button in the list of levels for the map editor.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
