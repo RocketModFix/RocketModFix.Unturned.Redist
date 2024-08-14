@@ -246,6 +246,21 @@
             Invoked when dark/light theme is set.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.OptionsSettings.onlineSafetyMenuProceedCount">
+            <summary>
+            Number of times the player has clicked "Proceed" in the online safety menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.wantsToHideOnlineSafetyMenu">
+            <summary>
+            If true, "don't show again" is checked in the online safety menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.didShowOnlineSafetyMenuThisSession">
+            <summary>
+            Prevents menu from being shown twice without a restart.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
             checks whether a space contains any filled slots
         </member>
@@ -4232,12 +4247,17 @@
             Replacement for isAssociatedWithFlag to fix quest conditions and somewhat improve perf.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.WebUtils.ParseThirdPartyUrl(System.String,System.String@,System.Boolean)">
+        <member name="M:SDG.Unturned.WebUtils.ParseThirdPartyUrl(System.String,System.String@,System.Boolean,System.Boolean)">
             <summary>
             The game uses Process.Start to open web links when the Steam overlay is unavailable, which could be exploited
             to e.g. download and execute files. To prevent this we only allow valid http or https urls.
             </summary>
             <param name="autoPrefix">If true, prefix with https:// if neither http:// or https:// is specified.</param>
+        </member>
+        <member name="M:SDG.Unturned.WebUtils.CanParseThirdPartyUrl(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            This version just doesn't return the parsed URL.
+            </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleTable.GetRandomAsset">
             <summary>
@@ -14488,6 +14508,11 @@
             around the guid naming, simplified by overriding name.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -14529,11 +14554,6 @@
         <member name="T:SDG.Unturned.SleekEditorLevel">
             <summary>
             Button in the list of levels for the map editor.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
