@@ -256,7 +256,7 @@
             If true, "don't show again" is checked in the online safety menu.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.OptionsSettings.didShowOnlineSafetyMenuThisSession">
+        <member name="F:SDG.Unturned.OptionsSettings.didProceedThroughOnlineSafetyMenuThisSession">
             <summary>
             Prevents menu from being shown twice without a restart.
             </summary>
@@ -721,11 +721,6 @@
             Used by UI. True when underwater or inside non-breathable oxygen volume.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.ArenaNode.radius">
-            <summary>
-            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.ItemTool.getItem(System.UInt16,System.UInt16,System.Byte,System.Byte[],System.Boolean,SDG.Unturned.GetStatTrackerValueHandler)">
             <summary>
             No longer used in vanilla. Kept in case plugins are using it.
@@ -754,6 +749,11 @@
         <member name="M:SDG.Unturned.ItemTool.CalculateOrthographicSize(SDG.Unturned.ItemAsset,UnityEngine.GameObject,UnityEngine.Transform,System.Int32,System.Int32)">
             <summary>
             Unity's Camera.orthographicSize is half the height of the viewing volume. Width is calculated from aspect ratio.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ArenaNode.radius">
+            <summary>
+            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWeatherStatusChange.BeginTransitionIn">
