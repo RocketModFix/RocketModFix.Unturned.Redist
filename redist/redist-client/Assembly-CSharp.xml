@@ -330,11 +330,6 @@
             Parses mb:X from input string and filters assets using X master bundle.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
-            <summary>
-            Used by inventory item context menu to override which blueprints are shown.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.BarricadeManager.SAVEDATA_VERSION_INCLUDE_BUILD_ENUM">
             <summary>
             Barricade asset's EBuild included in saves to fix state length problems. (public issue #3725)
@@ -443,6 +438,11 @@
             +0 = BarricadeDrop
             +1 = root transform
             +2 = Interactable (if exists)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
+            <summary>
+            Used by inventory item context menu to override which blueprints are shown.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ZombieTable.tableUniqueId">
@@ -721,6 +721,11 @@
             Used by UI. True when underwater or inside non-breathable oxygen volume.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ArenaNode.radius">
+            <summary>
+            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ItemTool.getItem(System.UInt16,System.UInt16,System.Byte,System.Byte[],System.Boolean,SDG.Unturned.GetStatTrackerValueHandler)">
             <summary>
             No longer used in vanilla. Kept in case plugins are using it.
@@ -749,11 +754,6 @@
         <member name="M:SDG.Unturned.ItemTool.CalculateOrthographicSize(SDG.Unturned.ItemAsset,UnityEngine.GameObject,UnityEngine.Transform,System.Int32,System.Int32)">
             <summary>
             Unity's Camera.orthographicSize is half the height of the viewing volume. Width is calculated from aspect ratio.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.ArenaNode.radius">
-            <summary>
-            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWeatherStatusChange.BeginTransitionIn">
@@ -7831,6 +7831,12 @@
             Material to use during the April Fools event instead.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayerBrowserRequestUI.url">
+            <summary>
+            Nelson 2024-08-19: This link has been checked with WebUtils.CanParseThirdPartyUrl, but is not the
+            potentially altered link to go through Steam's link filter. This way the UI shows the original link.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.UnturnedLog">
             <summary>
             Unturned wrapper for Debug.Log, Debug.LogWarning, Debug.LogError, etc.
@@ -8565,6 +8571,16 @@
             Sort servers by max player count low to high.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ServerListComparer_FullnessDefault">
+            <summary>
+            Sort servers by normalized player count high to low.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ServerListComparer_FullnessInverted">
+            <summary>
+            Sort servers by normalized player count low to high.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.ServerListComparer_PingAscending">
             <summary>
             Sort servers by ping low to high.
@@ -8601,6 +8617,37 @@
         <member name="M:SDG.Unturned.SteamServerAdvertisement.IsAddressUsingSteamFakeIP">
             <summary>
             Probably just checks whether IP is link-local, but may as well use Steam's utility function.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.NormalizedPlayerCount">
+            <summary>
+            Active player count divided by max player count.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.PingUtilityScore">
+            <summary>
+            Nelson 2024-08-20: This score is intended to prioritize low ping without making it the be-all end-all. The
+            old default of sorting by ping could put near-empty servers at the top of the list, and encouraged using
+            anycast caching to make the server appear as low-ping as possible.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.FullnessUtilityScore">
+            <summary>
+            Nelson 2024-08-20: This score is intended to prioritize servers around 75% capacity. My thought process is
+            that near-empty and near-full servers are already easy to find, but typically if you want to play online you
+            want a server with space for you and your friends. Unfortunately, servers with plenty of players but an even
+            higher max players make a 50% score plenty good.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SteamServerAdvertisement.PlayerCountUtilityScore">
+            <summary>
+            Nelson 2024-08-20: This score is intended to balance out the downside of the fullness score decreasing for
+            servers with very high max player counts, and over-scoring servers with low max players.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.SteamServerAdvertisement.CalculateUtilityScore">
+            <summary>
+            Called before inserting to server list.
             </summary>
         </member>
         <member name="M:SDG.Unturned.SteamServerAdvertisement.parseTagValue(System.String,System.String,System.String)">
@@ -12329,6 +12376,11 @@
             Version before named version constants were introduced. (2023-11-13)
             </summary>
         </member>
+        <member name="F:SDG.Unturned.FilterSettings.ServerBrowserColumns.fullnessPercentage">
+            <summary>
+            % Full
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerQuests.serverDefaultNextDialogueAsset">
             <summary>
             The dialogue to go to when a message has no available responses.
@@ -13681,6 +13733,7 @@
             Jump speed = sqrt(2 * jump height * gravity)
             Jump height = (jump speed ^ 2) / (2 * gravity)
             With 7 speed and 9.81 * 3 gravity = apex height of 1.66496772
+            Nelson 2024-08-19: Increased slightly to boost jump height by ~10cm after floor snapping update.
             </summary>
         </member>
         <member name="P:SDG.Unturned.PlayerMovement.controller">
