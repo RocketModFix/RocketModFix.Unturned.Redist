@@ -330,11 +330,6 @@
             Parses mb:X from input string and filters assets using X master bundle.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
-            <summary>
-            Used by inventory item context menu to override which blueprints are shown.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.BarricadeManager.SAVEDATA_VERSION_INCLUDE_BUILD_ENUM">
             <summary>
             Barricade asset's EBuild included in saves to fix state length problems. (public issue #3725)
@@ -443,6 +438,11 @@
             +0 = BarricadeDrop
             +1 = root transform
             +2 = Interactable (if exists)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
+            <summary>
+            Used by inventory item context menu to override which blueprints are shown.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ZombieTable.tableUniqueId">
