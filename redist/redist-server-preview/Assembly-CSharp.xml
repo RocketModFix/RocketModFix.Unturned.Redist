@@ -9788,6 +9788,12 @@
             <param name="iconURL">URL to a 32x32 .png to show rather than a player avatar, or null/empty.</param>
             <param name="useRichTextFormatting">Enable rich tags e.g., bold, italics in the message contents.</param>
         </member>
+        <member name="M:SDG.Unturned.ChatManager.CopyCameraTransform">
+            <summary>
+            Nelson 2024-10-14: We might want to elaborate on this with "client-side chat commands" in the future, but
+            for the meantime I've hacked in this one command.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemGearAsset.hairOverride">
             <summary>
             If set, find a child meshrenderer with this name and change its material to the character hair material.
