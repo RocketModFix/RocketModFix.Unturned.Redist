@@ -26,6 +26,12 @@
             respecting aspect ratio.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.SleekWebImage.maxImageDimensionsHeight">
+            <summary>
+            If useImageDimensions is on and image height exceeds this value, scale down
+            respecting aspect ratio.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemGlassesAsset.isNightvisionAllowedInThirdPerson">
             <summary>
             If true, NVGs work in third-person, not just first-person.
@@ -192,6 +198,17 @@
             Camera rotates when the car rotates.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EDamageFlinchMode.RollOnly">
+            <summary>
+            If hit from the left view rolls right, if hit from the right view rolls left. This may reduce motion
+            sickness for some players.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EDamageFlinchMode.Directional">
+            <summary>
+            Rotate on all axes according to damage direction. This may induce motion sickness.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.OptionsSettings.SAVEDATA_VERSION_ADDED_HITMARKER_STYLE_FIX">
             <summary>
             Unfortunately the version which added hitmarker style saved but didn't actually load (sigh).
@@ -234,6 +251,26 @@
         <member name="F:SDG.Unturned.OptionsSettings.vehicleAircraftThirdPersonCameraMode">
             <summary>
             Determines how camera follows aircraft vehicle in third-person view.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.flashbangBrightness">
+            <summary>
+            [0, 1] Blend factor between black and flashbang's desired color.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.cameraShakeIntensity">
+            <summary>
+            [0, 1] Multiplier for shake from <see cref="F:SDG.Unturned.EffectAsset.cameraShakeMagnitudeDegrees"/>.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.damageFlinchMode">
+            <summary>
+            Controls whether camera is constrained to roll-only or all axes.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OptionsSettings.damageFlinchIntensity">
+            <summary>
+            Multiplier for flinch away from damage source in <see cref="M:SDG.Unturned.PlayerLook.FlinchFromDamage(System.Byte,UnityEngine.Vector3)"/>.
             </summary>
         </member>
         <member name="E:SDG.Unturned.OptionsSettings.OnCustomColorsChanged">
@@ -328,6 +365,11 @@
         <member name="T:SDG.Unturned.MasterBundleSearchFilter">
             <summary>
             Parses mb:X from input string and filters assets using X master bundle.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
+            <summary>
+            Used by inventory item context menu to override which blueprints are shown.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BarricadeManager.SAVEDATA_VERSION_INCLUDE_BUILD_ENUM">
@@ -433,16 +475,17 @@
             Instantiate at least this many barricades per frame even if we exceed our time budget.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeManager.YAW_BIT_COUNT">
+            <summary>
+            Sending yaw only costs 1 bit (flag) plus yaw bits, so compared to the old 24-bit rotation we may as well
+            make it high-precision. Quaternion mode uses 1+27 bits!
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.BarricadeManager.NETIDS_PER_BARRICADE">
             <summary>
             +0 = BarricadeDrop
             +1 = root transform
             +2 = Interactable (if exists)
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.filteredBlueprintsOverride">
-            <summary>
-            Used by inventory item context menu to override which blueprints are shown.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ZombieTable.tableUniqueId">
@@ -928,6 +971,11 @@
             Enumerate random number of valid assetIDs.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.BbCodeWidgetConverter">
+            <summary>
+            Converts Steam BBcode tokens into widgets displayable using Glazier UI.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Skill.max">
             <summary>
             Vanilla maximum level.
@@ -948,6 +996,42 @@
             Get maximum level, or maxUnlockableLevel if set.
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:SDG.Unturned.IDialogueTarget">
+            <summary>
+            Implemented by components the player can talk with using DialogeAssets. (e.g., InteractableObjectNPC)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.GetDialogueTargetWorldPosition">
+            <summary>
+            Used to test whether player is within range.
+            Ideally, this should be removed in the future in favor of the server resetting speaker when out of range.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.GetDialogueTargetNetId">
+            <summary>
+            Get a net ID that can be used with GetDialogueTargetFromNetId to resolve IDialogueTarget in multiplayer.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.ShouldServerApproveDialogueRequest(SDG.Unturned.Player)">
+            <summary>
+            Called on server to test whether object conditions are met.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.FindStartingDialogueAsset">
+            <summary>
+            Called on server to find the start of conversation dialogue asset.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.GetDialogueTargetDebugName">
+            <summary>
+            Used in error messages.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IDialogueTarget.GetDialogueTargetNameShownToPlayer(SDG.Unturned.Player)">
+            <summary>
+            Called on client to format in UI.
+            </summary>
         </member>
         <member name="T:SDG.Unturned.UnturnedMasterVolume">
             <summary>
@@ -1647,6 +1731,11 @@
         <member name="M:SDG.Unturned.ZombieSpecialityExtension.IsBoss(SDG.Unturned.EZombieSpeciality)">
             <summary>
             Does this have the BOSS_* prefix?
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.TransformRecursiveFind.FindChildRecursiveWithExclusion(UnityEngine.Transform,System.String,UnityEngine.Transform)">
+            <summary>
+            Same as FindChildRecursive, but skip specific child.
             </summary>
         </member>
         <member name="T:SDG.Unturned.TextDebug">
@@ -2819,6 +2908,11 @@
             Will not lose current target within this range. Prevents target from popping in and out of range.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ServerSavedata.GetBackupFilePath(System.String)">
+            <summary>
+            If the file already exists when writing we will move it to this path. (public issue #4636)
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ItemBarricadeAsset.canBeDamaged">
             <summary>
             If false this barricade cannot take damage.
@@ -3512,6 +3606,12 @@
              text can be an IP address or DNS name with optional query port override. (e.g., "127.0.0.1:27015")
              </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerConfigData.Join_Rate_Limit_Window_Seconds">
+            <summary>
+            If ready-to-connect messages are received more than twice from the same client in less than this many
+            seconds they will be kicked.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ServerConfigData.Rate_Limit_Kick_Threshold">
             <summary>
             If a rate-limited method is called this many times within cooldown window the client will be kicked.
@@ -3801,6 +3901,18 @@
             Defaults to true.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Enable_Damage_Flinch">
+            <summary>
+            If true, aim flinches away from center when damaged.
+            Defaults to true.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Enable_Explosion_Camera_Shake">
+            <summary>
+            If true, camera will shake near explosions. Can also be toned down client-side in Options menu.
+            Defaults to true.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Explosion_Launch_Speed_Multiplier">
             <summary>
             Scales velocity added to players by explosion knock-back.
@@ -4081,6 +4193,17 @@
             Player's skin color is too similar to one of <see cref="F:SDG.Unturned.LevelAsset.terrainColorRules"/>.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.STEAM_ID_MISMATCH">
+            <summary>
+            Steam ID reported by net transport doesn't match client's reported Steam ID.
+            This was exploited to fill the server queue with fake players.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.CONNECT_RATE_LIMITING">
+            <summary>
+            Received too many connection requests from player in a short window.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.SleekChatEntryV2.shouldFadeOutWithAge">
             <summary>
             Does this label fade out as the chat message gets older?
@@ -4120,6 +4243,21 @@
         <member name="M:SDG.Unturned.ItemStoreMenu.CreateFilterCategoryButtons">
             <summary>
             Cannot be created until store data is available.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ItemStoreMenu.optionsButton">
+            <summary>
+            Toggle button to open/close advanced filters panel.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ItemStoreMenu.showOwnedToggle">
+            <summary>
+            On/off checkbox for including already-owned items in filter.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ItemStoreMenu.optionsPanel">
+            <summary>
+            Container for advanced options.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ItemStoreMenu.pageBox">
@@ -4996,6 +5134,11 @@
             Represents an item the vendor is selling to players.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.VendorSellingItem.GetGunStateOverride(SDG.Unturned.ItemGunAsset)">
+            <summary>
+            Refer to NPCItemReward state.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.VendorSellingVehicle">
             <summary>
             Represents a vehicle the vendor is selling to players.
@@ -5637,6 +5780,11 @@
             Ensures we do not modify the asset in editor.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Blueprint.withoutAttachments">
+            <summary>
+            If true, and transferState is enabled, delete attached items.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.Blueprint.questConditions">
             <summary>
             Must match conditions to craft.
@@ -6115,7 +6263,6 @@
         <member name="P:SDG.Unturned.Provider.backendRealtimeSeconds">
             <summary>
             Number of seconds since January 1st, 1970 GMT as reported by backend servers.
-            Used by holiday events to keep timing somewhat synced between players.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Provider.unixEpochDateTime">
@@ -7201,7 +7348,7 @@
             </summary>
             <param name="batteryCharge">zero spawns without a battery, ushort.MaxValue indicates the battery should be randomly spawned according to asset configuration, other values force a battery to spawn.</param>
         </member>
-        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleInternal(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,Steamworks.CSteamID,System.Nullable{UnityEngine.Color32})">
+        <member name="M:SDG.Unturned.VehicleManager.spawnVehicleInternal(SDG.Unturned.Asset,UnityEngine.Vector3,UnityEngine.Quaternion,Steamworks.CSteamID,Steamworks.CSteamID,System.Nullable{UnityEngine.Color32})">
             <summary>
             Used by external spawn vehicle methods.
             Supports redirects by VehicleRedirectorAsset. If redirector's SpawnPaintColor is set, that color is used,
@@ -8422,7 +8569,7 @@
             Save a reference to an object in the asset bundle, but defer loading it until requested by game code.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.MenuDashboardUI.hasNewAnnouncement">
+        <member name="F:SDG.Unturned.MenuDashboardUI.newAnnouncement">
             <summary>
             Has a new announcement been posted by the developer?
             If so, it is given priority over the featured workshop item.
@@ -8807,54 +8954,6 @@
         <member name="F:SDG.Unturned.AchievementStatusData.NPC_Achievement_IDs">
             <summary>
             Names of achievements that can be granted by NPC rewards.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.HalloweenStart">
-            <summary>
-            Inclusive start date of Halloween event.
-            Halloween event begins as soon as UTC day matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.HalloweenEnd">
-            <summary>
-            Inclusive end date of Halloween event.
-            Halloween event ends as soon as UTC day no longer matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.ChristmasStart">
-            <summary>
-            Inclusive start date of Christmas event.
-            Christmas event begins as soon as UTC day matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.ChristmasEnd">
-            <summary>
-            Inclusive end date of Christmas event.
-            Christmas event ends as soon as UTC day no longer matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.AprilFools_Start">
-            <summary>
-            Inclusive start date of April Fools event.
-            April Fools event begins as soon as UTC day matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.AprilFools_End">
-            <summary>
-            Inclusive end date of April Fools event.
-            April Fools event ends as soon as UTC day no longer matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.ValentinesStart">
-            <summary>
-            Inclusive start date of Valentine's Day event.
-            Valentine's event begins as soon as UTC day matches.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.HolidayStatusData.ValentinesEnd">
-            <summary>
-            Inclusive end date of Valentine's Day event.
-            Valentine's event ends as soon as UTC day no longer matches.
             </summary>
         </member>
         <member name="F:SDG.Unturned.MenuStatusData.PromoLevel">
@@ -9385,6 +9484,12 @@
             Should landing on this object inflict fall damage?
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ObjectAsset.FindInteractabilityDialogueAsset">
+            <summary>
+            Property is not exposed at the moment because interactability properties should really be moved into some
+            sort of sub-asset.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ObjectAsset.rubbleEffectGuid">
             <summary>
             Effect played when single segment is destroyed.
@@ -9500,6 +9605,11 @@
         <member name="P:SDG.Unturned.NPCZombieKillsCondition.usesBossInterval">
             <summary>
             If spawning is enabled, whether to use the timer between spawns.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ItemStoreBundleContentsMenu">
+            <summary>
+            Shows inspect buttons for each item mentioned in purchasable box or bundle's description text.
             </summary>
         </member>
         <member name="T:SDG.Unturned.UnturnedPostProcess">
@@ -9677,6 +9787,12 @@
             <param name="mode">Mostly deprecated, but global/local/group may be displayed.</param>
             <param name="iconURL">URL to a 32x32 .png to show rather than a player avatar, or null/empty.</param>
             <param name="useRichTextFormatting">Enable rich tags e.g., bold, italics in the message contents.</param>
+        </member>
+        <member name="M:SDG.Unturned.ChatManager.CopyCameraTransform">
+            <summary>
+            Nelson 2024-10-14: We might want to elaborate on this with "client-side chat commands" in the future, but
+            for the meantime I've hacked in this one command.
+            </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGearAsset.hairOverride">
             <summary>
@@ -10972,7 +11088,8 @@
             opposed to every simulation frame on the server.) Rather than kicking for one particularly large deviation
             we would recommend tracking stats for each shot's actual deviation vs max theoretical deviation. Remember
             to account for bullet drop and that aim spread is relative to this direction. (For example, a shotgun may
-            fire ~8 pellets in a cone around this direction.) 
+            fire ~8 pellets in a cone around this direction.) Note also that in third-person the bullet can turn up to
+            90 degrees from the aim direction if the camera is up against a wall.
             </summary>
         </member>
         <member name="M:SDG.Unturned.UseableGun.changeAttachmentRequested(SDG.Unturned.UseableGun.ChangeAttachmentRequestHandler,SDG.Unturned.Item,SDG.Unturned.ItemJar)">
@@ -11374,6 +11491,11 @@
             <summary>
             Introduced much later (2020) than most of the other methods in this class (2014) in order to properly handle
             BOM/preamble of text files. Matches somewhat undesirable legacy behavior like creating directories.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ReadWrite.MoveIfExists(System.String,System.String)">
+            <summary>
+            NOTE: From and to are both relative to PATH.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ReadWrite.readTextureFromFile(System.String,System.Boolean,SDG.Unturned.EReadTextureFromFileMode)">
@@ -11885,6 +12007,126 @@
             Entry in the MenuPlayServerBookmarksUI list.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.String">
+            <summary>
+            Text between tags.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.BoldOpen">
+            <summary>
+            [b]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.BoldClose">
+            <summary>
+            [/b]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ItalicOpen">
+            <summary>
+            [i]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ItalicClose">
+            <summary>
+            [/i]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.BulletListOpen">
+            <summary>
+            [list]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.BulletListClose">
+            <summary>
+            [/list]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.OrderedListOpen">
+            <summary>
+            [olist]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.OrderedListClose">
+            <summary>
+            [/olist]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ListItem">
+            <summary>
+            [*] value
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H1Open">
+            <summary>
+            [h1]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H1Close">
+            <summary>
+            [/h1]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H2Open">
+            <summary>
+            [h2]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H2Close">
+            <summary>
+            [/h2]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H3Open">
+            <summary>
+            [h3]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.H3Close">
+            <summary>
+            [/h3]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.UrlOpen">
+            <summary>
+            [url=value]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.UrlClose">
+            <summary>
+            [/url]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ImgOpen">
+            <summary>
+            [img]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ImgClose">
+            <summary>
+            [/img]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.PreviewYouTubeOpen">
+            <summary>
+            [previewyoutube=value]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.PreviewYouTubeClose">
+            <summary>
+            [/previewyoutube]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.LineBreak">
+            <summary>
+            '\n' or "\r\n"
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.BbCodeTokenizer">
+            <summary>
+            Breaks down Steam's version of BBcode into tokens like, "[b]", "[i]", "actual text", etc.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerLifeUI.repeatChatIndex">
             <summary>
             Reset to -1 when not chatting. If player presses up/down we get index 0 (most recent).
@@ -11981,6 +12223,16 @@
         <member name="P:SDG.Unturned.Zombie.gearID">
             <summary>
             Overrides gear item from zombie table with a specific item ID.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Zombie.targetBarricade">
+            <summary>
+            If zombie is stuck this was a nearby barricade potentially blocking our path.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Zombie.targetStructure">
+            <summary>
+            If zombie is stuck this was a nearby structure potentially blocking our path.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Zombie.targetObstructionVehicle">
@@ -12087,16 +12339,6 @@
             <summary>
             Weapon must have matching blade ID to damage tree.
             Both weapons and trees default to zero so they can be damaged by default.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ResourceAsset.isSpeedTree">
-            <summary>
-            Whether this asset is a SpeedTree model, can be false if an option to use the old models is enabled.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ResourceAsset.defaultLODWeights">
-            <summary>
-            Whether to reset SpeedTree LOD weights to default.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ResourceAsset.holidayRestriction">
@@ -12279,6 +12521,11 @@
             Subset of listings.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ItemStore.unownedDiscountedBundleListingIndices">
+            <summary>
+            Subset of listings.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ClientAssetIntegrity.Clear">
             <summary>
             Reset prior to joining a new server.
@@ -12330,6 +12577,11 @@
             Outlined object is not necessarily the focused object, so we track it to disable later if focus is destroyed.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.PlayerInteract.FindTargetTransform(UnityEngine.Transform,UnityEngine.Transform)">
+            <summary>
+            Search up hierarchy for most specific Target transform.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerInteract.didHaveFocus">
             <summary>
             Was focus non-null during last update? Used to detect when focus was destroyed.
@@ -12345,6 +12597,11 @@
             If >0 the game will start a coroutine to grant the reward after waiting.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.INPCReward.grantDelayApplyWhenInterrupted">
+            <summary>
+            If true and player has this reward pending when they die or disconnect it will be granted.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.GlazierUIToolkitTest">
             <summary>
             Used in a test scene to quickly test UI Toolkit implementation.
@@ -12358,9 +12615,17 @@
             -2 and below are the default presets.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerListFilters.attendance">
+            <summary>
+            Nelson 2024-09-20: Changing default to any (from has players) because the default server list sort will now
+            push empty servers to the bottom.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ServerListFilters.notFull">
             <summary>
             If true, only servers with available player slots are shown.
+            Nelson 2024-09-20: Changing default to false because the default server list sort will now push them down
+            from the top a little bit.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ServerListFilters.maxPing">
@@ -12483,7 +12748,7 @@
             Called when there are no responses to choose, but server has indicated a next dialogue is available.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerQuests.ApproveTalkWithNpcRequest(SDG.Unturned.InteractableObjectNPC,SDG.Unturned.DialogueAsset)">
+        <member name="M:SDG.Unturned.PlayerQuests.ApproveTalkWithNpcRequest(SDG.Unturned.IDialogueTarget,SDG.Unturned.DialogueAsset)">
             <summary>
             Called in singleplayer and on the server after client requests NPC dialogue.
             </summary>
@@ -12802,6 +13067,17 @@
         <member name="F:SDG.Unturned.ESteamRejection.SKIN_COLOR_WITHIN_THRESHOLD_OF_TERRAIN_COLOR">
             <summary>
             Player's skin color is too similar to one of <see cref="F:SDG.Unturned.LevelAsset.terrainColorRules"/>.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamRejection.STEAM_ID_MISMATCH">
+            <summary>
+            Steam ID reported by net transport doesn't match client's reported Steam ID.
+            This was exploited to fill the server queue with fake players.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamRejection.CONNECT_RATE_LIMITING">
+            <summary>
+            Received too many connection requests from player in a short window.
             </summary>
         </member>
         <member name="M:SDG.Unturned.NetId.IsNull">
@@ -13733,7 +14009,6 @@
             Jump speed = sqrt(2 * jump height * gravity)
             Jump height = (jump speed ^ 2) / (2 * gravity)
             With 7 speed and 9.81 * 3 gravity = apex height of 1.66496772
-            Nelson 2024-08-19: Increased slightly to boost jump height by ~10cm after floor snapping update.
             </summary>
         </member>
         <member name="P:SDG.Unturned.PlayerMovement.controller">
@@ -14005,6 +14280,12 @@
         <member name="F:SDG.Unturned.PlayerInput.FAKE_LAG_PENALTY_DAMAGE">
             <summary>
             Player damage multiplier while under penalty for fake lag. (10%)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Characters.previewItemDefId">
+            <summary>
+            If set, this item is prioritized over equipped cosmetics. Used by item inspect menu.
+            Admittedly, this is very hacked-together. Hopefully rewriting this file someday?
             </summary>
         </member>
         <member name="M:SDG.Unturned.Characters.isEquipped(System.UInt64)">
@@ -14448,6 +14729,11 @@
         <member name="F:SDG.Unturned.BuiltinAutoShutdown.updateShutdownWarnings">
             <summary>
             Sorted from low to high.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EObjectInteractability.DIALOGUE">
+            <summary>
+            Non-NPC object the player can talk with.
             </summary>
         </member>
         <member name="E:SDG.Unturned.UseableConsumeable.onPerformingAid">
@@ -15854,6 +16140,11 @@
             Reset after starting connection attempt, so set to true afterwards to auto join the server.
             </summary>
         </member>
+        <member name="F:SDG.Provider.UnturnedEconInfo.econ_type">
+            <summary>
+            EItemType
+            </summary>
+        </member>
         <member name="T:SDG.Provider.UnturnedEconInfo.ERarity">
             <summary>
             This enum exists for sorting items based on rarity, and is derived from quality.
@@ -16136,6 +16427,11 @@
             </summary>
             <returns>ID of mythical asset, or zero if not in tags.</returns>
         </member>
+        <member name="F:SDG.Provider.TempSteamworksEconomy.bundleContents">
+            <summary>
+            For purchasable box and bundle itemdefs this maps their itemdefid to the list of itemdefids in their desc.
+            </summary>
+        </member>
         <member name="F:SDG.Provider.TempSteamworksEconomy.onInventoryExchanged">
             <summary>
             Invoked after a successful exchange with the newly granted items.
@@ -16174,6 +16470,11 @@
         <member name="M:SDG.Provider.TempSteamworksEconomy.getScrapExchangeItem(System.Int32)">
             <summary>
             Get item with an exchange recipe for the appropriate number of scraps.
+            </summary>
+        </member>
+        <member name="M:SDG.Provider.TempSteamworksEconomy.GetBundleContents(System.Int32)">
+            <summary>
+            Get list of itemdefids mentioned in purchasable box or bundle item description.
             </summary>
         </member>
         <member name="M:SDG.Provider.TempSteamworksEconomy.loadInventoryFromResponseFile(System.String)">
