@@ -12225,6 +12225,16 @@
             Overrides gear item from zombie table with a specific item ID.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Zombie.targetBarricade">
+            <summary>
+            If zombie is stuck this was a nearby barricade potentially blocking our path.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Zombie.targetStructure">
+            <summary>
+            If zombie is stuck this was a nearby structure potentially blocking our path.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Zombie.targetObstructionVehicle">
             <summary>
             If zombie is stuck this was a nearby vehicle potentially blocking our path.
