@@ -14004,6 +14004,12 @@
             Should amount be filled to capacity when detached?
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayerMovement.SKIN_WIDTH">
+            <summary>
+            Nelson 2024-10-18: Moved to a constant because clients need this value for footsteps and they don't have the
+            character controller component.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerMovement.JUMP">
             <summary>
             Jump speed = sqrt(2 * jump height * gravity)
