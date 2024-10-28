@@ -14,17 +14,20 @@ jobs:
   build:
     name: "RocketModFix.Unturned.Redist Pack for Server"
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
       name: Setup .NET
       with:
-        dotnet-version: 7.x
+        dotnet-version: 8.x
+
     - uses: nuget/setup-nuget@v1
       name: Setup NuGet
       with:
         nuget-api-key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget-version: '5.x'
+
     - uses: ./.github/actions/nuget-pack
       id: nuget-pack
       with:

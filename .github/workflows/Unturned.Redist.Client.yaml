@@ -20,12 +20,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: master
 
     - name: Checkout tools
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: RocketModFix/UnturnedRedistUpdateTool
         path: tools
@@ -38,7 +38,7 @@ jobs:
       run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.x'
 
