@@ -3068,6 +3068,50 @@
             Favorite and bookmark buttons can be hidden depending whether the necessary server details are set.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelGround.hasLegacyDataForConversion">
+            <summary>
+            If true then level should convert old terrain.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.doesLegacyDataIncludeSplatmapWeights">
+            <summary>
+            If true, splatmap conversion should use weights as-is.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.legacyMaterialGuids">
+            <summary>
+            Material guids converted by legacy asset bundle hash or texture names.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelGround.treesHash">
+            <summary>
+            Hash of Trees.dat, or zeroed if any assets were missing locally.
+            Should only be used if level is configured to, as many mod maps are typically missing assets.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelGround.GetConversionMarkerFilePath">
+            <summary>
+            Game does not currently have a way to resave level's Config.json file, so instead we save a text file
+            indicating that the terrain auto conversion was performed. If there was a bug with auto conversion then
+            all of the old files are still present and can be re-converted.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelGround.tickRegionalVisibility">
+            <summary>
+            Stagger regional visibility across multiple frames.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.TreeRedirectorMap">
+            <summary>
+            Caches uint16 ID to ID redirects.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.MythicalEffectController">
+            <summary>
+            Manages lifetime and attachment of a mythical effect. Added by <see cref="M:SDG.Unturned.ItemTool.ApplyMythicalEffect(UnityEngine.Transform,System.UInt16,SDG.Unturned.EEffectType)"/>.
+            Was called `MythicLocker` with a paired `MythicLockee` prior to 2024-06-11.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.EVehicleBuildablePlacementRule">
             <summary>
             Controls whether vehicle allows barricades to be attached to it.
@@ -3101,6 +3145,11 @@
         <member name="F:SDG.Unturned.PaintableVehicleSection.materialIndex">
             <summary>
             Index in renderer's materials array.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PaintableVehicleSection.allMaterials">
+            <summary>
+            If true, apply to every item in renderer's materials array.
             </summary>
         </member>
         <member name="T:SDG.Unturned.EVehicleDefaultPaintColorMode">
@@ -3157,6 +3206,31 @@
         <member name="F:SDG.Unturned.ECrawlerTrackForwardMode.CounterClockwise">
             <summary>
             Positive motor torque on this wheel rotates the vehicle counter-clockwise.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.EWheelMotionEffectsMode">
+            <summary>
+            Controls whether wheel creates particle kickup effects for the ground surface material underneath.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EWheelMotionEffectsMode.None">
+            <summary>
+            Turn off motion effects. Default for wheels not using collider pose.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EWheelMotionEffectsMode.BothDirections">
+            <summary>
+            Enable motion effects. Default for wheels using collider pose.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EWheelMotionEffectsMode.ForwardOnly">
+            <summary>
+            Enable motion effects, but turn them off while moving backward.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EWheelMotionEffectsMode.BackwardOnly">
+            <summary>
+            Enable motion effects, but turn them off while moving forward.
             </summary>
         </member>
         <member name="F:SDG.Unturned.VehicleRandomPaintColorConfiguration.grayscaleChance">
@@ -3227,6 +3301,19 @@
             <summary>
             How quickly to interpolate model toward suspension position in meters per second.
             If negative, position teleports immediately.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VehicleWheelConfiguration.motionEffectsMode">
+            <summary>
+            Nelson 2024-12-06: Initially implemented as a minimum and maximum percentage of normalized forward velocity,
+            but think this is more practical. I can't think of why we would use values other than -1, 0, +1 for that,
+            and if we did we'd probably want some tuning for the angle particles are emitted at.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VehicleWheelConfiguration.canExplode">
+            <summary>
+            If true, wheel should fly off when vehicle explodes. Defaults to true.
+            Used to simplify destroying vehicles with crawler tracks.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EVehicleEngineSoundType.Legacy">
@@ -3393,6 +3480,11 @@
         <member name="P:SDG.Unturned.VehicleAsset.ShouldExplosionCauseDamage">
             <summary>
             If true, explosion will damage nearby entities and kill passengers.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VehicleAsset.explosionBurnMaterialSections">
+            <summary>
+            Only used if ShouldExplosionBurnMaterials. Optional. Allows specifying which renderers to burn.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.hasBicycle">
@@ -3672,50 +3764,6 @@
         <member name="P:SDG.Unturned.VehicleAsset.numSteeringTires">
             <summary>
             Number of tire visuals to rotate with steering wheel.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelGround.hasLegacyDataForConversion">
-            <summary>
-            If true then level should convert old terrain.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelGround.doesLegacyDataIncludeSplatmapWeights">
-            <summary>
-            If true, splatmap conversion should use weights as-is.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelGround.legacyMaterialGuids">
-            <summary>
-            Material guids converted by legacy asset bundle hash or texture names.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.LevelGround.treesHash">
-            <summary>
-            Hash of Trees.dat, or zeroed if any assets were missing locally.
-            Should only be used if level is configured to, as many mod maps are typically missing assets.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelGround.GetConversionMarkerFilePath">
-            <summary>
-            Game does not currently have a way to resave level's Config.json file, so instead we save a text file
-            indicating that the terrain auto conversion was performed. If there was a bug with auto conversion then
-            all of the old files are still present and can be re-converted.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelGround.tickRegionalVisibility">
-            <summary>
-            Stagger regional visibility across multiple frames.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.TreeRedirectorMap">
-            <summary>
-            Caches uint16 ID to ID redirects.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.MythicalEffectController">
-            <summary>
-            Manages lifetime and attachment of a mythical effect. Added by <see cref="M:SDG.Unturned.ItemTool.ApplyMythicalEffect(UnityEngine.Transform,System.UInt16,SDG.Unturned.EEffectType)"/>.
-            Was called `MythicLocker` with a paired `MythicLockee` prior to 2024-06-11.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BrowserConfigData.Login_Token">
@@ -16691,6 +16739,11 @@
         <member name="F:SDG.Provider.UnturnedEconInfo.econ_type">
             <summary>
             EItemType
+            </summary>
+        </member>
+        <member name="F:SDG.Provider.UnturnedEconInfo.creationTimeUtc">
+            <summary>
+            Nelson 2024-12-06: This was added 2023-06-19, so unfortunately it will be inaccurate for older items.
             </summary>
         </member>
         <member name="T:SDG.Provider.UnturnedEconInfo.ERarity">
