@@ -3068,50 +3068,6 @@
             Favorite and bookmark buttons can be hidden depending whether the necessary server details are set.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.LevelGround.hasLegacyDataForConversion">
-            <summary>
-            If true then level should convert old terrain.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelGround.doesLegacyDataIncludeSplatmapWeights">
-            <summary>
-            If true, splatmap conversion should use weights as-is.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelGround.legacyMaterialGuids">
-            <summary>
-            Material guids converted by legacy asset bundle hash or texture names.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.LevelGround.treesHash">
-            <summary>
-            Hash of Trees.dat, or zeroed if any assets were missing locally.
-            Should only be used if level is configured to, as many mod maps are typically missing assets.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelGround.GetConversionMarkerFilePath">
-            <summary>
-            Game does not currently have a way to resave level's Config.json file, so instead we save a text file
-            indicating that the terrain auto conversion was performed. If there was a bug with auto conversion then
-            all of the old files are still present and can be re-converted.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelGround.tickRegionalVisibility">
-            <summary>
-            Stagger regional visibility across multiple frames.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.TreeRedirectorMap">
-            <summary>
-            Caches uint16 ID to ID redirects.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.MythicalEffectController">
-            <summary>
-            Manages lifetime and attachment of a mythical effect. Added by <see cref="M:SDG.Unturned.ItemTool.ApplyMythicalEffect(UnityEngine.Transform,System.UInt16,SDG.Unturned.EEffectType)"/>.
-            Was called `MythicLocker` with a paired `MythicLockee` prior to 2024-06-11.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.EVehicleBuildablePlacementRule">
             <summary>
             Controls whether vehicle allows barricades to be attached to it.
@@ -3764,6 +3720,50 @@
         <member name="P:SDG.Unturned.VehicleAsset.numSteeringTires">
             <summary>
             Number of tire visuals to rotate with steering wheel.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.hasLegacyDataForConversion">
+            <summary>
+            If true then level should convert old terrain.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.doesLegacyDataIncludeSplatmapWeights">
+            <summary>
+            If true, splatmap conversion should use weights as-is.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelGround.legacyMaterialGuids">
+            <summary>
+            Material guids converted by legacy asset bundle hash or texture names.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelGround.treesHash">
+            <summary>
+            Hash of Trees.dat, or zeroed if any assets were missing locally.
+            Should only be used if level is configured to, as many mod maps are typically missing assets.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelGround.GetConversionMarkerFilePath">
+            <summary>
+            Game does not currently have a way to resave level's Config.json file, so instead we save a text file
+            indicating that the terrain auto conversion was performed. If there was a bug with auto conversion then
+            all of the old files are still present and can be re-converted.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelGround.tickRegionalVisibility">
+            <summary>
+            Stagger regional visibility across multiple frames.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.TreeRedirectorMap">
+            <summary>
+            Caches uint16 ID to ID redirects.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.MythicalEffectController">
+            <summary>
+            Manages lifetime and attachment of a mythical effect. Added by <see cref="M:SDG.Unturned.ItemTool.ApplyMythicalEffect(UnityEngine.Transform,System.UInt16,SDG.Unturned.EEffectType)"/>.
+            Was called `MythicLocker` with a paired `MythicLockee` prior to 2024-06-11.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BrowserConfigData.Login_Token">
