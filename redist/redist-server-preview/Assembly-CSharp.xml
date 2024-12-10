@@ -8065,6 +8065,11 @@
             If true, negate whether this rule matches. i.e., binary NOT.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerListCurationRule.latestBlockedServerCount">
+            <summary>
+            Incremented during server list refresh for each server blocked by this rule.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ServerListCurationAsset.Icon">
             <summary>
             Optional image bundled alongside the asset file.
@@ -11482,6 +11487,11 @@
         <member name="P:SDG.Unturned.ServerListCurationFile.IconUrl">
             <summary>
             Optional web image path if icon isn't included.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerListCurationFile.latestBlockedServerCount">
+            <summary>
+            Incremented during server list refresh for each server blocked by this rule.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BulletInfo.origin">
@@ -16729,6 +16739,11 @@
         <member name="M:SDG.Provider.Services.IService.shutdown">
             <summary>
             Shutdown this service's external API. Should be called before closing the program.
+            </summary>
+        </member>
+        <member name="P:SDG.Provider.TempSteamworksMatchmaking.CuratorBlockedServerCount">
+            <summary>
+            Used to show a warning when a lot of servers are blocked by curation list.
             </summary>
         </member>
         <member name="F:SDG.Provider.TempSteamworksMatchmaking.autoJoinServerQuery">
