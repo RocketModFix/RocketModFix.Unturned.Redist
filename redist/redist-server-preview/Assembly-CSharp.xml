@@ -2070,6 +2070,11 @@
             If true, set sharedMaterial. If false, set material.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.CrawlerTrackTilingMaterialInstance.speed">
+            <summary>
+            Calculated speed of this track. Used by some wheels.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.InteractableVehicle.tempCollidersArray">
             <summary>
             Temporary array for use with physics queries.
@@ -3240,6 +3245,12 @@
             <summary>
             If set, visual-only wheels without a collider (like the back wheels of the snowmobile) can copy RPM from
             a wheel that does have a collider. Requires modelRadius to also be set.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VehicleWheelConfiguration.copyCrawlerTrackSpeedIndex">
+            <summary>
+            If set, wheel model uses this crawler track's speed (average RPM of wheels). Prevents wheel model from
+            spinning out of sync with overall track.
             </summary>
         </member>
         <member name="F:SDG.Unturned.VehicleWheelConfiguration.steeringAngleMultiplier">
@@ -4908,6 +4919,13 @@
             Defaults to true.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemAsset.item">
+            <summary>
+            Nelson 2024-12-11: This can now be null for cosmetic items (<see cref="F:SDG.Unturned.ItemAsset.isPro"/>). For those items it wasn't
+            used outside of the main menu 3D item preview, in which case the clothing prefab is typically a better
+            visualization.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ItemAsset.equipablePrefab">
             <summary>
             Optional alternative item prefab specifically for the PlayerEquipment prefab spawned.
@@ -5971,6 +5989,12 @@
             <summary>
             If true, the value of <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> is used rather than <see cref="M:SDG.Unturned.ItemClothingAsset.GetDefaultTakesPriorityOverCosmetic"/>.
             Defaults to false. True if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> is set.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemClothingAsset.ClothingPrefab">
+            <summary>
+            For 3D clothes. Ideally, this wouldn't be type specific, but we have a separate prefab property for each
+            type of clothing at the moment.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ItemClothingAsset.GetDefaultTakesPriorityOverCosmetic">
@@ -12802,6 +12826,18 @@
             If true, item has 100% quality. If false, item has a random quality.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ResourceAsset.DebrisVerticalOffset">
+            <summary>
+            Distance along tree's local up axis to offset debris spawn position. Defaults to 1.0.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ResourceAsset.MaxRandomAngleDeviation">
+            <summary>
+            Before <see cref="!:FoliageResourceInfoAsset"/> had randomization properties (which trees don't currently use
+            as of 2024-12-11 because rotation/scale aren't saved) each tree has some random rotation and scale variation
+            based on its position. This property controls the rotation away from upright.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ResourceAsset.forageRewardExperience">
             <summary>
             Amount of experience to reward foraging player.
@@ -12816,6 +12852,12 @@
             <summary>
             Weapon must have matching blade ID to damage tree.
             Both weapons and trees default to zero so they can be damaged by default.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ResourceAsset.ShouldIgnoreCollisionBetweenStumpAndDebris">
+            <summary>
+            If true, prevent collisions between falling tree and the stump. (i.e., debris can fall through stump)
+            Defaults to true.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ResourceAsset.holidayRestriction">
