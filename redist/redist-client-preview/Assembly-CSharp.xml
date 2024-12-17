@@ -997,6 +997,7 @@
             </summary>
             <returns></returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:SDG.Unturned.Skill.NormalizeLevel(System.Int32)" -->
         <member name="T:SDG.Unturned.IDialogueTarget">
             <summary>
             Implemented by components the player can talk with using DialogeAssets. (e.g., InteractableObjectNPC)
@@ -1860,6 +1861,11 @@
             them... will need to clean this up, but it will be tricky because the game does not hold a reference to them.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.SkinAsset.specialAudioOverride">
+            <summary>
+            Used by melee skins to override impact sound.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.CraftingBlacklistAsset">
             <summary>
             Restricts which items can be crafted.
@@ -2300,6 +2306,12 @@
         <member name="M:SDG.Unturned.InteractableVehicle.checkEnter(SDG.Unturned.Player)">
             <summary>
             Is a given player allowed access to this vehicle?
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.IsFriendlyToSentry(SDG.Unturned.InteractableSentry)">
+            <summary>
+            If true, sentry ignores this vehicle early in target scanning.
+            Friendly if locked by owner/group of sentry, or driven by owner/group of sentry.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableVehicle.calculateAverageLocalTireContactPosition">
@@ -2921,6 +2933,18 @@
             Prior to 2022-04-11 this was the target field of view. (90/fov)
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.AmmoConsumptionProbability">
+            <summary>
+            [0, 1] percentage whether a shot decreases ammo count. Defaults to 100%.
+            For example, 0.25 means 25% of shots will use a bullet, while the remaining 75% will be free.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.QualityConsumptionProbability">
+            <summary>
+            [0, 1] percentage whether a shot decreases quality. Defaults to 100%.
+            Combined with the gun's chance of decreasing quality.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ItemSentryAsset.detectionRadius">
             <summary>
             Players/zombies within this range are treated as potential targets while scanning.
@@ -3015,6 +3039,12 @@
             <summary>
             Invoked when last player exits the trigger.
             Called after OnPlayerExit.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.EWorkshopMenuSubmissionMode">
+            <summary>
+            Nelson 2024-12-16: This menu and ESteamUGCType are far from ideal, but I'm just trying to hack in a new tag for
+            server browser curation assets before the update. :P
             </summary>
         </member>
         <member name="E:SDG.Unturned.PlayerClothing.VisualToggleChanged">
@@ -8394,12 +8424,12 @@
         </member>
         <member name="M:SDG.Unturned.CargoBuilder.GetOrAddDeclaration(System.String)">
             <summary>
-            Finds an existing "{{CargoDeclare/name" (if any), otherwise adds a new one.
+            Finds an existing "{{Cargo/name" (if any), otherwise adds a new one.
             </summary>
         </member>
         <member name="M:SDG.Unturned.CargoBuilder.AddDeclaration(System.String)">
             <summary>
-            Adds a new "{{CargoDeclare/name" even if one already exists.
+            Adds a new "{{Cargo/name" even if one already exists.
             </summary>
         </member>
         <member name="T:SDG.Unturned.CargoExporter">
@@ -10067,10 +10097,11 @@
             </summary>
             <returns>True if bounds were determined, false otherwise.</returns>
         </member>
-        <member name="M:SDG.Unturned.CollisionUtil.ClosestPoint(UnityEngine.GameObject,UnityEngine.Vector3,System.Boolean)">
+        <member name="M:SDG.Unturned.CollisionUtil.ClosestPoint(UnityEngine.GameObject,UnityEngine.Vector3,System.Boolean,System.Int32)">
             <summary>
             Find colliders in gameObject and the point closest to position, otherwise use gameObject position.
             </summary>
+            <param name="layerMask">Collider is only included if its layer is enabled in layer mask.</param>
         </member>
         <member name="M:SDG.Unturned.CollisionUtil.OverlapSphere(UnityEngine.Vector3,System.Single,System.Int32,UnityEngine.QueryTriggerInteraction)">
             <summary>
@@ -10757,6 +10788,11 @@
         <member name="E:SDG.Unturned.PlayerEquipment.OnUseableChanged_Global">
             <summary>
             Invoked from tellEquip after change.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerEquipment.useableSkin">
+            <summary>
+            Skin applied to the currently equipped useable.
             </summary>
         </member>
         <member name="P:SDG.Unturned.PlayerEquipment.isUseableShowingMenu">
