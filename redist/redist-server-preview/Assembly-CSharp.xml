@@ -298,6 +298,12 @@
             Prevents menu from being shown twice without a restart.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Items.onItemRemoved">
+            <summary>
+            Nelson 2025-02-24: Warning that this is invoked *before* the item is actually removed from the items list.
+            (public issue #4894)
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
             checks whether a space contains any filled slots
         </member>
@@ -6787,31 +6793,6 @@
             Server list filter for plugin usage.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ClientTextChatMessenger">
-            <summary>
-            Allows Unity events to send text chat messages from the client, for example to execute commands.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
-            <summary>
-            Text to use when SendDefaultTextChatMessage is invoked.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
-            <summary>
-            All players on the server will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
-            <summary>
-            Only nearby players will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
-            <summary>
-            Chat mode to send request in.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.ELightingRain.NONE">
             <summary>
             Corresponds to not active and not blending with new weather system. 
@@ -6905,6 +6886,31 @@
         <member name="M:SDG.Unturned.LevelLighting.resetForMainMenu">
             <summary>
             Reset any global shader properties that may affect the main menu.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ClientTextChatMessenger">
+            <summary>
+            Allows Unity events to send text chat messages from the client, for example to execute commands.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
+            <summary>
+            Text to use when SendDefaultTextChatMessage is invoked.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
+            <summary>
+            All players on the server will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
+            <summary>
+            Only nearby players will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
+            <summary>
+            Chat mode to send request in.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ZombieDifficultyAsset.Allow_Horde_Beacon">
@@ -15820,6 +15826,11 @@
             around the guid naming, simplified by overriding name.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -15861,11 +15872,6 @@
         <member name="T:SDG.Unturned.SleekEditorLevel">
             <summary>
             Button in the list of levels for the map editor.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
