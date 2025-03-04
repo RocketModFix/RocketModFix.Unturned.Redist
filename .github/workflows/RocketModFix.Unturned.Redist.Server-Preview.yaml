@@ -33,3 +33,4 @@ jobs:
         nuspec_path: redist/redist-server-preview/RocketModFix.Unturned.Redist.Server-Preview.nuspec
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true
+        
