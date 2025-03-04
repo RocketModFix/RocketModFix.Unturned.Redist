@@ -64,6 +64,7 @@ jobs:
         git config --global user.name "sunnamed434"
 
         git add -A
+        git reset README.md  # Prevents adding changes to README.md, steamcmd rewrites it by some reason.
         git status
         git commit -m "${{ steps.generate_commit_message.outputs.message }}"
         git push
