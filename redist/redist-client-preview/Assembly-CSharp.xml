@@ -238,6 +238,22 @@
             Defaults to true.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.OptionsSettings.ShouldAnonymizeMultiplayerDetails">
+             <summary>
+             If true, hide identifiable details of other multiplayer clients like avatars, player names, number of
+             players online, server name, etc. Live streamers may find this useful to help prevent stream sniping.
+            
+             Separated from the older "streamer mode" option.
+             </summary>
+        </member>
+        <member name="P:SDG.Unturned.OptionsSettings.ShouldHideRichPresence">
+             <summary>
+             If true, don't share details like "editing map X" or "join" with Steam. Useful for anyone who might be
+             targeted / followed into servers, or who has a project to keep secret.
+            
+             Separated from the older "streamer mode" option.
+             </summary>
+        </member>
         <member name="F:SDG.Unturned.OptionsSettings.hitmarkerStyle">
             <summary>
             Controls whether hitmarkers are animated outward (newer) or just a static image ("classic"). 
@@ -1958,61 +1974,6 @@
             Editor-only helper to read all text/dialogue.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.SkinAsset.lightingTime">
-            <summary>
-            Used by dawn and dusk skins which pull per-level lighting colors.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.SkinAsset.SetMaterialProperties(UnityEngine.Material)">
-            <summary>
-            Note: unfortunately it appears the stupid skin system always instantiated materials, but never destroys
-            them... will need to clean this up, but it will be tricky because the game does not hold a reference to them.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.SkinAsset.ShouldHideMagazine">
-            <summary>
-            If true, sets the Magazine attachment hook inactive while this skin is applied. (guns only)
-            
-            Nelson 2025-03-10: Adding this to address mismatched Ace bullets with certain skins. (public issue #4923)
-            It should be fine for vanilla guns because there shouldn't be assumptions about Magazine enable/disable,
-            but modded guns may have different expectations (particularly with GunAttachmentEventHook).
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.SkinAsset.specialAudioOverride">
-            <summary>
-            Used by melee skins to override impact sound.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.CraftingBlacklistAsset">
-            <summary>
-            Restricts which items can be crafted.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.CraftingBlacklistAsset.inputItems">
-            <summary>
-            Restrict blueprints that consume these items.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.CraftingBlacklistAsset.outputItems">
-            <summary>
-            Restrict blueprints that generate these items.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.CraftingBlacklistAsset.allowCoreBlueprints">
-            <summary>
-            If false, blueprints on vanilla/core/built-in items are not allowed. Defaults to true.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.CraftingBlacklistAsset.BlacklistedBlueprint.blueprintName">
-            <summary>
-            If null, use index instead.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.CraftingBlacklistAsset.blueprints">
-            <summary>
-            Restrict specific blueprints.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.LightingManager.SAVEDATA_VERSION_INITIAL">
             <summary>
             Version before named version constants were introduced. (2023-11-07)
@@ -2118,6 +2079,61 @@
         </member>
         <member name="M:SDG.Unturned.LightingManager.InitPerpetualWeather">
             <returns>True if perpetual weather was enabled, false otherwise.</returns>
+        </member>
+        <member name="P:SDG.Unturned.SkinAsset.lightingTime">
+            <summary>
+            Used by dawn and dusk skins which pull per-level lighting colors.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.SkinAsset.SetMaterialProperties(UnityEngine.Material)">
+            <summary>
+            Note: unfortunately it appears the stupid skin system always instantiated materials, but never destroys
+            them... will need to clean this up, but it will be tricky because the game does not hold a reference to them.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SkinAsset.ShouldHideMagazine">
+            <summary>
+            If true, sets the Magazine attachment hook inactive while this skin is applied. (guns only)
+            
+            Nelson 2025-03-10: Adding this to address mismatched Ace bullets with certain skins. (public issue #4923)
+            It should be fine for vanilla guns because there shouldn't be assumptions about Magazine enable/disable,
+            but modded guns may have different expectations (particularly with GunAttachmentEventHook).
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SkinAsset.specialAudioOverride">
+            <summary>
+            Used by melee skins to override impact sound.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.CraftingBlacklistAsset">
+            <summary>
+            Restricts which items can be crafted.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.CraftingBlacklistAsset.inputItems">
+            <summary>
+            Restrict blueprints that consume these items.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.CraftingBlacklistAsset.outputItems">
+            <summary>
+            Restrict blueprints that generate these items.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.CraftingBlacklistAsset.allowCoreBlueprints">
+            <summary>
+            If false, blueprints on vanilla/core/built-in items are not allowed. Defaults to true.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.CraftingBlacklistAsset.BlacklistedBlueprint.blueprintName">
+            <summary>
+            If null, use index instead.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.CraftingBlacklistAsset.blueprints">
+            <summary>
+            Restrict specific blueprints.
+            </summary>
         </member>
         <member name="T:SDG.Unturned.Rk4Spring2">
             <summary>
@@ -4262,6 +4278,23 @@
             For example a value of 1 means the client will be kicked the first time they call the method off-cooldown. (not recommended)
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerConfigData.Max_Clients_With_Same_IP_Address">
+             <summary>
+             Only applicable when Fake IP is off. When a client is connecting, if their connection would push the number
+             of simultaneous connections from the same IP address past this number, they are prevented from joining.
+            
+             May be useful to prevent against fake join requests coming from a single source IP. (public issue #5001)
+             
+             Defaults to a high value because some regions will have many more clients with the same IPv4 address than
+             others. For example, due to Carrier-grade NAT (CGNAT).
+             </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerConfigData.Max_Clients_With_Same_IP_Address_Log_Warnings">
+            <summary>
+            Whether rejections for Max_Clients_With_Same_IP_Address should log to command output. Useful for checking
+            if the limit is appropriate.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ServerConfigData.Fake_Lag_Threshold_Seconds">
             <summary>
             Ordinarily the server should be receiving multiple input packets per second from a client. If more than this
@@ -4888,6 +4921,12 @@
         <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.CUSTOM_SHOULD_VERIFY_GAME_FILES">
             <summary>
             Same as CUSTOM, but shows the "verify game files" prompt.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.TOO_MANY_CLIENTS_WITH_SAME_IP_ADDRESS">
+            <summary>
+            Server limits how many clients are joining from the same IP address.
+            (public issue #5001)
             </summary>
         </member>
         <member name="F:SDG.Unturned.SleekChatEntryV2.shouldFadeOutWithAge">
@@ -7002,6 +7041,11 @@
             If both the queue and connected slots are full then incoming connections are ignored.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Provider.IsBlockedByMaxClientsWithSameIpAddressRule(SDG.NetTransport.ITransportConnection,System.Boolean)">
+            <summary>
+            includeQueuedPlayers ensures player won't be kicked because someone on the same IP joined after them.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Provider.findPendingPlayer(SDG.NetTransport.ITransportConnection)">
             <summary>
             Find player in the queue associated with a client connection.
@@ -7149,18 +7193,6 @@
         <member name="M:SDG.Unturned.Provider.sendToClient(SDG.NetTransport.ITransportConnection,SDG.Unturned.ESteamPacket,System.Byte[],System.Int32)">
             <summary>
             Send to a connected client.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.Provider.WorkshopRequestLog">
-            <summary>
-            Workshop info is requested prior to authenticating so that it can be downloaded before joining,
-            but cheat devs are abusing this to spam the server with workshop requests. This class keeps
-            track of who and when requested that information.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Provider.WorkshopRequestLog.sender">
-            <summary>
-            Hash code of remote connection.
             </summary>
         </member>
         <member name="T:SDG.Unturned.Provider.CachedWorkshopResponse">
@@ -8020,6 +8052,11 @@
         <member name="F:SDG.Unturned.EPlayerMessage.NOT_PAINTABLE">
             <summary>
             Vehicle doesn't support spray paints.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.TUTORIAL_WORKSTATION">
+            <summary>
+            Explaining that some blueprints require workstations.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GunStatsExporter">
@@ -9625,6 +9662,12 @@
             Code common to <see cref="T:SDG.Unturned.DefaultEngineSoundController"/> and <see cref="T:SDG.Unturned.RpmEngineSoundController"/>.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ServerMessageHandler_GetWorkshopFiles.rateLimiter">
+            <summary>
+            Nelson 2025-05-13: replacing the "workshop request log" which used transport connection hash code with this
+            more recent IP address and Steam ID rate limiter.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ELevelObjectPlacementOrigin.MANUAL">
             <summary>
             Manually placed from the asset browser or old editor.
@@ -10252,6 +10295,12 @@
             Get brush strength multiplier where strength decreases past falloff. Use this method so that different falloffs e.g. linear, curved can be added.
             </summary>
             <param name="normalizedDistance">Percentage of <see cref="P:SDG.Unturned.TerrainEditor.brushRadius"/>.</param>
+        </member>
+        <member name="F:SDG.Unturned.SleekList`1.OnRemoveElement">
+            <summary>
+            Allows pooling elements.
+            If set, this is called rather than removing element from scroll view.
+            </summary>
         </member>
         <member name="P:SDG.Unturned.SleekList`1.IndexOfCreateElementItem">
             <summary>
@@ -13643,6 +13692,9 @@
             Caches uint16 ID to ID redirects.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.VehicleIconReady">
+            <param name="handle">Matches handle returned by request, or -1 if cached.</param>
+        </member>
         <member name="M:SDG.Unturned.ResourceManager.askClearRegionResources(System.Byte,System.Byte)">
             <summary>
             Revive all trees in a specific region.
@@ -13914,6 +13966,9 @@
             <summary>
             True while fading in or out.
             </summary>
+        </member>
+        <member name="T:SDG.Unturned.ItemIconReady">
+            <param name="handle">Matches handle returned by request, or -1 if cached.</param>
         </member>
         <member name="T:SDG.Unturned.ConsoleInputOutput">
             <summary>
@@ -15114,6 +15169,12 @@
         <member name="F:SDG.Unturned.ESteamRejection.BAD_PACKET_RATE_LIMITING">
             <summary>
             Received too many invalid messages from connection in a short window.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamRejection.TOO_MANY_CLIENTS_WITH_SAME_IP_ADDRESS">
+            <summary>
+            Server limits how many clients are joining from the same IP address.
+            (public issue #5001)
             </summary>
         </member>
         <member name="M:SDG.Unturned.NetId.IsNull">
