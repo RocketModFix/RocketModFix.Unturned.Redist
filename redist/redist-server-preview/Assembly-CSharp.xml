@@ -5038,6 +5038,12 @@
             Asset providing tags. For example, a barricade item.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ICraftingTagProvider.HasAnyCraftingTagsConfigured">
+            <summary>
+            True if GetAvailableTags can ever add any tags.
+            Used to skip unnecessary line-of-sight tests against (for example) ordinary structures and the like.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.CraftingTagProviderGetAvailableTagsParameters.ResultTags">
             <summary>
             All tags added by this crafting tag provider.
@@ -9430,6 +9436,11 @@
             Applied if greater than zero. Defaults to 128.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.SleekTagButton.TooltipAppendedText">
+            <summary>
+            Extra text added to tooltip.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.MenuSurvivorsClothingBoxUI.BoxEntry">
             <summary>
             Internal struct menu uses to sort items in box.
@@ -12125,12 +12136,6 @@
             to checkout. We request listings regardless in order to show the "sale" label automatically.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ThreadedWindowsConsoleInputOutput">
-            <summary>
-            Windows-specific extensions of Windows console input.
-            Uses the Win32 API to force a console to be created and destroyed.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.UnturnedPaths.RootDirectory">
             <summary>
             Directory the game files are installed in. For the editor this is the /Builds/Shared directory.
@@ -12415,6 +12420,16 @@
             For example, two workbenches providing the same tags shouldn't show two UI listings.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBlueprintPreferences.Ignored">
+            <summary>
+            Player does not want to see this blueprint.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBlueprintPreferences.Favorited">
+            <summary>
+            Player wants to save this blueprint in a special category.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.PlayerCrafting.UpdateAvailableCraftingTags">
             <summary>
             Find nearby crafting tag providers and query their tags.
@@ -12455,15 +12470,16 @@
             If updating behavior here please remember to update <see cref="M:SDG.Unturned.PlayerCrafting.UpdateBlueprintInputItemStatus(SDG.Unturned.UpdateBlueprintStatusParameters@,SDG.Unturned.BlueprintSupply,SDG.Unturned.BlueprintInputItemStatus,SDG.Unturned.ItemJar)"/>.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerCrafting.getIgnoringBlueprint(SDG.Unturned.Blueprint)">
+        <member name="M:SDG.Unturned.PlayerCrafting.GetBlueprintPreferences(SDG.Unturned.Blueprint)">
             <summary>
-            Get whether this player is ignoring a blueprint.
+            Get local player's per-blueprint preferences.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerCrafting.setIgnoringBlueprint(SDG.Unturned.Blueprint,System.Boolean)">
+        <member name="M:SDG.Unturned.PlayerCrafting.SetBlueprintPreferences(SDG.Unturned.Blueprint,SDG.Unturned.EBlueprintPreferences)">
             <summary>
-            Set whether this player is ignoring a blueprint.
-            This is a kludge to help with accidentally crafting items like blindfolds.
+            Set local player's per-blueprint preferences.
+            This is helpful both to prevent accidentally crafting certain blueprints (like blindfolds) when click to
+            craft is enabled, and to save frequently used blueprints.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerCrafting.nearbyCraftingTags">
@@ -13456,12 +13472,6 @@
         <member name="M:SDG.Unturned.ReadWrite.readTextureFromFile(System.String,SDG.Unturned.EReadTextureFromFileMode)">
             <summary>
             Read GUI texture from a .jpg or .png file.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.WindowsConsoleInputOutput">
-            <summary>
-            Windows-specific extensions of console input.
-            Uses the Win32 API to force a console to be created and destroyed.
             </summary>
         </member>
         <member name="M:SDG.Unturned.CullingVolumeManager.ImmediatelySyncAllVolumes">
@@ -17311,43 +17321,6 @@
         <member name="T:SDG.Unturned.GlazierTest.ListItem">
             <summary>
             Reference type for testing SleekList.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.WindowsConsole">
-            <summary>
-            Uses the Win32 API to force a console to be created and destroyed.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.WindowsConsole.shouldManageConsole">
-            <summary>
-            Should we manually create and destroy a Win32 console?
-            Useful for IO on Windows desktop, but not as much for dedicated machines.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.WindowsConsole.conditionalAlloc">
-            <summary>
-            Allocate Windows console if enabled.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.WindowsConsole.conditionalFree">
-            <summary>
-            Free Windows console if enabled.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_C_EVENT">
-            <summary>
-            A CTRL+C signal was received, either from keyboard input or from a signal generated by the GenerateConsoleCtrlEvent function.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_BREAK_EVENT">
-            <summary>
-            A CTRL+BREAK signal was received, either from keyboard input or from a signal generated by GenerateConsoleCtrlEvent.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_CLOSE_EVENT">
-            <summary>
-            A signal that the system sends to all processes attached to a console when the user closes the console
-            (either by clicking Close on the console window's window menu, or by clicking the End Task button command from Task Manager).
             </summary>
         </member>
         <member name="T:SDG.Unturned.ItemStoreSavedata">
