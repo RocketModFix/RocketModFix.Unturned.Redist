@@ -299,6 +299,11 @@
             [0, 1] Intensity of FOV boost while sprinting.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.OptionsSettings.viewmodelBobScale">
+            <summary>
+            [0, 1] Intensity of first-person motion caused by walking.
+            </summary>
+        </member>
         <member name="E:SDG.Unturned.OptionsSettings.OnCustomColorsChanged">
             <summary>
             Invoked when custom UI colors are set.
@@ -3145,6 +3150,12 @@
             2023-02-28: note order is important because BarricadeManager saves as a byte!
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemOpticAsset.zoom">
+            <summary>
+            Factor e.g. 2 is a 2x multiplier.
+            Prior to 2022-04-11 this was the target field of view. (90/fov)
+            </summary>
+        </member>
         <member name="E:SDG.Unturned.PlayerAnimator.OnGestureChanged_Global">
             <summary>
             Invoked after tellGesture is called with the new gesture.
@@ -3263,6 +3274,11 @@
             x = pitch, y = roll
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayerAnimator.landedSpring">
+            <summary>
+            Offset when player lands.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerAnimator.lastFramePitchInput">
             <summary>
             Used to measure change in pitch between frames.
@@ -3331,12 +3347,6 @@
             2023-01-18: Viewmodel camera position was originally set during Update (and still is for compatibility),
             but for aiming alignment that uses the previous frame's animation position, so we also modify during
             LateUpdate to use this frame's animation position.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.ItemOpticAsset.zoom">
-            <summary>
-            Factor e.g. 2 is a 2x multiplier.
-            Prior to 2022-04-11 this was the target field of view. (90/fov)
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemSentryAsset.AmmoConsumptionProbability">
@@ -10413,7 +10423,7 @@
             Used to disable animating out if disabled.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.BarricadeDestroyer">
+        <member name="T:SDG.Unturned.BarricadeDestroyerComponent">
             <summary>
             Allow Unity events to forcefully remove any barricades inside a sphere.
             </summary>
@@ -16318,6 +16328,36 @@
             Get sleek color for UI. If HasNameColor, get NameColor. Otherwise, preferred font color.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ESlotType">
+            <summary>
+            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.NONE">
+            <summary>
+            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
+            <summary>
+            Can be placed in primary slot, but cannot be equipped in secondary or bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
+            <summary>
+            Can be placed in primary or secondary slot, but cannot be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
+            <summary>
+            Only used by NPCs.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.ANY">
+            <summary>
+            Can be placed in primary, secondary, or equipped while in bag.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.CraftingTagModifierComponent">
             <summary>
             Allows Unity events to modify which crafting tags are provided by owning object.
@@ -16357,36 +16397,6 @@
         <member name="M:SDG.Unturned.CraftingTagModifierComponent.GetTagRefs">
             <summary>
             Get wrapper method rather than Awake because component might be inactive but should still apply modifiers.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.ESlotType">
-            <summary>
-            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.NONE">
-            <summary>
-            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
-            <summary>
-            Can be placed in primary slot, but cannot be equipped in secondary or bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
-            <summary>
-            Can be placed in primary or secondary slot, but cannot be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
-            <summary>
-            Only used by NPCs.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.ANY">
-            <summary>
-            Can be placed in primary, secondary, or equipped while in bag.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESensitivityScalingMode.ProjectionRatio">
@@ -17820,6 +17830,11 @@
             Returns true if calibers list contains any of the provided caliber IDs.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -17861,11 +17876,6 @@
         <member name="T:SDG.Unturned.SleekEditorLevel">
             <summary>
             Button in the list of levels for the map editor.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
