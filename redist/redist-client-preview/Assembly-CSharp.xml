@@ -3150,12 +3150,6 @@
             2023-02-28: note order is important because BarricadeManager saves as a byte!
             </summary>
         </member>
-        <member name="P:SDG.Unturned.ItemOpticAsset.zoom">
-            <summary>
-            Factor e.g. 2 is a 2x multiplier.
-            Prior to 2022-04-11 this was the target field of view. (90/fov)
-            </summary>
-        </member>
         <member name="E:SDG.Unturned.PlayerAnimator.OnGestureChanged_Global">
             <summary>
             Invoked after tellGesture is called with the new gesture.
@@ -3347,6 +3341,12 @@
             2023-01-18: Viewmodel camera position was originally set during Update (and still is for compatibility),
             but for aiming alignment that uses the previous frame's animation position, so we also modify during
             LateUpdate to use this frame's animation position.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemOpticAsset.zoom">
+            <summary>
+            Factor e.g. 2 is a 2x multiplier.
+            Prior to 2022-04-11 this was the target field of view. (90/fov)
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemSentryAsset.AmmoConsumptionProbability">
@@ -4774,6 +4774,12 @@
             If true, crafting blueprints can require nearby workstations. Defaults to true.
             If false, only the backwards-compatibility "Heat Source" vanilla crafting tag can be required. This
             functions identically to the cooking-skill-also-requires-heat behavior from before.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Disable_Motion_Sickness_Options">
+            <summary>
+            If true, client-side options like damage flinch, explosion camera shake, viewmodel bob are ignored.
+            Defaults to false.
             </summary>
         </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Explosion_Launch_Speed_Multiplier">
@@ -7169,6 +7175,11 @@
             Defaults to false. If true, blueprint can become visible in the crafting list even when NPC conditions
             are not met. This should typically only be enabled if all conditions are configured to be visible in the
             details panel. Otherwise, the default "conditions unmet" label isn't very informative for players.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Blueprint.DoesOutputCreateItem(SDG.Unturned.ItemAsset)">
+            <summary>
+            Search output items (excluding target item) for specific item.
             </summary>
         </member>
         <member name="P:SDG.Unturned.Provider.APP_VERSION_PACKED">
@@ -12552,7 +12563,7 @@
             Get a blank status from the pool or construct a new one.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.UseableHousingPlanner.RefreshAvailableItems">
+        <member name="M:SDG.Unturned.UseableHousingPlanner.RefreshAvailableItemsAndSelectedBlueprint">
             <summary>
             Search inventory for housing items, count the quantity of each, and remove
             duplicate entries from the list because it is used for the UI.
@@ -12809,6 +12820,11 @@
         <member name="M:SDG.Unturned.DamageTool.getResourceRootTransform(UnityEngine.Transform)">
             <summary>
             Was necessary when trees were children of ground transform.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.DamageTool.TryFindOwnership(UnityEngine.Transform,System.UInt64@,System.UInt64@)">
+            <summary>
+            Somewhat hacked-together to find owner of a vehicle, barricade, or structure descendant.
             </summary>
         </member>
         <member name="M:SDG.Unturned.DamageTool.getPlayerExplosionArmor(SDG.Unturned.Player)">
@@ -16328,36 +16344,6 @@
             Get sleek color for UI. If HasNameColor, get NameColor. Otherwise, preferred font color.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ESlotType">
-            <summary>
-            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.NONE">
-            <summary>
-            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
-            <summary>
-            Can be placed in primary slot, but cannot be equipped in secondary or bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
-            <summary>
-            Can be placed in primary or secondary slot, but cannot be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
-            <summary>
-            Only used by NPCs.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.ANY">
-            <summary>
-            Can be placed in primary, secondary, or equipped while in bag.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.CraftingTagModifierComponent">
             <summary>
             Allows Unity events to modify which crafting tags are provided by owning object.
@@ -16397,6 +16383,36 @@
         <member name="M:SDG.Unturned.CraftingTagModifierComponent.GetTagRefs">
             <summary>
             Get wrapper method rather than Awake because component might be inactive but should still apply modifiers.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ESlotType">
+            <summary>
+            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.NONE">
+            <summary>
+            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
+            <summary>
+            Can be placed in primary slot, but cannot be equipped in secondary or bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
+            <summary>
+            Can be placed in primary or secondary slot, but cannot be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
+            <summary>
+            Only used by NPCs.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.ANY">
+            <summary>
+            Can be placed in primary, secondary, or equipped while in bag.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESensitivityScalingMode.ProjectionRatio">
@@ -17509,6 +17525,11 @@
             <param name="position">The position of the alert.</param>
             <param name="radius">The detection radius.</param>
         </member>
+        <member name="T:SDG.Unturned.SleekServerCurationRule">
+            <summary>
+            Entry in the MenuPlayServerCurationRulesUI list.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.ContinuousIntegration">
             <summary>
             Report success or failure from game systems, conditionally compiled into the Windows 64-bit build.
@@ -17524,11 +17545,6 @@
             <summary>
             Call when the server encounters any error.
             Ignored if not running in CI mode, otherwise exits the server with error code 1.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekServerCurationRule">
-            <summary>
-            Entry in the MenuPlayServerCurationRulesUI list.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGeneratorAsset.burn">
