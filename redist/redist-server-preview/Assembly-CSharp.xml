@@ -4797,6 +4797,21 @@
             Scales midair decrease in speed while faster than max walk speed.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.FirstPerson_RecoilMultiplier">
+            <summary>
+            Scales magnitude of recoil while using first-person perspective.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.FirstPerson_AimingRecoilMultiplier">
+            <summary>
+            Scales magnitude of recoil while aiming in first-person perspective.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.FirstPerson_AimingZoomRecoilReduction">
+            <summary>
+            Scales magnitude of recoil inversely with zoom level while aiming in first-person perspective.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.GameplayConfigData.ThirdPerson_RecoilMultiplier">
             <summary>
             Scales magnitude of recoil while using third-person perspective.
@@ -4805,6 +4820,16 @@
         <member name="F:SDG.Unturned.GameplayConfigData.ThirdPerson_SpreadMultiplier">
             <summary>
             Scales magnitude of bullet inaccuracy while using third-person perspective.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Viewmodel_AimingJumpLandMultiplier">
+            <summary>
+            [0, 1] Scales how much the first-person move up and down while jumping/landing.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Viewmodel_AimingMisalignmentMultiplier">
+            <summary>
+            [0, 1] Scales how much the first-person arms move while ADS.
             </summary>
         </member>
         <member name="M:SDG.Unturned.HumanClothes.centerHeadEffect(UnityEngine.Transform,UnityEngine.Transform)">
@@ -14301,6 +14326,12 @@
             Unintuitively (to say the least), a pitch of 0 is up, 90 is forward, and 180 is down.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.PlayerLook.ConvertScopeSwayToInputRotation">
+            <summary>
+            Nelson 2025-06-27: previously, stopping aim cancelled the sway offset immediately. When
+            experimenting with removing the dual-render scope blur this felt jarring.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerLook.freecamVerticalFieldOfView">
             <summary>
             Reset to actual fov when first used.
@@ -17525,11 +17556,6 @@
             <param name="position">The position of the alert.</param>
             <param name="radius">The detection radius.</param>
         </member>
-        <member name="T:SDG.Unturned.SleekServerCurationRule">
-            <summary>
-            Entry in the MenuPlayServerCurationRulesUI list.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.ContinuousIntegration">
             <summary>
             Report success or failure from game systems, conditionally compiled into the Windows 64-bit build.
@@ -17545,6 +17571,11 @@
             <summary>
             Call when the server encounters any error.
             Ignored if not running in CI mode, otherwise exits the server with error code 1.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekServerCurationRule">
+            <summary>
+            Entry in the MenuPlayServerCurationRulesUI list.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGeneratorAsset.burn">
