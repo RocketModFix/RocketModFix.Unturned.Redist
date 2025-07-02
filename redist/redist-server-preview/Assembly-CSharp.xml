@@ -1110,6 +1110,14 @@
             Converts Steam BBcode tokens into widgets displayable using Glazier UI.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.BbCodeWidgetConverter.InferLineBreaks">
+            <summary>
+            If false, expect LineBreak tokens in input. (default false)
+            If true, insert line breaks where appropriate.
+            Steam's new visual editor doesn't emit newlines, instead inferring line breaks from paragraph blocks. To
+            make life easier we will do the same for the main menu announcement feed.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Skill.max">
             <summary>
             Vanilla maximum level.
@@ -1834,26 +1842,6 @@
             Only gold servers pass the filter.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.NpcGlobalEventHook">
-            <summary>
-            Can be added to any GameObject to listen for the Event NPC reward type.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.EventId">
-            <summary>
-            *_ID configured in NPC rewards list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.AuthorityOnly">
-            <summary>
-            If true the event will only be invoked in offline mode and on the server.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.OnTriggered">
-            <summary>
-            Invoked when NPC global event matching EventId is processed.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.TimerEventHook.OnTimerTriggered">
             <summary>
             Invoked when timer expires.
@@ -1877,6 +1865,26 @@
         <member name="F:SDG.Unturned.TimerEventHook.coroutine">
             <summary>
             Handle to stop the coroutine.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.NpcGlobalEventHook">
+            <summary>
+            Can be added to any GameObject to listen for the Event NPC reward type.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.EventId">
+            <summary>
+            *_ID configured in NPC rewards list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.AuthorityOnly">
+            <summary>
+            If true the event will only be invoked in offline mode and on the server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.OnTriggered">
+            <summary>
+            Invoked when NPC global event matching EventId is processed.
             </summary>
         </member>
         <member name="P:SDG.Unturned.RoadAsset.Width">
@@ -12666,6 +12674,12 @@
             to checkout. We request listings regardless in order to show the "sale" label automatically.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ThreadedWindowsConsoleInputOutput">
+            <summary>
+            Windows-specific extensions of Windows console input.
+            Uses the Win32 API to force a console to be created and destroyed.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.UnturnedPaths.RootDirectory">
             <summary>
             Directory the game files are installed in. For the editor this is the /Builds/Shared directory.
@@ -14053,6 +14067,12 @@
             Read GUI texture from a .jpg or .png file.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.WindowsConsoleInputOutput">
+            <summary>
+            Windows-specific extensions of console input.
+            Uses the Win32 API to force a console to be created and destroyed.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.CullingVolumeManager.ImmediatelySyncAllVolumes">
             <summary>
             Called by navmesh baking to complete pending object changes that may affect which nav objects are enabled.
@@ -14596,6 +14616,11 @@
             Entry in the MenuPlayServerBookmarksUI list.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.Invalid">
+            <summary>
+            Null token.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.EBbCodeTokenType.String">
             <summary>
             Text between tags.
@@ -14641,9 +14666,17 @@
             [/olist]
             </summary>
         </member>
-        <member name="F:SDG.Unturned.EBbCodeTokenType.ListItem">
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ListItemOpen">
             <summary>
             [*] value
+            Nelson 2025-07-02: manually written lists typically don't have a ListItemClose token.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ListItemClose">
+            <summary>
+            [/*]
+            Nelson 2025-07-02: Steam's new visual editor adds closing tokens to list items, but
+            manually-written list items typically don't have them.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EBbCodeTokenType.H1Open">
@@ -14721,9 +14754,33 @@
             [/quote]
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ParagraphOpen">
+            <summary>
+            [p]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.ParagraphClose">
+            <summary>
+            [/p]
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.BbCodeToken.GetUnquotedValue">
+            <summary>
+            Steam's new visual editor quotes value in [url=x] tag. If value is not quoted, this method returns as-is.
+            If it IS quoted, this methods returns without quotation marks.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.BbCodeTokenizer">
             <summary>
             Breaks down Steam's version of BBcode into tokens like, "[b]", "[i]", "actual text", etc.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.BbCodeTokenizer.ParseLineBreaks">
+            <summary>
+            If true, parse newlines in the input as LineBreak tokens. (default true)
+            If false, exclude LineBreak tokens from output.
+            Steam's new visual editor doesn't emit newlines, instead inferring line breaks from paragraph blocks. To
+            make life easier we will do the same for the main menu announcement feed.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerLifeUI.repeatChatIndex">
@@ -17871,11 +17928,6 @@
             Returns true if calibers list contains any of the provided caliber IDs.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -17919,6 +17971,11 @@
             Button in the list of levels for the map editor.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
             <summary>
             Base class for IMGUI implementations of primitive building block widgets.
@@ -17958,6 +18015,43 @@
         <member name="T:SDG.Unturned.GlazierTest.ListItem">
             <summary>
             Reference type for testing SleekList.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.WindowsConsole">
+            <summary>
+            Uses the Win32 API to force a console to be created and destroyed.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.WindowsConsole.shouldManageConsole">
+            <summary>
+            Should we manually create and destroy a Win32 console?
+            Useful for IO on Windows desktop, but not as much for dedicated machines.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.WindowsConsole.conditionalAlloc">
+            <summary>
+            Allocate Windows console if enabled.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.WindowsConsole.conditionalFree">
+            <summary>
+            Free Windows console if enabled.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_C_EVENT">
+            <summary>
+            A CTRL+C signal was received, either from keyboard input or from a signal generated by the GenerateConsoleCtrlEvent function.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_BREAK_EVENT">
+            <summary>
+            A CTRL+BREAK signal was received, either from keyboard input or from a signal generated by GenerateConsoleCtrlEvent.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.WindowsConsole.ECtrlType.CTRL_CLOSE_EVENT">
+            <summary>
+            A signal that the system sends to all processes attached to a console when the user closes the console
+            (either by clicking Close on the console window's window menu, or by clicking the End Task button command from Task Manager).
             </summary>
         </member>
         <member name="T:SDG.Unturned.ItemStoreSavedata">
