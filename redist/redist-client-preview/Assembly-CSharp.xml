@@ -1842,6 +1842,26 @@
             Only gold servers pass the filter.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.NpcGlobalEventHook">
+            <summary>
+            Can be added to any GameObject to listen for the Event NPC reward type.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.EventId">
+            <summary>
+            *_ID configured in NPC rewards list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.AuthorityOnly">
+            <summary>
+            If true the event will only be invoked in offline mode and on the server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NpcGlobalEventHook.OnTriggered">
+            <summary>
+            Invoked when NPC global event matching EventId is processed.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.TimerEventHook.OnTimerTriggered">
             <summary>
             Invoked when timer expires.
@@ -1865,26 +1885,6 @@
         <member name="F:SDG.Unturned.TimerEventHook.coroutine">
             <summary>
             Handle to stop the coroutine.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.NpcGlobalEventHook">
-            <summary>
-            Can be added to any GameObject to listen for the Event NPC reward type.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.EventId">
-            <summary>
-            *_ID configured in NPC rewards list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.AuthorityOnly">
-            <summary>
-            If true the event will only be invoked in offline mode and on the server.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NpcGlobalEventHook.OnTriggered">
-            <summary>
-            Invoked when NPC global event matching EventId is processed.
             </summary>
         </member>
         <member name="P:SDG.Unturned.RoadAsset.Width">
@@ -10078,6 +10078,11 @@
             Print red message.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ENPCHoliday.UNTURNED_ANNIVERSARY">
+            <summary>
+            July 7th!
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ConsoleWriterProxy.Write(System.Char)">
             <summary>
             This is the only /required/ override of text writer.
@@ -14764,6 +14769,16 @@
             [/p]
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.UnderlineOpen">
+            <summary>
+            [u]
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBbCodeTokenType.UnderlineClose">
+            <summary>
+            [/u]
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.BbCodeToken.GetUnquotedValue">
             <summary>
             Steam's new visual editor quotes value in [url=x] tag. If value is not quoted, this method returns as-is.
@@ -17928,6 +17943,11 @@
             Returns true if calibers list contains any of the provided caliber IDs.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.BarricadeData.rotation">
+            <summary>
+            Note: If barricade is attached to a vehicle this is the local rotation.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -17969,11 +17989,6 @@
         <member name="T:SDG.Unturned.SleekEditorLevel">
             <summary>
             Button in the list of levels for the map editor.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BarricadeData.rotation">
-            <summary>
-            Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
