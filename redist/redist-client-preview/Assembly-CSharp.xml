@@ -9648,13 +9648,6 @@
             Remove fuel from target.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.PlayerManager.CulledPosition">
-            <summary>
-            Position to place players outside visible range.
-            Defaults to as far away as supported by default clamped Vector3 precision.
-            Doesn't use world origin because that would potentially increase rendering cost for clients near the origin.
-            </summary>
-        </member>
         <member name="P:SDG.Unturned.PlayerManager.IsClientUnderFakeLagPenalty">
             <summary>
             Whether local client is currently penalized for potentially using a lag switch. Server has an equivalent check which reduces
