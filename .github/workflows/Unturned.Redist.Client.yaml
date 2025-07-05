@@ -40,9 +40,13 @@ jobs:
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
+      env:
+        DOTNET_NOLOGO: true
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+        DOTNET_CLI_TELEMETRY_OPTOUT: true
       with:
-        dotnet-version: '8.x'
-
+        dotnet-version: 9.x
+        
     - name: Install dependencies
       run: dotnet restore tools/UnturnedRedistUpdateTool/
 
