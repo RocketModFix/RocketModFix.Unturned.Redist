@@ -1,25 +1,6 @@
-
-# We must ignore most of the files, because Auto-Redist update might commit files which we don't need to have, in case if you want to add new file/directory, anything, then make sure to remove ignore of all files (below) or just specify your files/directories below
-
-# Ignore all files
-*
-
-# Allow tracking of the .gitignore file itself
-!.gitignore
-
-# Allow tracking of existing directories and their contents
-!*/
-
-# Allow tracking of files already committed (optional)
-!.gitkeep
-
-# Allow tracking for redist
-!/redist/
-!/redist/**
-
-# Allow tracking for common stuff
-!/.github
-!/.github/**
-!/.gitignore
-!/README.md
-!/LICENSE
+# Steam Linux Runtime (SLR)
+/mtree.txt.gz
+/run-in-scout-on-soldier
+/scout-on-soldier-entry-point-v2
+/toolmanifest.vdf
+/VERSIONS.txt
