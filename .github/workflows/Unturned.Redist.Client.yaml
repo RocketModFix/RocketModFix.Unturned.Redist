@@ -25,18 +25,14 @@ jobs:
       with:
         ref: master
 
-    - name: Checkout tools
-      uses: actions/checkout@v4
+    - name: Download tool release
+      uses: robinraju/release-downloader@v1
       with:
         repository: RocketModFix/UnturnedRedistUpdateTool
-        path: tools
-
-    - name: Setup SteamCMD
-      id: setup-steamcmd
-      uses: CyberAndrii/setup-steamcmd@v1
-
-    - name: Update app
-      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
+        tag: latest
+        fileName: UnturnedRedistUpdateTool.zip
+        out-file-path: redist_tool
+        extract: true
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -46,17 +42,30 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: true
       with:
         dotnet-version: 9.x
-        
-    - name: Install dependencies
-      run: dotnet restore tools/UnturnedRedistUpdateTool/
+
+    - name: Download tool release
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: RocketModFix/UnturnedRedistUpdateTool
+        tag: latest
+        fileName: UnturnedRedistUpdateTool.zip
+        out-file-path: redist_tool
+        extract: true
+
+    - name: Setup SteamCMD
+      id: setup-steamcmd
+      uses: CyberAndrii/setup-steamcmd@v1
+
+    - name: Update app
+      run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $REDIST_DIR $APP_ID --force
+      run: dotnet redist_tool/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID" --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $REDIST_DIR $APP_ID
+      run: dotnet redist_tool/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID"
 
     - name: Generate Commit Message
       run: |
@@ -69,7 +78,7 @@ jobs:
         git config --global user.name "sunnamed434"
 
         git add -A
-        git reset README.md  # Prevents adding changes to README.md, steamcmd rewrites it by some reason.
+        git reset README.md  # Reset README.md, cause steamcmd override it.
         git status
         git commit -m "${{ steps.generate_commit_message.outputs.message }}"
         git push

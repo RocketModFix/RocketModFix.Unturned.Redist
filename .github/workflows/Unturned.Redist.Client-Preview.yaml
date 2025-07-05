@@ -25,11 +25,14 @@ jobs:
       with:
         ref: master
 
-    - name: Checkout tools
-      uses: actions/checkout@v4
+    - name: Download tool release
+      uses: robinraju/release-downloader@v1
       with:
         repository: RocketModFix/UnturnedRedistUpdateTool
-        path: tools
+        tag: latest
+        fileName: UnturnedRedistUpdateTool.zip
+        out-file-path: redist_tool
+        extract: true
 
     - name: Setup SteamCMD
       id: setup-steamcmd
@@ -47,16 +50,13 @@ jobs:
       with:
         dotnet-version: 9.x
 
-    - name: Install dependencies
-      run: dotnet restore tools/UnturnedRedistUpdateTool/
-
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $REDIST_DIR $APP_ID --force
+      run: dotnet redist_tool/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID" --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet run --project ./tools/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.csproj --configuration Release -- $GITHUB_WORKSPACE $REDIST_DIR $APP_ID
+      run: dotnet redist_tool/UnturnedRedistUpdateTool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID"
 
     - name: Generate Commit Message
       run: |
@@ -69,7 +69,7 @@ jobs:
         git config --global user.name "sunnamed434"
 
         git add -A
-        git reset README.md  # Prevents adding changes to README.md, steamcmd rewrites it by some reason.
+        git reset README.md  # Reset README.md, cause steamcmd override it.
         git status
         git commit -m "${{ steps.generate_commit_message.outputs.message }}"
         git push
