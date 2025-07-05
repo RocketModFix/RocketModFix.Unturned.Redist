@@ -16,7 +16,7 @@ jobs:
 
     env:
       APP_ID: 304930
-      REDIST_DIR: $GITHUB_WORKSPACE/redist/redist-client-preview
+      REDIST_DIR: redist/redist-client-preview
 
     steps:
 
@@ -52,11 +52,11 @@ jobs:
 
     - name: Run auto-updater (force)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      run: dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID" --force
+      run: dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" --force
 
     - name: Run auto-updater (schedule)
       if: ${{ github.event_name == 'schedule' }}
-      run: dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$REDIST_DIR" "$APP_ID"
+      run: dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID"
 
     - name: Generate Commit Message
       run: |
