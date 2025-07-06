@@ -1,8 +1,8 @@
 name: "Update.Unturned.Redist"
 
 on:
-  # schedule:
-  #  - cron: "*/15 * * * *"
+  schedule:
+    - cron: "*/15 * * * *"  # Run every 15 minutes
   workflow_dispatch:
     inputs:
       variant:
@@ -27,31 +27,61 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update_redist:
-    name: "Update ${{ matrix.variant }}"
+  determine-variants:
+    name: "Determine Variants to Run"
     runs-on: ubuntu-latest
+    outputs:
+      variants: ${{ steps.set_variants.outputs.variants }}
+    steps:
+      - name: Set variants
+        id: set_variants
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # For dispatch, only run the selected variant
+            variant="${{ github.event.inputs.variant }}"
+            echo "variants=[\"$variant\"]" >> $GITHUB_OUTPUT
+          else
+            # For scheduled runs, use all variants in desired order
+            all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
+            variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
+            echo "variants=$variants_json" >> $GITHUB_OUTPUT
+          fi
+
+  update_redist:
+    name: "Update Redist"
+    runs-on: ubuntu-latest
+    needs: determine-variants
     strategy:
       matrix:
-        variant: 
-          - client
-          - server
-          - server-preview
-          - client-preview
-          - server-preview-old
-          - client-preview-old
-      # Run all variants in parallel without failing entire workflow
+        variant: ${{ fromJson(needs.determine-variants.outputs.variants) }}
+      # Run sequentially, one variant at a time
+      max-parallel: 1
       fail-fast: false
-    
-    env:
-      APP_ID: ${{ (matrix.variant == 'client' || matrix.variant == 'client-preview' || matrix.variant == 'client-preview-old') && '304930' || '1110390' }}
-      REDIST_DIR: ${{ matrix.variant == 'client-preview' && 'redist/redist-client' || matrix.variant == 'server-preview' && 'redist/redist-server' || matrix.variant == 'client-preview-old' && 'redist/redist-client-preview-old' || matrix.variant == 'server-preview-old' && 'redist/redist-server-preview-old' || matrix.variant == 'client' && 'redist/redist-client' || matrix.variant == 'server' && 'redist/redist-server' || 'redist/redist-unknown' }}
 
     steps:
+      - name: Determine APP_ID and REDIST_DIR
+        id: vars
+        run: |
+          if [[ "${{ matrix.variant }}" == client || "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == client-preview-old ]]; then
+            echo "APP_ID=304930" >> $GITHUB_ENV
+          else
+            echo "APP_ID=1110390" >> $GITHUB_ENV
+          fi
+
+          case "${{ matrix.variant }}" in
+            client-preview) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
+            server-preview) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
+            client-preview-old) echo "REDIST_DIR=redist/redist-client-preview-old" >> $GITHUB_ENV ;;
+            server-preview-old) echo "REDIST_DIR=redist/redist-server-preview-old" >> $GITHUB_ENV ;;
+            client) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
+            server) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
+            *) echo "REDIST_DIR=redist/redist-unknown" >> $GITHUB_ENV ;;
+          esac
+      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: master
-          # Fetch entire history for proper version comparison
           fetch-depth: 0
 
       - name: Download update tool
@@ -101,7 +131,6 @@ jobs:
           git config --global user.email "sunnamed434@users.noreply.github.com"
           git config --global user.name "sunnamed434"
           
-          # Check for actual changes before committing
           if git diff --quiet; then
             echo "No changes detected for ${{ matrix.variant }}"
           else
