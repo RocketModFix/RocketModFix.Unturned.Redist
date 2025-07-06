@@ -36,16 +36,16 @@ jobs:
       - name: Set variants
         id: set_variants
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # For dispatch, only run the selected variant
-            variant="${{ github.event.inputs.variant }}"
-            echo "variants=[\"$variant\"]" >> $GITHUB_OUTPUT
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "variants=[\"${INPUT_VARIANT}\"]" >> $GITHUB_OUTPUT
           else
-            # For scheduled runs, use all variants in desired order
             all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
             variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
             echo "variants=$variants_json" >> $GITHUB_OUTPUT
           fi
+        env:
+          INPUT_VARIANT: ${{ github.event.inputs.variant }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
 
   update_redist:
     name: "Update Redist"
