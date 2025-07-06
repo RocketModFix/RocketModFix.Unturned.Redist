@@ -2,12 +2,7 @@ name: "Update.Unturned.Redist"
 
 on:
   schedule:
-    - cron: "*/9 * * * *"   # Client
-    - cron: "*/16 * * * *"  # Server
-    - cron: "*/12 * * * *"  # Server Preview Old
-    - cron: "*/6 * * * *"   # Client Preview Old
-    - cron: "*/8 * * * *"   # Server Preview
-    - cron: "*/7 * * * *"   # Client Preview
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       variant:
@@ -28,100 +23,38 @@ permissions:
   packages: write
 
 concurrency:
-  group: unturned-redist-update
+  group: unturned-redist-update-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  determine-variant:
-    name: "Determine Variant"
-    runs-on: ubuntu-latest
-    outputs:
-      variants: ${{ steps.set-variants.outputs.variants }}
-    steps:
-      - name: Set variants based on trigger
-        id: set-variants
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            case "${{ github.event.inputs.variant }}" in
-              "client")
-                echo 'variants=["client"]' >> $GITHUB_OUTPUT
-                ;;
-              "server")
-                echo 'variants=["server"]' >> $GITHUB_OUTPUT
-                ;;
-              "server-preview")
-                echo 'variants=["server-preview"]' >> $GITHUB_OUTPUT
-                ;;
-              "client-preview")
-                echo 'variants=["client-preview"]' >> $GITHUB_OUTPUT
-                ;;
-              "server-preview-old")
-                echo 'variants=["server-preview-old"]' >> $GITHUB_OUTPUT
-                ;;
-              "client-preview-old")
-                echo 'variants=["client-preview-old"]' >> $GITHUB_OUTPUT
-                ;;
-            esac
-          else
-            # For scheduled runs, determine which variant based on current time
-            current_minute=$(date +%M)
-            remainder_9=$((current_minute % 9))
-            remainder_16=$((current_minute % 16))
-            remainder_12=$((current_minute % 12))
-            remainder_6=$((current_minute % 6))
-            remainder_8=$((current_minute % 8))
-            remainder_7=$((current_minute % 7))
-            
-            variants=()
-            if [ $remainder_9 -eq 0 ]; then
-              variants+=("client")
-            fi
-            if [ $remainder_16 -eq 0 ]; then
-              variants+=("server")
-            fi
-            if [ $remainder_12 -eq 0 ]; then
-              variants+=("server-preview-old")
-            fi
-            if [ $remainder_6 -eq 0 ]; then
-              variants+=("client-preview-old")
-            fi
-            if [ $remainder_8 -eq 0 ]; then
-              variants+=("server-preview")
-            fi
-            if [ $remainder_7 -eq 0 ]; then
-              variants+=("client-preview")
-            fi
-            
-            if [ ${#variants[@]} -eq 0 ]; then
-              echo "No variants to run"
-              echo 'variants=["none"]' >> $GITHUB_OUTPUT
-            else
-              # Convert array to JSON format
-              json_variants=$(printf '%s\n' "${variants[@]}" | jq -R . | jq -cs .)
-              echo "variants=$json_variants" >> "$GITHUB_OUTPUT"
-            fi
-          fi
-
   update_redist:
     name: "Update ${{ matrix.variant }}"
     runs-on: ubuntu-latest
-    needs: determine-variant
-    if: ${{ needs.determine-variant.outputs.variants != '["none"]' }}
     strategy:
       matrix:
-        variant: ${{ fromJson(needs.determine-variant.outputs.variants) }}
+        variant: 
+          - client
+          - server
+          - server-preview
+          - client-preview
+          - server-preview-old
+          - client-preview-old
+      # Run all variants in parallel without failing entire workflow
+      fail-fast: false
     
     env:
       APP_ID: ${{ (matrix.variant == 'client' || matrix.variant == 'client-preview' || matrix.variant == 'client-preview-old') && '304930' || '1110390' }}
-      REDIST_DIR: ${{ matrix.variant == 'client-preview' && 'redist/redist-client' || matrix.variant == 'server-preview' && 'redist/redist-server' || format('redist/redist-{0}', matrix.variant) }}
+      REDIST_DIR: ${{ matrix.variant == 'client-preview' && 'redist/redist-client' || matrix.variant == 'server-preview' && 'redist/redist-server' || matrix.variant == 'client-preview-old' && 'redist/redist-client-preview-old' || matrix.variant == 'server-preview-old' && 'redist/redist-server-preview-old' || matrix.variant == 'client' && 'redist/redist-client' || matrix.variant == 'server' && 'redist/redist-server' || 'redist/redist-unknown' }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: master
+          # Fetch entire history for proper version comparison
+          fetch-depth: 0
 
-      - name: Download tool release
+      - name: Download update tool
         uses: robinraju/release-downloader@v1
         with:
           repository: RocketModFix/UnturnedRedistUpdateTool
@@ -140,51 +73,43 @@ jobs:
           dotnet-version: 9.x
 
       - name: Setup SteamCMD
-        id: setup-steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
 
-      - name: Update app 
-        if: ${{ matrix.variant == 'client' || matrix.variant == 'server' }}
-        run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
-
-      - name: Update app (preview)
-        if: ${{ matrix.variant == 'client-preview' || matrix.variant == 'server-preview' || matrix.variant == 'client-preview-old' || matrix.variant == 'server-preview-old' }}
-        run: steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
-
-      - name: Run auto-updater (force)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Update game files
         run: |
-          if [[ "${{ matrix.variant }}" == "client-preview" || "${{ matrix.variant }}" == "server-preview" ]]; then
-            dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" --force --preview
+          if [[ "${{ matrix.variant }}" == "client" || "${{ matrix.variant }}" == "server" ]]; then
+            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
           else
-            dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" --force
+            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
           fi
 
-      - name: Run auto-updater (schedule)
-        if: ${{ github.event_name == 'schedule' }}
+      - name: Run redist updater
         run: |
-          if [[ "${{ matrix.variant }}" == "client-preview" || "${{ matrix.variant }}" == "server-preview" ]]; then
-            dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" --preview
-          else
-            dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID"
+          flags=""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            flags+=" --force"
           fi
+          if [[ "${{ matrix.variant }}" == "client-preview" || "${{ matrix.variant }}" == "server-preview" ]]; then
+            flags+=" --preview"
+          fi
+          
+          dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags
 
-      - name: Generate Commit Message
-        run: |
-          msg=$( cat .commit )
-          echo "message=$msg" >> "$GITHUB_OUTPUT"
-        id: generate_commit_message
-
-      - name: Commit and push changes
+      - name: Commit changes
+        if: success()
         run: |
           git config --global user.email "sunnamed434@users.noreply.github.com"
           git config --global user.name "sunnamed434"
-
-          git add -A
-          git reset README.md  # Reset README.md, cause steamcmd override it.
-          git status
-          git commit -m "${{ steps.generate_commit_message.outputs.message }}"
-          git push
+          
+          # Check for actual changes before committing
+          if git diff --quiet; then
+            echo "No changes detected for ${{ matrix.variant }}"
+          else
+            git add -A
+            git reset README.md  # Reset README.md, cause steamcmd override it.
+            git commit -m "Update redist: ${{ matrix.variant }}"
+            git push
+          fi
 
   workflow-keepalive:
     if: github.event_name == 'schedule'
