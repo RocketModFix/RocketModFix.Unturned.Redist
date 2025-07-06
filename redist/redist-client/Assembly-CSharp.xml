@@ -898,11 +898,6 @@
             Used by UI. True when underwater or inside non-breathable oxygen volume.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.ArenaNode.radius">
-            <summary>
-            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.ItemTool.getItem(System.UInt16,System.UInt16,System.Byte,System.Byte[],System.Boolean,SDG.Unturned.GetStatTrackerValueHandler)">
             <summary>
             No longer used in vanilla. Kept in case plugins are using it.
@@ -931,6 +926,11 @@
         <member name="M:SDG.Unturned.ItemTool.CalculateOrthographicSize(SDG.Unturned.ItemAsset,UnityEngine.GameObject,UnityEngine.Transform,System.Int32,System.Int32)">
             <summary>
             Unity's Camera.orthographicSize is half the height of the viewing volume. Width is calculated from aspect ratio.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ArenaNode.radius">
+            <summary>
+            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWeatherStatusChange.BeginTransitionIn">
@@ -1522,11 +1522,6 @@
         <member name="F:SDG.Unturned.ItemSightAsset.shouldZoomUsingEyes">
             <summary>
             Whether main camera field of view should zoom without scope camera / scope overlay.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ItemSightAsset.shouldOffsetScopeOverlayByOneTexel">
-            <summary>
-            If true, scale scope overly by 1 texel to keep "middle" pixel centered.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemSightAsset.AimAlignmentTransformOwner">
@@ -4792,16 +4787,6 @@
         <member name="F:SDG.Unturned.GameplayConfigData.Disable_Motion_Sickness_Options">
             <summary>
             If true, client-side options like damage flinch, explosion camera shake, viewmodel bob are ignored.
-            Defaults to false.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.GameplayConfigData.Use_2D_Scope_Overlay">
-            <summary>
-            If true, hide viewmodel while aiming a dual-render scope and show a 2D overlay instead.
-            
-            Nelson 2025-07-04: adding this option for backwards compatibility with modded scopes that have a small
-            enough dual-render surface to zoom-*out* when aiming in.
-            
             Defaults to false.
             </summary>
         </member>
