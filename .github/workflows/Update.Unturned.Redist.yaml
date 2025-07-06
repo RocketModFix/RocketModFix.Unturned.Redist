@@ -115,13 +115,23 @@ jobs:
       - name: Run redist updater
         run: |
           flags=""
+              
+          # Add --force flag for manual dispatch
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            flags+=" --force"
+            flags="$flags --force"
           fi
-          if [[ "${{ matrix.variant }}" == "client-preview" || "${{ matrix.variant }}" == "server-preview" ]]; then
-            flags+=" --preview"
-          fi
-          
+              
+          # Add --preview flag for preview variants
+          case "${{ matrix.variant }}" in
+            client-preview|server-preview)
+              flags="$flags --preview"
+              ;;
+          esac
+              
+          echo "Event name: ${{ github.event_name }}"
+          echo "Matrix variant: ${{ matrix.variant }}"
+          echo "Final flags: '$flags'"
+              
           dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags
 
       - name: Generate Commit Message
