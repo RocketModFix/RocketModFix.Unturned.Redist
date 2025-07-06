@@ -94,11 +94,11 @@ jobs:
             
             if [ ${#variants[@]} -eq 0 ]; then
               echo "No variants to run"
-              echo 'variants=[]' >> $GITHUB_OUTPUT
+              echo 'variants=["none"]' >> $GITHUB_OUTPUT
             else
               # Convert array to JSON format
-              json_variants=$(printf '%s\n' "${variants[@]}" | jq -R . | jq -s .)
-              echo "variants=$json_variants" >> $GITHUB_OUTPUT
+              json_variants=$(printf '%s\n' "${variants[@]}" | jq -R . | jq -cs .)
+              echo "variants=$json_variants" >> "$GITHUB_OUTPUT"
             fi
           fi
 
@@ -106,13 +106,13 @@ jobs:
     name: "Update ${{ matrix.variant }}"
     runs-on: ubuntu-latest
     needs: determine-variant
-    if: ${{ needs.determine-variant.outputs.variants != '[]' }}
+    if: ${{ needs.determine-variant.outputs.variants != '["none"]' }}
     strategy:
       matrix:
         variant: ${{ fromJson(needs.determine-variant.outputs.variants) }}
     
     env:
-      APP_ID: ${{ (matrix.variant == 'client' || matrix.variant == 'client-preview') && '304930' || '1110390' }}
+      APP_ID: ${{ (matrix.variant == 'client' || matrix.variant == 'client-preview' || matrix.variant == 'client-preview-old') && '304930' || '1110390' }}
       REDIST_DIR: ${{ matrix.variant == 'client-preview' && 'redist/redist-client' || matrix.variant == 'server-preview' && 'redist/redist-server' || format('redist/redist-{0}', matrix.variant) }}
 
     steps:
