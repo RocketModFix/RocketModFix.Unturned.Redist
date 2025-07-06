@@ -1,0 +1,222 @@
+﻿GUID 0b3ca9ed9d6441df815d2ea4feb63cb0
+Type Spawn
+ID 956
+
+Tables
+[
+	{
+		// Ranger Suppressor (Barrel Item)
+		LegacyAssetId 144
+		Weight 200
+	}
+	{
+		// Military Suppressor (Barrel Item)
+		LegacyAssetId 7
+		Weight 200
+	}
+	{
+		// 16x Scope (Sight Item)
+		LegacyAssetId 296
+		Weight 150
+	}
+	{
+		// 8x Scope (Sight Item)
+		LegacyAssetId 21
+		Weight 150
+	}
+	{
+		// 7x Scope (Sight Item)
+		LegacyAssetId 153
+		Weight 150
+	}
+	{
+		// Augewehr (Gun Item)
+		LegacyAssetId 1362
+		Weight 100
+	}
+	{
+		// Nykorev (Gun Item)
+		LegacyAssetId 126
+		Weight 100
+	}
+	{
+		// Peacemaker (Gun Item)
+		LegacyAssetId 1024
+		Weight 100
+	}
+	{
+		// Sabertooth (Gun Item)
+		LegacyAssetId 1018
+		Weight 100
+	}
+	{
+		// Scalar (Gun Item)
+		LegacyAssetId 1447
+		Weight 100
+	}
+	{
+		// Snayperskya (Gun Item)
+		LegacyAssetId 129
+		Weight 100
+	}
+	{
+		// Timberwolf (Gun Item)
+		LegacyAssetId 18
+		Weight 100
+	}
+	{
+		// Yuri (Gun Item)
+		LegacyAssetId 1041
+		Weight 100
+	}
+	{
+		// Vonya (Gun Item)
+		LegacyAssetId 1366
+		Weight 100
+	}
+	{
+		// Nightraider (Gun Item)
+		LegacyAssetId 1377
+		Weight 100
+	}
+	{
+		// Zubeknakov (Gun Item)
+		LegacyAssetId 122
+		Weight 100
+	}
+	{
+		// Adaptive Chambering (Tactical Item)
+		LegacyAssetId 1007
+		Weight 100
+	}
+	{
+		// Bayonet (Tactical Item)
+		LegacyAssetId 1438
+		Weight 100
+	}
+	{
+		// Rangefinder (Tactical Item)
+		LegacyAssetId 1008
+		Weight 100
+	}
+	{
+		// Viper (Gun Item)
+		LegacyAssetId 1027
+		Weight 100
+	}
+	{
+		// Tactical Laser (Tactical Item)
+		LegacyAssetId 151
+		Weight 100
+	}
+	{
+		// Maschinengewehr (Gun Item)
+		LegacyAssetId 1477
+		Weight 100
+	}
+	{
+		// Maplestrike (Gun Item)
+		LegacyAssetId 363
+		Weight 100
+	}
+	{
+		// Devil's Bane (Gun Item)
+		LegacyAssetId 1484
+		Weight 100
+	}
+	{
+		// Bluntforce (Gun Item)
+		LegacyAssetId 112
+		Weight 100
+	}
+	{
+		// Compound Bow (Gun Item)
+		LegacyAssetId 357
+		Weight 100
+	}
+	{
+		// Bulldog (Gun Item)
+		LegacyAssetId 1369
+		Weight 100
+	}
+	{
+		// Calling Card (Gun Item)
+		LegacyAssetId 1379
+		Weight 100
+	}
+	{
+		// Crossbow (Gun Item)
+		LegacyAssetId 346
+		Weight 100
+	}
+	{
+		// Desert Falcon (Gun Item)
+		LegacyAssetId 488
+		Weight 100
+	}
+	{
+		// Determinator (Gun Item)
+		LegacyAssetId 1480
+		Weight 100
+	}
+	{
+		// Matamorez (Gun Item)
+		LegacyAssetId 1000
+		Weight 100
+	}
+	{
+		// Dragonfang (Gun Item)
+		LegacyAssetId 132
+		Weight 100
+	}
+	{
+		// Ekho (Gun Item)
+		LegacyAssetId 1382
+		Weight 100
+	}
+	{
+		// Empire (Gun Item)
+		LegacyAssetId 1481
+		Weight 100
+	}
+	{
+		// Hell's Fury (Gun Item)
+		LegacyAssetId 1364
+		Weight 100
+	}
+	{
+		// Fusilaut (Gun Item)
+		LegacyAssetId 1375
+		Weight 100
+	}
+	{
+		// Grizzly (Gun Item)
+		LegacyAssetId 297
+		Weight 100
+	}
+	{
+		// Heartbreaker (Gun Item)
+		LegacyAssetId 1037
+		Weight 100
+	}
+	{
+		// PDW (Gun Item)
+		LegacyAssetId 116
+		Weight 100
+	}
+	{
+		// Rocket Launcher (Gun Item)
+		LegacyAssetId 519
+		Weight 100
+	}
+	{
+		// Eaglefire (Gun Item)
+		LegacyAssetId 4
+		Weight 100
+	}
+	{
+		// Tactical Light (Tactical Item)
+		LegacyAssetId 152
+		Weight 100
+	}
+]

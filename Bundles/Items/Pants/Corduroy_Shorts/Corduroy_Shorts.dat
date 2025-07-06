@@ -1,0 +1,35 @@
+﻿GUID 3eb418560771458d827921dddf38fb47
+Type Pants
+Useable Clothing
+ID 228
+
+Size_X 2
+Size_Y 2
+Size_Z 0.65
+
+Width 5
+Height 2
+
+Armor 0.95
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "14901f32cd3240179fd6124324cc27e5 x 2" // Cloth
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+	{
+		Name Repair
+		CategoryTag "732ee6ffeb18418985cf4f9fde33dd11" // Repair
+		Operation RepairTargetItem
+		InputItems "14901f32cd3240179fd6124324cc27e5 x 2" // Cloth
+		RequiresNearbyCraftingTags
+		[
+			"2ac5ddc545a848008c0308d21f5d2e6b" // Spinning Wheel
+		]
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+]

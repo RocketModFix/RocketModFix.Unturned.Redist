@@ -1,0 +1,51 @@
+﻿GUID f1f45dcc34704413b451be175a4c1f1c
+Type Magazine
+Rarity Epic
+ID 1485
+
+Size_X 2
+Size_Y 2
+Size_Z 0.175
+
+Amount 21
+Count_Min 5
+Count_Max 20
+
+Calibers 1
+Caliber_0 42
+
+Pellets 6
+
+Tracer 48
+
+Blueprints
+[
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "8031e39dd5664b74ba0b104728413cef" // 12 Gauge Shells
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems this
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Paintable

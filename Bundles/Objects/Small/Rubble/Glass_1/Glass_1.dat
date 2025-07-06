@@ -1,0 +1,11 @@
+﻿GUID 8548fc360c554b399e98cde4d40eca5d
+Type Small
+ID 143
+
+Rubble Destroy
+Rubble_Reset 60
+Rubble_Health 1
+Rubble_Effect 64
+Has_Clip_Prefab false
+
+Is_Clutter true

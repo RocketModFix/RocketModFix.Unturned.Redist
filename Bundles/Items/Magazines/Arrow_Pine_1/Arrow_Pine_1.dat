@@ -1,0 +1,46 @@
+﻿GUID 0f2fea18ed9444cbbb544993ed31d009
+Type Magazine
+ID 352
+
+Size_X 2
+Size_Y 1
+Size_Z 0.2
+
+Amount 1
+
+Calibers 1
+Caliber_0 15
+
+Tracer 48
+
+Stuck 10
+
+Should_Delete_At_Zero_Amount true
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems
+		[
+			"55d9700ea53c477685458171932251f1 x 3" // Pine Stick
+			"4b68587f5cad45eaab5e07ed0e6fd3b3" // Nails
+		]
+		OutputItems this x 3
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "55d9700ea53c477685458171932251f1" // Pine Stick
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

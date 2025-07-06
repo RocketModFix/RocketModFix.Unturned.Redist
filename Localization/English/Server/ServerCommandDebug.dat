@@ -1,0 +1,11 @@
+NotRunningErrorText Failed to check debug info while not running.
+
+DebugCommandText Debug
+DebugInfoText Debug
+DebugHelpText This provides information on the state of the server.
+
+DebugText Server state
+DebugUPSText Updates per second: {0}%
+DebugTPSText Ticks per second: {0}%
+DebugZombiesText Active zombies: {0}
+DebugAnimalsText Active animals: {0}

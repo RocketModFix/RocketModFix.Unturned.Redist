@@ -1,0 +1,48 @@
+﻿GUID 1d9fa8ad36504d9ab63ad574c6675cf3
+Type Barricade
+Rarity Rare
+Useable Barricade
+Build Barricade
+ID 1902
+
+Size_X 3
+Size_Y 2
+
+Health 300
+Range 4
+Radius 0.3
+Offset 0.6
+
+Explosion 29
+Vulnerable
+
+Blueprints
+[
+	{
+		CategoryTag "cdb2df24b76d4c6e9d8411c940d8337f" // Gear
+		InputItems "86bf08032a5147f9871e362e40812771 x 12" // Pine Log
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "86bf08032a5147f9871e362e40812771 x 12" // Pine Log
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Items_Recovered_On_Salvage 1
+SalvageItem this
+Items_Dropped_On_Destroy 1
+Item_Dropped_On_Destroy this
+
+Actions 1
+Action_0_Type Blueprint
+Action_0_Source 1902
+Action_0_Blueprints 1
+Action_0_Blueprint_0_Index 1
+Action_0_Key Unstack
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

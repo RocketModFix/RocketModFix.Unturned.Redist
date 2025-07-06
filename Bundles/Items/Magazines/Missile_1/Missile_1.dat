@@ -1,0 +1,28 @@
+﻿GUID 68b893410eeb48ea936b483ec652119d
+Type Magazine
+Rarity Legendary
+ID 1302
+
+Size_X 3
+Size_Y 1
+Size_Z 0.225
+
+Amount 1
+
+Calibers 1
+Caliber_0 29
+
+Should_Delete_At_Zero_Amount true
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "8ce5c560166545499432d6e01ce399cc x 2" // Raw Explosives
+		Skill Craft
+		Skill_Level 2
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

@@ -1,0 +1,66 @@
+﻿GUID 5f85885dbd404b08983c3ec11ad98416
+Type Melee
+Rarity Mythical
+Useable Melee
+Slot Secondary
+ID 1867
+
+Size_X 1
+Size_Y 4
+Size_Z 0.8
+Size2_Z 0.65
+
+Range 3
+Strength 1.5
+Weak 0.45
+Strong 0.44
+Stamina 25
+
+Player_Damage 60
+Player_Leg_Multiplier 0.6
+Player_Arm_Multiplier 0.6
+Player_Spine_Multiplier 0.8
+Player_Skull_Multiplier 1.1
+
+Zombie_Damage 60
+Zombie_Leg_Multiplier 0.3
+Zombie_Arm_Multiplier 0.3
+Zombie_Spine_Multiplier 0.6
+Zombie_Skull_Multiplier 1.1
+
+Animal_Damage 60
+Animal_Leg_Multiplier 0.3
+Animal_Spine_Multiplier 0.6
+Animal_Skull_Multiplier 1.1
+
+Barricade_Damage 5
+Structure_Damage 5
+Vehicle_Damage 25
+Resource_Damage 30
+Object_Damage 25
+
+Durability 0.145
+
+Blueprints
+[
+	{
+		Name Repair
+		CategoryTag "732ee6ffeb18418985cf4f9fde33dd11" // Repair
+		Operation RepairTargetItem
+		InputItems "21ede8ebffb14c5580e8c7ad149e335e x 10" // Metal Scrap
+		RequiresNearbyCraftingTags
+		[
+			"7b82c125a5a54984b8bb26576b59e977" // Workbench
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e x 10" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+AttackAudioClip Sounds/MeleeAttack_02.mp3

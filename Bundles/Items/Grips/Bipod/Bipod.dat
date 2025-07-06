@@ -1,0 +1,29 @@
+﻿GUID 4a1ac4b1fda34805b22ce0aa582ead08
+Type Grip
+Rarity Epic
+ID 143
+
+Size_X 1
+Size_Y 2
+Size_Z 0.3
+
+Recoil_X 0.4
+Recoil_Y 0.4
+
+Spread 0.4
+Sway 0.5
+Shake 0.4
+
+Bipod
+Paintable
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e x 2" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

@@ -1,0 +1,42 @@
+﻿GUID 2f41e75848024d41ad6e51ebc2b9317a
+Type Spawn
+ID 768
+
+Tables
+[
+	{
+		// Teklowvka (Gun Item)
+		LegacyAssetId 1360
+		Weight 15
+	}
+	{
+		// Kryzkarek (Gun Item)
+		LegacyAssetId 1039
+		Weight 15
+	}
+	{
+		// Determinator (Gun Item)
+		LegacyAssetId 1480
+		Weight 10
+	}
+	{
+		// Maschinengewehr (Gun Item)
+		LegacyAssetId 1477
+		Weight 10
+	}
+	{
+		// Bulldog (Gun Item)
+		LegacyAssetId 1369
+		Weight 10
+	}
+	{
+		// 1911 (Gun Item)
+		Guid 7d6c442450c3419aa73405930919d067
+		Weight 10
+	}
+	{
+		// Zubeknakov (Gun Item)
+		LegacyAssetId 122
+		Weight 5
+	}
+]

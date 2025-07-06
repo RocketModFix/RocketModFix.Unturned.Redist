@@ -1,0 +1,33 @@
+﻿GUID 544aedb190e8444994910d5ee348eaf2
+Type Farm
+Useable Barricade
+Build Farm
+ID 1045
+
+Size_X 1
+Size_Y 1
+Size_Z 0.2
+
+Health 1
+Range 4
+Radius 0.25
+Offset 0.375
+
+Growth 10800
+Grow 1046
+
+Explosion 43
+Vulnerable
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems "b62856039eca4808a5795a9e15d57182" // Pumpkin
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/FoliagePlacement.mp3
+Has_Clip_Prefab false

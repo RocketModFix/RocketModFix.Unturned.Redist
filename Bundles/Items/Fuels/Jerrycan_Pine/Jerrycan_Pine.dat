@@ -1,0 +1,26 @@
+﻿GUID 52e635dbf3b641069759247cdf8336ad
+Type Fuel
+Useable Fuel
+ID 1116
+
+Size_X 2
+Size_Y 2
+Size_Z 0.6
+
+Fuel 325
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems
+		[
+			"719bfdf2c2dc4be6ad5be44d044583e4 x 7" // Pine Plank
+			"8c25cf28c76a4634855f404c8972c0ae x 2" // Tape
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 1
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

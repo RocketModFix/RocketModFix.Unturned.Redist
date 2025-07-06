@@ -1,0 +1,29 @@
+﻿GUID bdffdef7d9784831b97dca9e27006b3d
+Type Food
+Useable Consumeable
+ID 515
+
+Size_X 2
+Size_Y 2
+Size_Z 0.45
+
+Health 5
+Food 35
+
+Blueprints
+[
+	{
+		CategoryTag "d089feb7e43f40c5a7dfcefc36998cfb" // Supplies
+		InputItems "d25eabfc211f48ddbb9be752c0d870fc" // Raw Venison
+		OutputItems this
+		Skill Cook
+		Skill_Level 1
+		RequiresNearbyCraftingTags
+		[
+			"20f30322bbcc4b01a4f116d22b24c21a" // Heat Source
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+ConsumeAudioClip Sounds/EatCrunchy.mp3

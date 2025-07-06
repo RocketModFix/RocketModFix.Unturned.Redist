@@ -1,0 +1,29 @@
+﻿GUID c1884c06179c4179be536b5adf0cf157
+Type Barricade
+Useable Barricade
+Build Torch
+ID 1272
+
+Size_X 1
+Size_Y 2
+Size_Z 0.6
+
+Health 50
+Range 4
+Offset 0.2
+
+Explosion 36
+Vulnerable
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems "2e3326e006904aae90aead15bcc2e8a3 x 2" // Blue Flare
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

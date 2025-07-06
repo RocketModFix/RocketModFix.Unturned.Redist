@@ -1,0 +1,15 @@
+﻿GUID cb6965c6613f4d42a5dc6dcf2ef17e2d
+Type Small
+ID 129
+
+Rubble Destroy
+Rubble_Reset 60
+Rubble_Health 1
+Rubble_Effect 59
+
+Holiday_Restriction HALLOWEEN
+Bundle_Override_Path /Objects/Small/Overgrowth/Web_0
+
+Has_Clip_Prefab false
+
+Is_Clutter true

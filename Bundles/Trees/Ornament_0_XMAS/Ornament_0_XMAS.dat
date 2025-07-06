@@ -1,0 +1,23 @@
+﻿GUID f0707c1712804e6fbe1a7d925cb33ca4
+Type Resource
+ID 49
+
+Health 1200
+Radius 5
+Scale 0.3
+
+Explosion 23
+Reward_ID 517
+Reward_XP 6
+
+Reset 750
+
+Auto_Skybox
+
+Holiday_Restriction CHRISTMAS
+Bundle_Override_Path /Trees/Ornament_0
+
+Debris_Vertical_Offset 0
+Ignore_Collision_Between_Stump_And_Debris false
+
+Has_Clip_Prefab false

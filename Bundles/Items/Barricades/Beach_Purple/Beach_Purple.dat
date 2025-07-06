@@ -1,0 +1,40 @@
+﻿GUID 9dacf96665b04b2b97e47f767f0be13e
+Type Barricade
+Useable Barricade
+Build Barricade
+ID 1318
+
+Size_X 2
+Size_Y 1
+Size_Z 0.3
+
+Health 250
+Range 4
+Radius 0.2
+Offset 0.25
+
+Explosion 37
+
+Blueprints
+[
+	{
+		CategoryTag "b0c6cc0a8b4346be89aef697ecdb8e46" // Furniture
+		InputItems
+		[
+			{
+				ID "b16e02715819464ebd3a810543e760a9" // White Beach Chair
+				Critical true
+			}
+			"4477326c7a1c4ff3bbfe5943e724f73a" // Purple Flare
+		]
+		RequiresNearbyCraftingTags
+		[
+			"8e86b740dafc46f7bf98c5040c9b223e" // DyeVat
+		]
+		OutputItems this
+		Effect "61edeaee95b742a3a0b589f769261cdb" // DyeVatCraftingEffect
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

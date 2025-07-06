@@ -1,0 +1,36 @@
+﻿GUID 4f1b2f0458ca4442b45cf4439a9e05f7
+Type Pants
+Rarity Rare
+Useable Clothing
+ID 1517
+
+Size_X 2
+Size_Y 2
+Size_Z 0.65
+
+Width 4
+Height 3
+
+Armor 0.9
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "14901f32cd3240179fd6124324cc27e5 x 2" // Cloth
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+	{
+		Name Repair
+		CategoryTag "732ee6ffeb18418985cf4f9fde33dd11" // Repair
+		Operation RepairTargetItem
+		InputItems "14901f32cd3240179fd6124324cc27e5 x 2" // Cloth
+		RequiresNearbyCraftingTags
+		[
+			"2ac5ddc545a848008c0308d21f5d2e6b" // Spinning Wheel
+		]
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+]

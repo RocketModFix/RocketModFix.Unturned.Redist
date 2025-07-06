@@ -1,0 +1,42 @@
+﻿GUID 642a4ad41af845b298e49885ec79c84e
+Type Barricade
+Rarity Epic
+Useable Barricade
+Build Gate
+ID 457
+
+Size_X 2
+Size_Y 1
+Size_Z 0.35
+
+Health 900
+Range 4
+Radius 1.5
+Offset 1.25
+
+Locked
+
+Explosion 36
+
+Blueprints
+[
+	{
+		CategoryTag "31a59b5fec3f4ec5b2887b1ce4acb029" // Barricades
+		InputItems
+		[
+			"7f06b16642724683bd61584a52fde981 x 4" // Metal Sheet
+			"21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 3
+		RequiresNearbyCraftingTags
+		[
+			"7b82c125a5a54984b8bb26576b59e977" // Workbench
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/MetalPlacement.mp3
+Has_Clip_Prefab false

@@ -1,0 +1,55 @@
+﻿GUID 0037da99dfa344559498348744d2c4d3
+Type Magazine
+Rarity Epic
+ID 1003
+
+Size_X 1
+Size_Y 1
+Size_Z 0.2
+
+Amount 17
+Count_Min 6
+Count_Max 15
+
+Calibers 1
+Caliber_0 21
+
+Tracer 48
+
+Blueprints
+[
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "b5c9e7c3e3a94807b18aa86f47d8651c" // High Caliber Ranger Ammunition Box
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems this
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "0c6ca1d63e30422b8d22482ad42ec5bb" // Matamorez Box
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Paintable

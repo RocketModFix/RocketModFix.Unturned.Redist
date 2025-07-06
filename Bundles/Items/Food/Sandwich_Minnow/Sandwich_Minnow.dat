@@ -1,0 +1,33 @@
+﻿GUID c4ed2972e1984164aa18ceadca56ea40
+Type Food
+Rarity Rare
+Useable Consumeable
+ID 1400
+
+Size_X 1
+Size_Y 1
+Size_Z 0.3
+
+Food 85
+
+Blueprints
+[
+	{
+		CategoryTag "d089feb7e43f40c5a7dfcefc36998cfb" // Supplies
+		InputItems
+		[
+			"4880f590a948465891188c5f96559340 x 2" // Bread
+			"0cb79578847f4d26a17b55d31f44402c x 3" // Cooked Minnow
+		]
+		OutputItems this
+		Skill Cook
+		Skill_Level 2
+		RequiresNearbyCraftingTags
+		[
+			"68816064e2ce44839c3f35da55033cba" // Cooking Table
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+ConsumeAudioClip Sounds/EatCrunchy.mp3

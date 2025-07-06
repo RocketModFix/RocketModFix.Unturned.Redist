@@ -1,0 +1,65 @@
+﻿GUID 5de40f42976d4e148d62eb86d170e1cc
+Type Magazine
+Rarity Epic
+ID 1395
+
+Size_X 2
+Size_Y 2
+Size_Z 0.25
+
+Amount 50
+Count_Min 40
+Count_Max 50
+
+Calibers 1
+Caliber_0 37
+
+Tracer 55
+
+Range 5
+Player_Damage 30
+Zombie_Damage 50
+Animal_Damage 50
+Barricade_Damage 30
+Structure_Damage 30
+Vehicle_Damage 40
+Resource_Damage 60
+Object_Damage 40
+Explosion 53
+Explosive
+
+Blueprints
+[
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "b5c9e7c3e3a94807b18aa86f47d8651c" // High Caliber Ranger Ammunition Box
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems this
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "d20d112bc75a4691962f09cd549439b0" // High Caliber Military Ammunition Crate
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

@@ -1,0 +1,62 @@
+﻿GUID 632632fea2f94952938100c6cb62c544
+Type Beacon
+Rarity Legendary
+Useable Barricade
+Build Beacon
+ID 1194
+
+Size_X 2
+Size_Y 2
+Size_Z 0.5
+
+Health 80
+Range 4
+Radius 0.5
+Offset 0.75
+
+Explosion 36
+Unpickupable
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			{
+				ID "7f06b16642724683bd61584a52fde981" // Metal Sheet
+				Amount 6
+			}
+			{
+				ID "656f319d2d194813b390edc6edd8a697" // Metal Bar
+				Amount 6
+			}
+			{
+				ID "8ce5c560166545499432d6e01ce399cc" // Raw Explosives
+				Amount 2
+			}
+			{
+				ID "7aee55ea2abf4f3fb70c4b2677da0e14" // Chemicals
+				Amount 2
+			}
+			{
+				ID "8d80a12a6f564850ab2478927648dd7a" // Detonator
+			}
+			{
+				ID "5830b84bf8074caa91cf3f4dde0dd19e" // Blowtorch
+				Delete false
+			}
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 3
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Wave 100
+Rewards 7
+Reward_ID 1
+
+PlacementAudioClip Sounds/MetalPlacement.mp3
+Has_Clip_Prefab false

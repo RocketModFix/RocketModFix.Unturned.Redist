@@ -1,0 +1,8 @@
+{
+	"Use_Legacy_Ground": false,
+	"Version": "3.23.1.2",
+	"Use_Underground_Whitelist": true,
+	"Terrain_Snow_Sparkle": true,
+	"Batching_Version": 2,
+	"Enable_Clutter_Option": true
+}

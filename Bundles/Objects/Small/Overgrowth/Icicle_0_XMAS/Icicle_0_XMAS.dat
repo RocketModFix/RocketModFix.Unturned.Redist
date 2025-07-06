@@ -1,0 +1,15 @@
+﻿GUID aa5713bdfae44bacbc36979248e25128
+Type Small
+ID 198
+
+Rubble Destroy
+Rubble_Reset 60
+Rubble_Health 1
+Rubble_Effect 63
+
+Holiday_Restriction CHRISTMAS
+Bundle_Override_Path /Objects/Small/Overgrowth/Icicle_0
+
+Has_Clip_Prefab false
+
+Is_Clutter true

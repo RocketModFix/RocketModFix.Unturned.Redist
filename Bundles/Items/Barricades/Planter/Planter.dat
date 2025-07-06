@@ -1,0 +1,54 @@
+﻿GUID 0dede0087967430c9ff5606a101eeb6e
+Type Barricade
+Rarity Rare
+Useable Barricade
+Build Barricade
+ID 331
+
+Size_X 2
+Size_Y 1
+Size_Z 0.35
+
+Health 300
+Range 4
+Radius 0.4
+Offset 0.5
+
+Explosion 19
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			"e73a23b102f24520a32ec0b2afaa6157 x 5" // Maple Plank
+			"54ebe428a6e34922b8764ca40a95d165" // Fertilizer
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			"5a3c4302400e400b9b9486fbb5178eca x 5" // Birch Plank
+			"54ebe428a6e34922b8764ca40a95d165" // Fertilizer
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			"719bfdf2c2dc4be6ad5be44d044583e4 x 5" // Pine Plank
+			"54ebe428a6e34922b8764ca40a95d165" // Fertilizer
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

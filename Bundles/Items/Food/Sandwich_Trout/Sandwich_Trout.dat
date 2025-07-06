@@ -1,0 +1,33 @@
+﻿GUID 79f92a0be40d40f090bda0bdf577fd4e
+Type Food
+Rarity Rare
+Useable Consumeable
+ID 1398
+
+Size_X 1
+Size_Y 1
+Size_Z 0.3
+
+Food 80
+
+Blueprints
+[
+	{
+		CategoryTag "d089feb7e43f40c5a7dfcefc36998cfb" // Supplies
+		InputItems
+		[
+			"4880f590a948465891188c5f96559340 x 2" // Bread
+			"1183047fcfd640e893a21ddb24000e30 x 2" // Cooked Trout
+		]
+		OutputItems this
+		Skill Cook
+		Skill_Level 2
+		RequiresNearbyCraftingTags
+		[
+			"68816064e2ce44839c3f35da55033cba" // Cooking Table
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+ConsumeAudioClip Sounds/EatCrunchy.mp3

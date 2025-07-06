@@ -1,0 +1,24 @@
+﻿GUID e795f250c6384d7db45a05be43f156ac
+Type Tactical
+Rarity Rare
+ID 151
+
+Size_X 1
+Size_Y 1
+Size_Z 0.075
+
+Spread 0.8
+
+Laser
+Paintable
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e x 2" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

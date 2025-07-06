@@ -1,0 +1,27 @@
+﻿GUID e1116457d44f47a5bb73c36ca58bd183
+Type Throwable
+Useable Throwable
+ID 260
+
+Size_X 1
+Size_Y 1
+Size_Z 0.45
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems "48303a446214402fa8db745f568151e3" // Yellow Flare Sconce
+		OutputItems this x 2
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this x 3
+		OutputItems "7aee55ea2abf4f3fb70c4b2677da0e14" // Chemicals
+		Skill Craft
+		Skill_Level 2
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

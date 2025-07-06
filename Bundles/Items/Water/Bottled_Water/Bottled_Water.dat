@@ -1,0 +1,23 @@
+﻿GUID f81d68ebb2a8490dbe1545d432b9c099
+Type Water
+Useable Consumeable
+ID 14
+
+Size_X 1
+Size_Y 1
+Size_Z 0.4
+
+Water 55
+
+Blueprints
+[
+	{
+		Name Repair
+		CategoryTag "732ee6ffeb18418985cf4f9fde33dd11" // Repair
+		Operation RepairTargetItem
+		InputItems "f2707771eebb4904b1e4b1f58929393b" // Purification Tablets
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+ConsumeAudioClip Sounds/DrinkSwallow.mp3

@@ -1,0 +1,12 @@
+﻿GUID ce264dcdeaa84df7b767a8384e5be66c
+Type Small
+ID 129
+
+Rubble Destroy
+Rubble_Reset 60
+Rubble_Health 1
+Rubble_Effect 59
+Has_Clip_Prefab false
+
+// Not clutter because this is the non-auto-holiday variant.
+// Likely decorative in many cases, but helps themeing in caves.

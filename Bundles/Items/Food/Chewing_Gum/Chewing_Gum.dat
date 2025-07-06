@@ -1,0 +1,38 @@
+﻿GUID 10e009f1778f492d99570925141c3c34
+Type Food
+Useable Consumeable
+ID 1510
+
+Size_X 1
+Size_Y 1
+Size_Z 0.3
+
+Player_Damage 100
+Zombie_Damage 200
+Animal_Damage 200
+Barricade_Damage 100
+Structure_Damage 100
+Vehicle_Damage 100
+Resource_Damage 2000
+Object_Damage 1000
+
+Range 8
+Explosion 45
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems
+		[
+			"2e15a98da9e34774b961d636c0e88cc9" // Demolition Charge
+			"1ca6017eaa3241f38779f9ee8730899f" // Candy Bar
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 2
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+]
+
+ConsumeAudioClip Sounds/EatSquishy.mp3

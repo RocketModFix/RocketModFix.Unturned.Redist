@@ -1,0 +1,12 @@
+﻿GUID 5e5ea229d42f4bd186204b9b3b8bb2d8
+Type Spawn
+ID 747
+
+Tables
+[
+	{
+		// Prison_German (Spawn)
+		Guid 0dc01e9c6640470ca13bdea22111bf91
+		Weight 100
+	}
+]

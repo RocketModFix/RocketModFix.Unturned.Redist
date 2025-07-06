@@ -1,0 +1,172 @@
+﻿GUID b3a18613b4a3483c9c41968ceb46a8d7
+Type Spawn
+ID 615
+
+Tables
+[
+	{
+		// Military Magazine (Magazine Item)
+		LegacyAssetId 6
+		Weight 200
+	}
+	{
+		// Empire (Gun Item)
+		LegacyAssetId 1481
+		Weight 100
+	}
+	{
+		// Bluntforce (Gun Item)
+		LegacyAssetId 112
+		Weight 100
+	}
+	{
+		// Viper Magazine (Magazine Item)
+		LegacyAssetId 1029
+		Weight 100
+	}
+	{
+		// Peacemaker (Gun Item)
+		LegacyAssetId 1024
+		Weight 100
+	}
+	{
+		// Scalar (Gun Item)
+		LegacyAssetId 1447
+		Weight 100
+	}
+	{
+		// Sabertooth Magazine (Magazine Item)
+		LegacyAssetId 1020
+		Weight 100
+	}
+	{
+		// Peacemaker Magazine (Magazine Item)
+		LegacyAssetId 1026
+		Weight 100
+	}
+	{
+		// Sabertooth (Gun Item)
+		LegacyAssetId 1018
+		Weight 100
+	}
+	{
+		// Empire Magazine (Magazine Item)
+		LegacyAssetId 1483
+		Weight 100
+	}
+	{
+		// Swissgewehr (Gun Item)
+		LegacyAssetId 1488
+		Weight 100
+	}
+	{
+		// Swissgewehr Magazine (Magazine Item)
+		LegacyAssetId 1490
+		Weight 100
+	}
+	{
+		// 12 Gauge Shells (Magazine Item)
+		LegacyAssetId 113
+		Weight 100
+	}
+	{
+		// Eaglefire (Gun Item)
+		LegacyAssetId 4
+		Weight 100
+	}
+	{
+		// Demolition Charge (Charge Item)
+		Guid 2e15a98da9e34774b961d636c0e88cc9
+		Weight 100
+	}
+	{
+		// Avenger (Gun Item)
+		LegacyAssetId 1021
+		Weight 100
+	}
+	{
+		// Avenger Magazine (Magazine Item)
+		LegacyAssetId 1022
+		Weight 100
+	}
+	{
+		// Viper (Gun Item)
+		LegacyAssetId 1027
+		Weight 100
+	}
+	{
+		// Scalar Magazine (Magazine Item)
+		LegacyAssetId 1449
+		Weight 100
+	}
+	{
+		// Devil's Bane Magazine (Magazine Item)
+		LegacyAssetId 1485
+		Weight 50
+	}
+	{
+		// Dragonfang Box (Magazine Item)
+		LegacyAssetId 133
+		Weight 50
+	}
+	{
+		// Maplestrike (Gun Item)
+		LegacyAssetId 363
+		Weight 50
+	}
+	{
+		// Heartbreaker (Gun Item)
+		LegacyAssetId 1037
+		Weight 50
+	}
+	{
+		// Dragonfang (Gun Item)
+		LegacyAssetId 132
+		Weight 50
+	}
+	{
+		// Devil's Bane (Gun Item)
+		LegacyAssetId 1484
+		Weight 50
+	}
+	{
+		// Desert Falcon (Gun Item)
+		LegacyAssetId 488
+		Weight 50
+	}
+	{
+		// Desert Falcon Magazine (Magazine Item)
+		LegacyAssetId 489
+		Weight 50
+	}
+	{
+		// Detonator (Detonator Item)
+		Guid 8d80a12a6f564850ab2478927648dd7a
+		Weight 40
+	}
+	{
+		// Grizzly Magazine (Magazine Item)
+		LegacyAssetId 298
+		Weight 25
+	}
+	{
+		// PDW (Gun Item)
+		LegacyAssetId 116
+		Weight 25
+	}
+	{
+		// Timberwolf (Gun Item)
+		LegacyAssetId 18
+		Weight 25
+	}
+	{
+		// Timberwolf Magazine (Magazine Item)
+		LegacyAssetId 20
+		Weight 25
+	}
+	{
+		// Grizzly (Gun Item)
+		LegacyAssetId 297
+		Weight 25
+	}
+]

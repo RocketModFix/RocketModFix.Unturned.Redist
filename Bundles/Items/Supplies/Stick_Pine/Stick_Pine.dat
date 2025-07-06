@@ -1,0 +1,34 @@
+﻿GUID 55d9700ea53c477685458171932251f1
+Type Supply
+Rarity Rare
+ID 42
+
+Size_X 1
+Size_Y 1
+Size_Z 0.4
+
+Blueprints
+[
+	{
+		CategoryTag "cdb2df24b76d4c6e9d8411c940d8337f" // Gear
+		InputItems
+		[
+			{
+				ID "719bfdf2c2dc4be6ad5be44d044583e4" // Pine Plank
+			}
+			{
+				ID "fd6bee4579884ee9ad0b729baf423ab1" // Saw
+				Delete false
+			}
+		]
+		OutputItems this x 4
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Actions 1
+Action_0_Type Blueprint
+Action_0_Source 1908
+Action_0_Blueprints 1
+Action_0_Blueprint_0_Index 0
+Action_0_Key Stack

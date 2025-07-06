@@ -1,0 +1,22 @@
+﻿GUID f260c581cf504098956f424d62345982
+Type Optic
+Rarity Uncommon
+Useable Optic
+ID 333
+
+Size_X 2
+Size_Y 1
+Size_Z 0.15
+
+Zoom 12
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

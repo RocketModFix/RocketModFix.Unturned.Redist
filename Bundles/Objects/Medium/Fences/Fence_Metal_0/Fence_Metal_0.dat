@@ -1,0 +1,9 @@
+﻿GUID b2ff709de7a54b09a11a1b3b344e88e5
+Type Medium
+ID 220
+
+Rubble Destroy
+Rubble_Reset 300
+Rubble_Health 275
+Rubble_Effect 68
+Has_Clip_Prefab false

@@ -1,0 +1,49 @@
+﻿GUID ca724c5d0f1a472dab55c91b4fc4522e
+Type Magazine
+Rarity Legendary
+ID 298
+
+Size_X 1
+Size_Y 1
+Size_Z 0.2
+
+Amount 5
+Count_Min 2
+Count_Max 4
+
+Calibers 1
+Caliber_0 13
+
+Tracer 51
+
+Blueprints
+[
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "d20d112bc75a4691962f09cd549439b0" // High Caliber Military Ammunition Crate
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems this
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Paintable

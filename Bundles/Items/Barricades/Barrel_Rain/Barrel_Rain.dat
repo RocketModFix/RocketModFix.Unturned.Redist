@@ -1,0 +1,35 @@
+﻿GUID c8c459e27d724d02a00bca4f4a7a6971
+Type Barricade
+Rarity Uncommon
+Useable Barricade
+Build Barrel_Rain
+ID 1208
+
+Size_X 2
+Size_Y 2
+Size_Z 0.4
+
+Health 235
+Range 4
+Radius 0.5
+Offset 0.75
+
+Explosion 36
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			"7f06b16642724683bd61584a52fde981 x 2" // Metal Sheet
+			"c0b0f4a9f46c49a59f4558210bf36da5" // Metal Can
+			"8c25cf28c76a4634855f404c8972c0ae" // Tape
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

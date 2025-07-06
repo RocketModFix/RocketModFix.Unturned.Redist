@@ -1,0 +1,29 @@
+﻿GUID 2d6c74d430524040955e60f04e1399f2
+Type Food
+Rarity Uncommon
+Useable Consumeable
+ID 513
+
+Size_X 2
+Size_Y 1
+Size_Z 0.225
+
+Food 25
+
+Blueprints
+[
+	{
+		CategoryTag "d089feb7e43f40c5a7dfcefc36998cfb" // Supplies
+		InputItems "7c09233d7e2c4ccfa59cf24f602d6ee9" // Raw Salmon
+		OutputItems this
+		Skill Cook
+		Skill_Level 1
+		RequiresNearbyCraftingTags
+		[
+			"20f30322bbcc4b01a4f116d22b24c21a" // Heat Source
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+ConsumeAudioClip Sounds/EatCrunchy.mp3

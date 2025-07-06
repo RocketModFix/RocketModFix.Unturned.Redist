@@ -1,0 +1,7 @@
+﻿GUID c9944e733dcc46e5ad40f4436ffe6170
+Type Small
+ID 487
+Has_Clip_Prefab false
+
+// Not clutter because this is the non-auto-holiday variant.
+// I.e., potentially important to level themeing.

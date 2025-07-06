@@ -1,0 +1,52 @@
+﻿GUID c8e47533e3f245c1a45402d81092380b
+Type Spawn
+ID 685
+
+Tables
+[
+	{
+		// Military_Low_Peaks_Clothes (Spawn)
+		LegacySpawnId 772
+		Weight 175
+	}
+	{
+		// Smoke (Spawn)
+		LegacySpawnId 123
+		Weight 86
+	}
+	{
+		// Military_Low_Melee (Spawn)
+		LegacySpawnId 649
+		Weight 75
+	}
+	{
+		// Military_Low_Peaks_Magazines (Spawn)
+		LegacySpawnId 775
+		Weight 50
+	}
+	{
+		// Military_Low_Peaks_Ammo (Spawn)
+		LegacySpawnId 773
+		Weight 25
+	}
+	{
+		// Military_Low_Peaks_Guns (Spawn)
+		LegacySpawnId 774
+		Weight 25
+	}
+	{
+		// Military_Low_Barricades (Spawn)
+		LegacySpawnId 651
+		Weight 10
+	}
+	{
+		// Military_Low_Tools (Spawn)
+		LegacySpawnId 648
+		Weight 10
+	}
+	{
+		// Russian Military Vehicle Spraypaint (Vehicle Paint Tool Item)
+		Guid e322656746a045a98eb6e5a6650a104e
+		Weight 5
+	}
+]

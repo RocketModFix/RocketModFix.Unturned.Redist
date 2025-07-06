@@ -1,0 +1,34 @@
+﻿GUID 870a1bdb38a644ef94b3606650550e9e
+Type Barricade
+Rarity Rare
+Useable Barricade
+Build Sign
+ID 1233
+
+Size_X 2
+Size_Y 2
+Size_Z 0.7
+
+Health 350
+Range 4
+Radius 1
+Offset 5
+
+Explosion 29
+
+Blueprints
+[
+	{
+		CategoryTag "b0c6cc0a8b4346be89aef697ecdb8e46" // Furniture
+		InputItems
+		[
+			"14901f32cd3240179fd6124324cc27e5 x 5" // Cloth
+			"55d9700ea53c477685458171932251f1 x 7" // Pine Stick
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+Has_Clip_Prefab false

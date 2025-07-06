@@ -1,0 +1,53 @@
+﻿GUID 1f8856edf5964774aa2457b37e45603b
+Type Barricade
+Rarity Legendary
+Useable Barricade
+Build Safezone
+ID 1050
+
+Size_X 2
+Size_Y 2
+Size_Z 0.5
+
+Health 450
+Range 4
+Radius 0.5
+Offset 0.75
+
+Explosion 36
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			{
+				ID "7f06b16642724683bd61584a52fde981" // Metal Sheet
+				Amount 6
+			}
+			{
+				ID "656f319d2d194813b390edc6edd8a697" // Metal Bar
+				Amount 6
+			}
+			{
+				ID "81419c5ae34e4f449bfddc9075709ff2" // Vaccine
+			}
+			{
+				ID "5830b84bf8074caa91cf3f4dde0dd19e" // Blowtorch
+				Delete false
+			}
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 3
+		RequiresNearbyCraftingTags
+		[
+			"7b82c125a5a54984b8bb26576b59e977" // Workbench
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/MetalPlacement.mp3
+Has_Clip_Prefab false

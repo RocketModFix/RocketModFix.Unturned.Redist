@@ -1,0 +1,7 @@
+﻿GUID 17723c9812f04815afad1b55769f6bb0
+Type Large
+ID 912
+
+Collision_Important
+Exclude_From_Culling_Volumes true
+Has_Clip_Prefab false

@@ -1,0 +1,39 @@
+﻿GUID ac2debec9e8641af98a05b83ef429dea
+Type Structure
+Useable Structure
+Construct Roof
+ID 323
+
+Size_X 2
+Size_Y 2
+Size_Z 0.45
+
+Health 450
+Range 8
+
+Explosion 28
+
+Blueprints
+[
+	{
+		CategoryTag "71d9e182c18b4aad8e87778e4f621995" // Structures
+		InputItems "ccfd125a44cf487fbd3d471f15a854af x 3" // Birch Log
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		CategoryTag "71d9e182c18b4aad8e87778e4f621995" // Structures
+		InputItems "5004bbe3d0864ddd9b81d3406d241d2d" // Stacked Birch Logs
+		InputItems_Critical true
+		OutputItems
+		[
+			this
+			"ccfd125a44cf487fbd3d471f15a854af x 9" // Birch Log
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+
+Has_Clip_Prefab false

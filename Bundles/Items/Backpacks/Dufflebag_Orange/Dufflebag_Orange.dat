@@ -1,0 +1,50 @@
+﻿GUID f64a9beaf39c4bcfab50cdb57122fb62
+Type Backpack
+Useable Clothing
+ID 1185
+
+Size_X 2
+Size_Y 2
+Size_Z 0.55
+
+Width 7
+Height 4
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "14901f32cd3240179fd6124324cc27e5 x 3" // Cloth
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+	{
+		Name Repair
+		CategoryTag "732ee6ffeb18418985cf4f9fde33dd11" // Repair
+		Operation RepairTargetItem
+		InputItems "14901f32cd3240179fd6124324cc27e5 x 3" // Cloth
+		RequiresNearbyCraftingTags
+		[
+			"2ac5ddc545a848008c0308d21f5d2e6b" // Spinning Wheel
+		]
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+	{
+		CategoryTag "ebe755533bdd42d1871c3ac66b89530f" // Apparel
+		InputItems
+		[
+			{
+				ID "ebad30019a5e4bb790e6e7a7e28f0262" // White Dufflebag
+				Critical true
+			}
+			"e5e0e9876b6b4f6f8511b741544c6c94" // Orange Flare
+		]
+		RequiresNearbyCraftingTags
+		[
+			"8e86b740dafc46f7bf98c5040c9b223e" // DyeVat
+		]
+		OutputItems this
+		Effect "61edeaee95b742a3a0b589f769261cdb" // DyeVatCraftingEffect
+	}
+]

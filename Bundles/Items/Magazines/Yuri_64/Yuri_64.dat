@@ -1,0 +1,49 @@
+﻿GUID 34ae9214fc364b8e98fdeafbf5ba5461
+Type Magazine
+Rarity Rare
+ID 1042
+
+Size_X 2
+Size_Y 1
+Size_Z 0.125
+
+Amount 64
+Count_Min 16
+Count_Max 48
+
+Calibers 1
+Caliber_0 27
+
+Tracer 48
+
+Blueprints
+[
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems "5f609a8593504f2c88402cf2c45b49d3" // Low Caliber Ranger Ammunition Box
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		CategoryTag "d739926736374e5ba34b4ac6ffbb5c8f" // Ammunition
+		Operation FillTargetItem
+		InputItems this
+		Effect "03caec479dd2475c92e1c326e1720140" // Casing
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems
+		[
+			{
+				ID this
+				Prioritization LowestAmount
+				CountEmptyAsOne true
+			}
+		]
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Paintable

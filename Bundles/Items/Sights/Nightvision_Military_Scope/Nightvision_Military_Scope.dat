@@ -1,0 +1,59 @@
+﻿GUID b8abc7c292144e8eaaf744815c3108ae
+Type Sight
+Rarity Legendary
+ID 1201
+
+Size_X 2
+Size_Y 1
+Size_Z 0.2
+
+Spread 0.8
+Zoom 6
+
+Vision Military
+
+Paintable
+
+Offset_Scope_Overlay_By_One_Texel true
+
+DistanceMarkers
+[
+	{
+		Distance 100
+		LineOffset -0.01
+		LineWidth 0.02
+		Color ffff00
+	}
+	{
+		Distance 150
+		LineOffset -0.005
+		LineWidth 0.01
+		Color ffff00
+		HasLabel false
+	}
+	{
+		Distance 200
+		LineOffset -0.01
+		LineWidth 0.02
+		Color ffff00
+	}
+	{
+		Distance 250
+		LineOffset -0.005
+		LineWidth 0.01
+		Color ffff00
+		HasLabel false
+	}
+]
+
+
+Blueprints
+[
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

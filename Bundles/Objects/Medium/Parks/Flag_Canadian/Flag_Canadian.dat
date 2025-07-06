@@ -1,0 +1,11 @@
+﻿GUID d24d5180464b4894933d5ce922dc932e
+Type Medium
+ID 145
+
+Snowshoe
+
+Rubble Destroy
+Rubble_Reset 300
+Rubble_Health 100
+Rubble_Effect 72
+Has_Clip_Prefab false

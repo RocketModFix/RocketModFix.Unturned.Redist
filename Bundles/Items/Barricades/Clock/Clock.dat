@@ -1,0 +1,45 @@
+﻿GUID d3c40816534e48c3af0e26fb4d5f1b1a
+Type Barricade
+Rarity Rare
+Useable Barricade
+Build Clock
+ID 1509
+
+Size_X 2
+Size_Y 2
+Size_Z 0.4
+
+Health 75
+Range 4
+Offset 0.05
+
+Explosion 60
+
+Blueprints
+[
+	{
+		CategoryTag "bfac6026305f4737a95fd275ebff65a6" // Utilities
+		InputItems
+		[
+			{
+				ID "6314c13082c24bdcbc9872d492df4926" // Weak Glass
+			}
+			{
+				ID "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+				Amount 2
+			}
+			{
+				ID "5830b84bf8074caa91cf3f4dde0dd19e" // Blowtorch
+				Delete false
+			}
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 3
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+
+Has_Clip_Prefab false

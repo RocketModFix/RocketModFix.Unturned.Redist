@@ -1,0 +1,3 @@
+ReloadCommandText Reload
+ReloadInfoText Reload [GUID | Path]
+ReloadHelpText This reloads an asset by GUID or an absolute directory path.

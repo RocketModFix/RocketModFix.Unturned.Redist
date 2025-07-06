@@ -1,0 +1,55 @@
+﻿GUID 57d8bb26e4d8424bb5679651c9582cca
+Type Throwable
+Rarity Epic
+Useable Throwable
+ID 1100
+
+Size_X 1
+Size_Y 1
+Size_Z 0.3
+
+Player_Damage 200
+Zombie_Damage 200
+Animal_Damage 200
+Barricade_Damage 100
+Structure_Damage 100
+Vehicle_Damage 200
+Resource_Damage 1500
+Object_Damage 750
+
+Range 10
+Explosion 34
+
+Explosive
+Sticky
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems
+		[
+			"ae1fc8674d0b4443b3ad9a68776dcf0f" // Glue
+			"ebb61f2e64f24351a6ab905b5516060b" // Wire
+			"8ce5c560166545499432d6e01ce399cc" // Raw Explosives
+			"4ca85c0123bb466fa2a059b6227544c1" // Fragmentation Grenade
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 2
+		RequiresNearbyCraftingTags
+		[
+			"99896da563a748148460c67b9962874f" // Pharmaceutical
+		]
+		Effect "7eceb9f7751d4634b572c8e236355104" // Rip
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "8ce5c560166545499432d6e01ce399cc" // Raw Explosives
+		Skill Craft
+		Skill_Level 2
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]

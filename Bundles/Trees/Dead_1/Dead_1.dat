@@ -1,0 +1,22 @@
+﻿GUID 99f67404304842f4a2fc2fb8e3257f62
+Type Resource
+ID 20
+
+Health 1000
+Radius 5
+RandomUniformScale_Min 1
+RandomUniformScale_Max 1.55
+
+Explosion 47
+Reward_ID 516
+Reward_XP 5
+Reward_Min 6
+Reward_Max 9
+
+Reset 600
+
+Auto_Skybox
+
+Debris_Vertical_Offset 0
+Ignore_Collision_Between_Stump_And_Debris false
+Has_Clip_Prefab false

@@ -1,0 +1,59 @@
+﻿GUID 806bc882292247b78bd730ba073eb45a
+Type Sight
+ID 476
+
+Size_X 2
+Size_Y 1
+Size_Z 0.2
+
+Spread 0.8
+Zoom 6
+
+Blueprints
+[
+	{
+		CategoryTag "ad1804b6945145f3b308738b0b8ea447" // Tools
+		InputItems
+		[
+			"f260c581cf504098956f424d62345982" // Binoculars
+			"8c25cf28c76a4634855f404c8972c0ae" // Tape
+		]
+		OutputItems this
+		Skill Craft
+		Skill_Level 1
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		Name Salvage
+		CategoryTag "7ed29f9101ae4523a3b2e389414b7bd9" // Salvage
+		InputItems this
+		OutputItems "21ede8ebffb14c5580e8c7ad149e335e" // Metal Scrap
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Offset_Scope_Overlay_By_One_Texel true
+
+DistanceMarkers
+[
+	{
+		Distance 100
+		LineWidth 0.04
+		HasLabel false
+	}
+	{
+		Distance 200
+		LineWidth 0.03
+		HasLabel false
+	}
+	{
+		Distance 300
+		LineWidth 0.02
+		HasLabel false
+	}
+	{
+		Distance 400
+		LineWidth 0.01
+		HasLabel false
+	}
+]

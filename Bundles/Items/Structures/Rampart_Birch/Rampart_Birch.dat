@@ -1,0 +1,39 @@
+﻿GUID 43f6fa0ddb874d9fabc284daa3ae59f6
+Type Structure
+Useable Structure
+Construct Rampart
+ID 444
+
+Size_X 2
+Size_Y 1
+Size_Z 0.3
+
+Health 350
+Range 8
+
+Explosion 28
+
+Blueprints
+[
+	{
+		CategoryTag "71d9e182c18b4aad8e87778e4f621995" // Structures
+		InputItems "ccfd125a44cf487fbd3d471f15a854af x 3" // Birch Log
+		OutputItems this x 2
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+	{
+		CategoryTag "71d9e182c18b4aad8e87778e4f621995" // Structures
+		InputItems "5004bbe3d0864ddd9b81d3406d241d2d" // Stacked Birch Logs
+		InputItems_Critical true
+		OutputItems
+		[
+			this x 2
+			"ccfd125a44cf487fbd3d471f15a854af x 9" // Birch Log
+		]
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+PlacementAudioClip Sounds/WoodenPlacement.mp3
+
+Has_Clip_Prefab false

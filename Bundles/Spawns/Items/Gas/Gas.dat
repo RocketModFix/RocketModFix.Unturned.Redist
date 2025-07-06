@@ -1,0 +1,37 @@
+﻿GUID 2c29571045f54ffb8b2f24db76cdec03
+Type Spawn
+ID 163
+
+Tables
+[
+	{
+		// Flare (Spawn)
+		LegacySpawnId 112
+		Weight 80
+	}
+	{
+		// Gas_Tools (Spawn)
+		LegacySpawnId 164
+		Weight 80
+	}
+	{
+		// Gas_Melee (Spawn)
+		LegacySpawnId 165
+		Weight 44
+	}
+	{
+		// Gas_Clothes (Spawn)
+		LegacySpawnId 166
+		Weight 14
+	}
+	{
+		// Vehicle_Spraypaints (Spawn)
+		Guid 424d1cd228a4493890f3d7f101612447
+		Weight 13
+	}
+	{
+		// Gas_Supplies (Spawn)
+		LegacySpawnId 167
+		Weight 10
+	}
+]

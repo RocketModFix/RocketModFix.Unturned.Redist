@@ -1,0 +1,34 @@
+﻿GUID ebb61f2e64f24351a6ab905b5516060b
+Type Supply
+ID 65
+
+Size_X 1
+Size_Y 1
+Size_Z 0.45
+
+Blueprints
+[
+	{
+		CategoryTag "cdb2df24b76d4c6e9d8411c940d8337f" // Gear
+		InputItems
+		[
+			{
+				ID "656f319d2d194813b390edc6edd8a697" // Metal Bar
+				Amount 3
+			}
+			{
+				ID "5830b84bf8074caa91cf3f4dde0dd19e" // Blowtorch
+				Delete false
+			}
+		]
+		OutputItems this
+		Effect "84347b13028340b8976033c08675d458" // Wrench
+	}
+]
+
+Actions 1
+Action_0_Type Blueprint
+Action_0_Source 1912
+Action_0_Blueprints 1
+Action_0_Blueprint_0_Index 0
+Action_0_Key Stack
