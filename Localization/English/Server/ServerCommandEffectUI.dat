@@ -1,3 +1,0 @@
-EffectCommandText EffectUI
-EffectInfoText EffectUI [EffectID]
-EffectHelpText This spawns a UI effect for the executing player.

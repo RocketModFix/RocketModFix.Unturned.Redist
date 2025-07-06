@@ -1,6 +1,0 @@
-﻿GUID 0f6bbfcb77cc4f17a234b5a4b2e25569
-Type Small
-ID 736
-Has_Clip_Prefab false
-
-// Not clutter because the light source may be crucial in a dark environment.
