@@ -72,9 +72,6 @@ steamcmd/
 /toolmanifest.vdf
 /VERSIONS.txt
 
-# Steam Linux Runtime (SLR)
-/mtree.txt.gz
-/run-in-scout-on-soldier
-/scout-on-soldier-entry-point-v2
-/toolmanifest.vdf
-/VERSIONS.txt
+# Allow tracking for redist
+!/redist/
+!/redist/**
