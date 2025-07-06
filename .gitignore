@@ -1,77 +1,24 @@
-# Ignore our Redist Updater Tool
-redist_tool/
+# We must ignore most of the files, because Auto-Redist update might commit files which we don't need to have, in case if you want to add new file/directory, anything, then make sure to remove ignore of all files (below) or just specify your files/directories below
 
-steamapps/
-appcache/
-BattlEye/
-config/
-Content/
-CuratedMapIcons/
-depotcache/
-Extras/
-LoadingScreens/
-Logs/
-Modules/
-MonoBleedingEdge/
-Sandbox/
-Servers/
-userdata/
-Unturned_Data/
-Unturned_Headless_Data/
-Bundles/Sources/
+# Ignore all files
+*
 
-install.vdf
-Licenses.txt
-ServerHelper.*
-steamclient.*
-steamclient64.*
-StreamerNames.json
-tier0_s.*
-tier0_s64.*
-UnityPlayer.*
-UnityCrashHandler64.*
-Unturned_Headless.*
-vstdlib_s.*
-vstdlib_s64.*
-ExampleServer.*
+# Allow tracking of the .gitignore file itself
+!.gitignore
 
-**/Landscape
-**/Editor
-**/Terrain
+# Allow tracking of existing directories and their contents
+!*/
 
-*.masterbundle
-*.hash
-*.log
-*.bak
-*.unity3d
-*.jpg
-*.png
-*.lnk
-*.unitypackage
-*.blend
-
-*.dll
-*.so
-*.exe
-*.x86_64
-*.bat
-*.sh
-
-*.blob
-*.commit
-
-SteamCMD/
-steamcmd/
-
-.vs/
-
-# Steam Linux Runtime (SLR)
-/mtree.txt.gz
-/run-in-scout-on-soldier
-/scout-on-soldier-entry-point-v2
-/toolmanifest.vdf
-/VERSIONS.txt
+# Allow tracking of files already committed (optional)
+!.gitkeep
 
 # Allow tracking for redist
 !/redist/
 !/redist/**
+
+# Allow tracking for common stuff
+!/.github
+!/.github/**
+!/.gitignore
+!/README.md
+!/LICENSE
