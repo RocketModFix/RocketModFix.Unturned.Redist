@@ -1,43 +1,69 @@
-# RocketModFix.Unturned.Redist
+Steam Linux Runtime 1.0 (scout)
+===============================
 
-## Why Use This?
+This container-based release of the Steam Runtime is enabled on a
+per-title basis by forcing its use in the title's Properties dialog,
+and is used by default for native Linux games on Steam Deck.
 
-Do you find it annoying to copy libraries from the Managed directory every time Unturned updates? With this NuGet package, you get all the necessary libraries for Unturned, and they update automatically. You don't need to wait for us to update them manually. This package is like a "redistributable" that stays current.
+For general information please see
+<https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/container-runtime.md>
 
-You get:
+Release notes
+-------------
 
-- **Assembly-CSharp.dll**
-- **com.rlabrecque.steamworks.net.dll**
-- **UnturnedDat.dll**
-- and many more, including XML docs for the Unturned API and more.
+Please see
+<https://gitlab.steamos.cloud/steamrt/steamrt/-/wikis/Steam-Linux-Runtime-1.0-(scout)-release-notes>
 
-## How to Install
+Known issues
+------------
 
-These libraries (or "redists") update by themselves, so you don’t have to worry about manual updates.
+Please see
+<https://github.com/ValveSoftware/steam-runtime/blob/master/doc/steamlinuxruntime-known-issues.md>
 
-Choose the package that fits your need:
+Reporting bugs
+--------------
 
-- **Client:** For tools that run on the Unturned client.
-- **Server:** For tools that run on the Unturned server.
-- **Client Preview:** For early versions of the client-side libraries.
-- **Server Preview:** For early versions of the server-side libraries.
+Please see
+<https://github.com/ValveSoftware/steam-runtime/blob/master/doc/reporting-steamlinuxruntime-bugs.md>
 
-### Installation Links
+Development and debugging
+-------------------------
 
-Click the links below to get the package you need:
+See `SteamLinuxRuntime_soldier/README.md` for details of the container
+runtime.
 
-[![RocketModFix.Unturned.Redist.Client](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client?label=RocketModFix.Unturned.Redist.Client&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client)
+This additional layer uses a `LD_LIBRARY_PATH`-based Steam Runtime to
+provide the required libraries for the Steam Runtime version 1 ABI.
 
-[![RocketModFix.Unturned.Redist.Server](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server?label=RocketModFix.Unturned.Redist.Server&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server)
+By default, it will use the version in the Steam installation directory,
+`~/.steam/root/ubuntu12_32/steam-runtime` (normally this is the same as
+`~/.local/share/Steam/ubuntu12_32/steam-runtime`). You can use a different
+version of Steam Runtime 1 'scout' by unpacking a `steam-runtime.tar.xz`
+into the `SteamLinuxRuntime/steam-runtime/` directory, so that you have
+files like `SteamLinuxRuntime/steam-runtime/run.sh`.
 
-[![RocketModFix.Unturned.Redist.Client-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview)
+If you have `SteamLinuxRuntime` and `SteamLinuxRuntime_soldier` installed
+in the same Steam library, you can use `run-in-scout-on-soldier` to test
+commands in the scout-on-soldier environment, for example:
 
-[![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
+    .../steamapps/common/SteamLinuxRuntime/run-in-scout-on-soldier -- xterm
 
-## Credits
+Please see
+<https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/distro-assumptions.md>
+for details of assumptions made about the host operating system, and some
+advice on debugging the container runtime on new Linux distributions.
 
-Special thanks to these projects that helped us build this auto-updating tool:
+Game developers who are interested in targeting this environment should
+check the SDK documentation <https://gitlab.steamos.cloud/steamrt/scout/sdk>
+and general information for game developers
+<https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/slr-for-game-developers.md>.
 
-- [Unturned-Datamining](https://github.com/Unturned-Datamining)
+Licensing and copyright
+-----------------------
 
-- [setup-steamcmd](https://github.com/CyberAndrii/setup-steamcmd)
+The Steam Runtime contains many third-party software packages under
+various open-source licenses.
+
+For full source code, please see the version-numbered subdirectories of
+<https://repo.steampowered.com/steamrt-images-scout/snapshots/>
+corresponding to the version numbers listed in VERSIONS.txt.
