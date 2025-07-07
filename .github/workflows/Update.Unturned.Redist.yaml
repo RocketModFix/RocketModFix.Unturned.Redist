@@ -21,6 +21,7 @@ on:
 permissions:
   contents: write
   packages: write
+  pull-requests: write
 
 concurrency:
   group: unturned-redist-update-${{ github.ref }}
@@ -54,8 +55,6 @@ jobs:
     strategy:
       matrix:
         variant: ${{ fromJson(needs.determine-variants.outputs.variants) }}
-      # Run sequentially, one variant at a time
-      max-parallel: 1
       fail-fast: false
 
     steps:
@@ -77,11 +76,22 @@ jobs:
             server) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
             *) echo "REDIST_DIR=redist/redist-unknown" >> $GITHUB_ENV ;;
           esac
+
+          # Generate unique branch name
+          timestamp=$(date +%Y%m%d-%H%M%S)
+          echo "BRANCH_NAME=redist-update/${{ matrix.variant }}-${timestamp}" >> $GITHUB_ENV
       
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and switch to update branch
+        run: |
+          git config --global user.email "sunnamed434@users.noreply.github.com"
+          git config --global user.name "sunnamed434"
+          git checkout -b "$BRANCH_NAME"
 
       - name: Download update tool
         uses: robinraju/release-downloader@v1
@@ -140,20 +150,68 @@ jobs:
           echo "message=$msg" >> "$GITHUB_OUTPUT"
         id: generate_commit_message
 
-      - name: Commit changes
-        if: success()
+      - name: Check for changes
+        id: check_changes
         run: |
-          git config --global user.email "sunnamed434@users.noreply.github.com"
-          git config --global user.name "sunnamed434"
-          
           if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No changes detected for ${{ matrix.variant }}"
           else
-            git add -A
-            git reset README.md  # Reset README.md, cause steamcmd override it.
-            git status
-            git commit -m "${{ steps.generate_commit_message.outputs.message }}"
-            git push
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected for ${{ matrix.variant }}"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git reset README.md  # Reset README.md, cause steamcmd override it.
+          git status
+          git commit -m "${{ steps.generate_commit_message.outputs.message }}"
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: create_pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.BRANCH_NAME }}
+          base: master
+          title: "🤖 Auto-update ${{ matrix.variant }} redist files"
+          body: |
+            ## Automated Redist Update - ${{ matrix.variant }}
+            
+            This PR contains automatically updated redist files for the **${{ matrix.variant }}** variant.
+            
+            ### Changes
+            ${{ steps.generate_commit_message.outputs.message }}
+            
+            ### Validation
+            🔄 Validation will run automatically when this PR is created.
+            
+            ---
+            
+            **Triggered by**: ${{ github.event_name == 'workflow_dispatch' && 'Manual dispatch' || 'Scheduled run' }}
+            **Variant**: ${{ matrix.variant }}
+            **Branch**: `${{ env.BRANCH_NAME }}`
+            
+            > This PR was automatically created by the Unturned Redist update workflow.
+            > Validation checks will run automatically. Review the changes carefully before merging.
+          draft: false
+          labels: |
+            automated
+            redist-update
+            ${{ matrix.variant }}
+
+      - name: Summary
+        run: |
+          echo "## Update Summary for ${{ matrix.variant }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Has Changes**: ${{ steps.check_changes.outputs.has_changes }}" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]]; then
+            echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
           fi
 
   workflow-keepalive:
