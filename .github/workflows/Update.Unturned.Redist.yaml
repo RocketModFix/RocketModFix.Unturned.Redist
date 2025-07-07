@@ -68,8 +68,8 @@ jobs:
           fi
 
           case "${{ matrix.variant }}" in
-            client-preview) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
-            server-preview) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
+            client-preview) echo "REDIST_DIR=redist/redist-client-preview" >> $GITHUB_ENV ;;
+            server-preview) echo "REDIST_DIR=redist/redist-server-preview" >> $GITHUB_ENV ;;
             client-preview-old) echo "REDIST_DIR=redist/redist-client-preview-old" >> $GITHUB_ENV ;;
             server-preview-old) echo "REDIST_DIR=redist/redist-server-preview-old" >> $GITHUB_ENV ;;
             client) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
@@ -165,7 +165,7 @@ jobs:
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git add -A
-          git reset README.md  # Reset README.md, cause steamcmd override it.
+          git restore README.md # Restore README.md, cause steamcmd override it.
           git status
           git commit -m "${{ steps.generate_commit_message.outputs.message }}"
           git push origin "$BRANCH_NAME"
@@ -178,6 +178,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ env.BRANCH_NAME }}
           base: master
+          commit-message: "${{ steps.generate_commit_message.outputs.message }}"
           title: "🤖 Auto-update ${{ matrix.variant }} redist files"
           body: |
             ## Automated Redist Update - ${{ matrix.variant }}
