@@ -1,8 +1,8 @@
 name: "Update.Unturned.Redist"
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"  # Run every 15 minutes
+  #schedule:
+  #  - cron: "*/15 * * * *"  # Run every 15 minutes
   workflow_dispatch:
     inputs:
       variant:
@@ -161,20 +161,13 @@ jobs:
             echo "Changes detected for ${{ matrix.variant }}"
           fi
 
-      - name: Commit and push changes
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git add -A
-          git restore README.md # Restore README.md, cause steamcmd override it.
-          git status
-          git commit -m "${{ steps.generate_commit_message.outputs.message }}"
-          git push origin "$BRANCH_NAME"
-
       - name: Create Pull Request
         if: steps.check_changes.outputs.has_changes == 'true'
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
+          add-paths: |
+            redist/*
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ env.BRANCH_NAME }}
           base: master
