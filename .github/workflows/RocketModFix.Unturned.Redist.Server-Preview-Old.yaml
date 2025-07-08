@@ -1,18 +1,18 @@
-name: RocketModFix.Unturned.Redist.Server-Preview
+name: RocketModFix.Unturned.Redist.Server-Preview-Old
 
 on:
   workflow_run:
-    workflows: ["Update Unturned Redist for Server Preview"]
+    workflows: ["Update Unturned Redist for Server Preview Old"]
     types:
       - completed
   push:
     branches: [ master ]
     paths:
-      - 'redist/redist-server-preview/**'
+      - 'redist/redist-server-preview-old/**'
 
 jobs:
   build:
-    name: "RocketModFix.Unturned.Redist Pack for Server Preview"
+    name: "RocketModFix.Unturned.Redist Pack for Server Preview Old"
     runs-on: ubuntu-22.04
 
     steps:
@@ -27,7 +27,7 @@ jobs:
     - uses: ./.github/actions/nuget-pack
       id: nuget-pack
       with:
-        nuspec_path: redist/redist-server-preview/RocketModFix.Unturned.Redist.Server-Preview.nuspec
+        nuspec_path: redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server-Preview.nuspec
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true
         
