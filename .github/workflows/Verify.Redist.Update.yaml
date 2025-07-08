@@ -15,7 +15,6 @@ on:
 jobs:
   verify:
     name: "Verify Redist Update"
-    if: startsWith(github.head_ref, 'redist-update/')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
