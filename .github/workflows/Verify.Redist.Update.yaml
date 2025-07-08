@@ -55,4 +55,4 @@ jobs:
         if: success() && env.ALLOW_AUTO_APPROVE_REDIST_PR == 'true' && github.actor == 'sunnamed434'
         uses: hmarr/auto-approve-action@v4
         with:
-          github-token: ${{ secrets.PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
