@@ -16,6 +16,8 @@ jobs:
   verify:
     name: "Verify Redist Update"
     runs-on: ubuntu-latest
+    env:
+      ALLOW_AUTO_APPROVE_REDIST_PR: ${{ vars.ALLOW_AUTO_APPROVE_REDIST_PR }}
     permissions:
       pull-requests: write
       contents: read
@@ -49,8 +51,8 @@ jobs:
             exit 1
           fi
 
-      #- name: Auto-approve PR
-      #  if: success() && github.actor == 'github-actions[bot]'
-      #  uses: hmarr/auto-approve-action@v4
-      #  with:
-      #    github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Auto-approve PR
+        if: success() && env.ALLOW_AUTO_APPROVE_REDIST_PR == 'true' && github.actor == 'sunnamed434'
+        uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.PAT }}
