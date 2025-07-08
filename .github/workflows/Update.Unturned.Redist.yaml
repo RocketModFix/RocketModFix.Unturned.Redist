@@ -1,8 +1,8 @@
 name: "Update.Unturned.Redist"
 
 on:
-  #schedule:
-  #  - cron: "*/15 * * * *"  # Run every 15 minutes
+  schedule:
+    - cron: "*/15 * * * *"  # Run every 15 minutes
   workflow_dispatch:
     inputs:
       variant:
@@ -86,12 +86,6 @@ jobs:
         with:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create and switch to update branch
-        run: |
-          git config --global user.email "sunnamed434@users.noreply.github.com"
-          git config --global user.name "sunnamed434"
-          git checkout -b "$BRANCH_NAME"
 
       - name: Download update tool
         uses: robinraju/release-downloader@v1
