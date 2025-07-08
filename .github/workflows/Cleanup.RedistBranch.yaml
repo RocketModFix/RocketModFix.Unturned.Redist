@@ -1,0 +1,27 @@
+name: "Cleanup.RedistBranch"
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  cleanup-redist-branch:
+    name: "Cleanup Redist Branch"
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'redist-update/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete PR branch
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          echo "Deleting redist PR branch: $BRANCH_NAME"
+          gh api \
+            -X DELETE \
+            "repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
