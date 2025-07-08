@@ -17,7 +17,7 @@ jobs:
     name: "Verify Redist Update"
     runs-on: ubuntu-latest
     env:
-      ALLOW_AUTO_APPROVE_REDIST_PR: ${{ vars.ALLOW_AUTO_APPROVE_REDIST_PR }}
+      ALLOW_AUTO_MERGE_REDIST_PR: ${{ vars.ALLOW_AUTO_MERGE_REDIST_PR }}
     permissions:
       pull-requests: write
       contents: read
@@ -52,7 +52,14 @@ jobs:
           fi
 
       - name: Auto-approve PR
-        if: success() && env.ALLOW_AUTO_APPROVE_REDIST_PR == 'true' && github.actor == 'sunnamed434'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR != 'true' && github.actor == 'sunnamed434'
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Auto-merge PR
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'sunnamed434'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.PAT }}
+          merge-method: squash
