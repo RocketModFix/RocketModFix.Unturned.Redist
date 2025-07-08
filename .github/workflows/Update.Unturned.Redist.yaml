@@ -11,6 +11,7 @@ on:
         default: 'client'
         type: choice
         options:
+          - all
           - client
           - server
           - server-preview
@@ -38,7 +39,13 @@ jobs:
         id: set_variants
         run: |
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            echo "variants=[\"${INPUT_VARIANT}\"]" >> $GITHUB_OUTPUT
+            if [ "$INPUT_VARIANT" = "all" ]; then
+              all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
+              variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
+              echo "variants=$variants_json" >> $GITHUB_OUTPUT
+            else
+              echo "variants=[\"${INPUT_VARIANT}\"]" >> $GITHUB_OUTPUT
+            fi
           else
             all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
             variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
