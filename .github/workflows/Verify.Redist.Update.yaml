@@ -1,0 +1,57 @@
+name: "Verify.Redist.Update"
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'redist/**'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  verify:
+    if: startsWith(github.head_ref, 'redist-update/')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate redist update
+        run: |
+          echo "🔍 Verifying redist update..."
+
+          VARIANT=$(echo "${GITHUB_HEAD_REF}" | cut -d'/' -f2 | cut -d'-' -f2-)
+          echo "Detected variant: $VARIANT"
+
+          case "$VARIANT" in
+            client-preview) REDIST_DIR="redist/redist-client-preview" ;;
+            server-preview) REDIST_DIR="redist/redist-server-preview" ;;
+            client-preview-old) REDIST_DIR="redist/redist-client-preview-old" ;;
+            server-preview-old) REDIST_DIR="redist/redist-server-preview-old" ;;
+            client) REDIST_DIR="redist/redist-client" ;;
+            server) REDIST_DIR="redist/redist-server" ;;
+            *) 
+              echo "Unknown variant: $VARIANT"
+              exit 1
+              ;;
+          esac
+
+          echo "Checking directory: $REDIST_DIR"
+          if [[ ! -f "$REDIST_DIR/README.md" ]]; then
+            echo "Missing README.md file in $REDIST_DIR!"
+            exit 1
+          fi
+
+      #- name: Auto-approve PR
+      #  if: success() && github.actor == 'github-actions[bot]'
+      #  uses: hmarr/auto-approve-action@v4
+      #  with:
+      #    github-token: ${{ secrets.GITHUB_TOKEN }}
