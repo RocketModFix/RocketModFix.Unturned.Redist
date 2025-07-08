@@ -34,6 +34,10 @@ Click the links below to get the package you need:
 
 [![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
 
+## Architecture
+
+![Architecture](https://raw.githubusercontent.com/RocketModFix/RocketModFix.Unturned.Redist/master/architecture.jpg)
+
 ## Credits
 
 Special thanks to these projects that helped us build this auto-updating tool:
