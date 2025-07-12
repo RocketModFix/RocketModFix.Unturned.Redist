@@ -255,21 +255,25 @@ jobs:
             
             # Create backup
             cp "$ASSEMBLY_PATH" "$ASSEMBLY_PATH.backup"
+            echo "Created backup at: $ASSEMBLY_PATH.backup"
             
             # Publicize the assembly
-            assembly-publicizer "$ASSEMBLY_PATH" --output "$ASSEMBLY_PATH" --overwrite
-            
-            if [ $? -eq 0 ]; then
+            echo "Running assembly-publicizer..."
+            if assembly-publicizer "$ASSEMBLY_PATH" --output "$ASSEMBLY_PATH" --overwrite; then
               echo "Successfully publicized Assembly-CSharp.dll"
               # Remove backup if successful
               rm "$ASSEMBLY_PATH.backup"
+              echo "Removed backup file"
             else
-              echo "Failed to publicize Assembly-CSharp.dll, restoring backup"
+              echo "Failed to publicize Assembly-CSharp.dll"
+              echo "Restoring original file from backup..."
               mv "$ASSEMBLY_PATH.backup" "$ASSEMBLY_PATH"
+              echo "Original file restored. Workflow will fail."
               exit 1
             fi
           else
             echo "Error: Assembly-CSharp.dll not found at $ASSEMBLY_PATH"
+            echo "This is required for publicized variants. Workflow will fail."
             exit 1
           fi
 
