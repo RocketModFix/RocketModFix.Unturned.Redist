@@ -262,7 +262,7 @@ jobs:
             
             # Publicize the assembly
             echo "Running assembly-publicizer..."
-            if assembly-publicizer "$ASSEMBLY_PATH"; then
+            if assembly-publicizer "$ASSEMBLY_PATH" --overwrite; then
               echo "Successfully publicized Assembly-CSharp.dll"
               # Remove backup if successful
               rm "$ASSEMBLY_PATH.backup"
