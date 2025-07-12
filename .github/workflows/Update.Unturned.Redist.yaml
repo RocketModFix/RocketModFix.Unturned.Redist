@@ -123,7 +123,7 @@ jobs:
         id: compare_manifest
         run: |
           MANIFEST_FILE="redist/redist-manifests/.manifest.${{ matrix.variant }}.txt"
-          manifest_output=$(dotnet depot_downloader/DepotDownloader.dll \
+          manifest_output=$(dotnet depot_downloader/DepotDownloader \
             -app $APP_ID \
             -depot $APP_DEPOT_ID \
             -username ${{ secrets.STEAM_USERNAME }} \
