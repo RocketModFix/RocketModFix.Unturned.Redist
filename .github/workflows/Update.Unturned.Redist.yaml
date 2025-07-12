@@ -152,7 +152,7 @@ jobs:
           fi
 
       - name: Skip unchanged manifest
-        if: steps.compare_manifest.outputs.manifest_changed == 'false'
+        if: steps.compare_manifest.outputs.manifest_changed != 'true'
         run: |
           echo "No manifest changes for ${{ matrix.variant }}. Skipping update steps."
           exit 0
