@@ -172,7 +172,7 @@ jobs:
 
       - name: Update game files
         run: |
-          if [[ "$APP_BRANCH_NAME" == ""]]; then
+          if [[ "$APP_BRANCH_NAME" == "" ]]; then
             steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
           else
             steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta $APP_BRANCH_NAME -validate +quit
