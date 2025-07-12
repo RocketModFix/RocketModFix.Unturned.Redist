@@ -72,7 +72,7 @@ jobs:
       - name: Determine APP_ID, APP_BRANCH_NAME, APP_DEPOT_ID, and REDIST_DIR
         id: vars
         run: |
-          if [[ "${{ matrix.variant }}" == client || "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == client-preview-old ]]; then
+          if [[ "${{ matrix.variant }}" == client || "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == client-preview-old ]]; then
             echo "APP_ID=304930" >> $GITHUB_ENV
             echo "APP_DEPOT_ID=304931" >> $GITHUB_ENV
           else
@@ -80,7 +80,7 @@ jobs:
             echo "APP_DEPOT_ID=1110391" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == server-preview || "${{ matrix.variant }}" == client-preview-old || "${{ matrix.variant }}" == server-preview-old ]]; then
+          if [[ "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == server-preview || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == server-preview-publicized || "${{ matrix.variant }}" == client-preview-old || "${{ matrix.variant }}" == server-preview-old ]]; then
             echo "APP_BRANCH_NAME=preview" >> $GITHUB_ENV
           fi
 
