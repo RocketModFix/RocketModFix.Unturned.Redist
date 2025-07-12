@@ -16,6 +16,10 @@
 !/redist/
 !/redist/**
 
+# Ignore temp depots
+/redist/temp_depots/
+/redist/temp_depots/**
+
 # Allow tracking for common stuff
 !/.github
 !/.github/**
