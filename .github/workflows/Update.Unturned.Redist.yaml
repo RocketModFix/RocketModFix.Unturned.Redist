@@ -115,7 +115,9 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
           DOTNET_CLI_TELEMETRY_OPTOUT: true
         with:
-          dotnet-version: 9.x
+          dotnet-version: |
+            9.x
+            6.0.x
 
       - name: Download depot downloader
         uses: robinraju/release-downloader@v1
