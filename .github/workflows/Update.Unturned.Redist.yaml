@@ -8,7 +8,7 @@ on:
       variant:
         description: 'Which variant to update'
         required: true
-        default: 'client'
+        default: 'all'
         type: choice
         options:
           - all
@@ -65,13 +65,19 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Determine APP_ID and REDIST_DIR
+      - name: Determine APP_ID, APP_BRANCH_NAME, APP_DEPOT_ID, and REDIST_DIR
         id: vars
         run: |
           if [[ "${{ matrix.variant }}" == client || "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == client-preview-old ]]; then
             echo "APP_ID=304930" >> $GITHUB_ENV
+            echo "APP_DEPOT_ID=304931" >> $GITHUB_ENV
           else
             echo "APP_ID=1110390" >> $GITHUB_ENV
+            echo "APP_DEPOT_ID=1110391" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == server-preview || "${{ matrix.variant }}" == client-preview-old || "${{ matrix.variant }}" == server-preview-old ]]; then
+            echo "APP_BRANCH_NAME=preview" >> $GITHUB_ENV
           fi
 
           case "${{ matrix.variant }}" in
@@ -94,15 +100,6 @@ jobs:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download update tool
-        uses: robinraju/release-downloader@v1
-        with:
-          repository: RocketModFix/UnturnedRedistUpdateTool
-          latest: true
-          fileName: UnturnedRedistUpdateTool.zip
-          out-file-path: redist_tool
-          extract: true
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         env:
@@ -112,15 +109,72 @@ jobs:
         with:
           dotnet-version: 9.x
 
+      - name: Download depot downloader
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: SteamRE/DepotDownloader
+          latest: true
+          fileName: DepotDownloader-linux-x64.zip
+          out-file-path: depot_downloader
+          tag: "DepotDownloader_3.4.0" # Pin it's version to avoid breaking changes.
+          extract: true
+
+      - name: Compare current vs saved manifest
+        id: compare_manifest
+        run: |
+          MANIFEST_FILE="redist/redist-manifests/.manifest.${{ matrix.variant }}.txt"
+          manifest_output=$(dotnet depot_downloader/DepotDownloader.dll \
+            -app $APP_ID \
+            -depot $APP_DEPOT_ID \
+            -username ${{ secrets.STEAM_USERNAME }} \
+            -password ${{ secrets.STEAM_PASSWORD }} \
+            -manifest-only \
+            -dir redist/temp_depots)
+              
+          current_manifest=$(echo "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1)
+          echo "Current manifest: $current_manifest"
+              
+          if [ -f "$MANIFEST_FILE" ]; then
+            previous_manifest=$(cat "$MANIFEST_FILE")
+          else
+            previous_manifest=""
+          fi
+              
+          echo "Previous manifest: $previous_manifest"
+              
+          if [ "$current_manifest" != "$previous_manifest" ]; then
+            echo "Manifest changed"
+            echo "$current_manifest" > "$MANIFEST_FILE"
+            echo "manifest_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Manifest unchanged"
+            echo "manifest_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip unchanged manifest
+        if: steps.compare_manifest.outputs.manifest_changed == 'false'
+        run: |
+          echo "No manifest changes for ${{ matrix.variant }}. Skipping update steps."
+          exit 0
+
+      - name: Download update tool
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: RocketModFix/UnturnedRedistUpdateTool
+          latest: true
+          fileName: UnturnedRedistUpdateTool.zip
+          out-file-path: redist_tool
+          extract: true
+
       - name: Setup SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
       - name: Update game files
         run: |
-          if [[ "${{ matrix.variant }}" == "client" || "${{ matrix.variant }}" == "server" ]]; then
+          if [[ "$APP_BRANCH_NAME" == ""]]; then
             steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
           else
-            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta preview -validate +quit
+            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta $APP_BRANCH_NAME -validate +quit
           fi
 
       - name: Run redist updater
