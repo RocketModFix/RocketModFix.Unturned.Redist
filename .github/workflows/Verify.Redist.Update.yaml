@@ -39,6 +39,10 @@ jobs:
             server-preview-old) REDIST_DIR="redist/redist-server-preview-old" ;;
             client) REDIST_DIR="redist/redist-client" ;;
             server) REDIST_DIR="redist/redist-server" ;;
+            client-publicized) REDIST_DIR="redist/redist-client-publicized" ;;
+            server-publicized) REDIST_DIR="redist/redist-server-publicized" ;;
+            client-preview-publicized) REDIST_DIR="redist/redist-client-preview-publicized" ;;
+            server-preview-publicized) REDIST_DIR="redist/redist-server-preview-publicized" ;;
             *) 
               echo "Unknown variant: $VARIANT"
               exit 1
