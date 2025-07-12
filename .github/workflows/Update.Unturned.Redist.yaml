@@ -257,7 +257,7 @@ jobs:
             cp "$ASSEMBLY_PATH" "$ASSEMBLY_PATH.backup"
             
             # Publicize the assembly
-            assembly-publicizer "$ASSEMBLY_PATH" --output "$ASSEMBLY_PATH"
+            assembly-publicizer "$ASSEMBLY_PATH" --output "$ASSEMBLY_PATH" --overwrite
             
             if [ $? -eq 0 ]; then
               echo "Successfully publicized Assembly-CSharp.dll"
