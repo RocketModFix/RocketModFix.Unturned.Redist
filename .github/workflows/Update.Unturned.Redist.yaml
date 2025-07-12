@@ -133,6 +133,9 @@ jobs:
         id: compare_manifest
         run: |
           MANIFEST_FILE="redist/redist-manifests/.manifest.redist-${{ matrix.variant }}.txt"
+          
+          mkdir -p redist/temp_depots
+
           chmod +x depot_downloader/DepotDownloader
           manifest_output=$(depot_downloader/DepotDownloader \
             -app $APP_ID \
