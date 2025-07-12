@@ -9,6 +9,7 @@ on:
     branches: [ master ]
     paths:
       - 'redist/redist-server/**'
+  workflow_dispatch:
 
 jobs:
   build:
