@@ -17,10 +17,10 @@ These libraries (or "redists") update by themselves, so you don’t have to worr
 
 Choose the package that fits your need:
 
-- **Client:** For tools that run on the Unturned client.
-- **Server:** For tools that run on the Unturned server.
-- **Client Preview:** For early versions of the client-side libraries.
-- **Server Preview:** For early versions of the server-side libraries.
+- **RocketModFix.Unturned.Redist.Client:** For tools that run on the Unturned client.
+- **RocketModFix.Unturned.Redist.Server:** For tools that run on the Unturned server.
+- **RocketModFix.Unturned.Redist.Client-Preview:** For early versions of the client-side libraries.
+- **RocketModFix.Unturned.Redist.Server-Preview:** For early versions of the server-side libraries.
 
 ### Installation Links
 
@@ -37,6 +37,9 @@ Click the links below to get the package you need:
 > This is mainly to simplify things going forward. The older `*-Preview` packages are still supported for backward compatibility, so you don't need to switch if you're already using them.
 
 ## Architecture
+
+All updates and automation are handled entirely through GitHub Actions.  
+We don't run any of this on external servers — everything happens directly on GitHub.
 
 ![Architecture](https://raw.githubusercontent.com/RocketModFix/RocketModFix.Unturned.Redist/master/architecture.jpg)
 
