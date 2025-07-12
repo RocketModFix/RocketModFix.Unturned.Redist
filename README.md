@@ -26,13 +26,15 @@ Choose the package that fits your need:
 
 Click the links below to get the package you need:
 
-[![RocketModFix.Unturned.Redist.Client](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client?label=RocketModFix.Unturned.Redist.Client&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client)
-
-[![RocketModFix.Unturned.Redist.Server](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server?label=RocketModFix.Unturned.Redist.Server&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server)
-
-[![RocketModFix.Unturned.Redist.Client-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview)
-
+[![RocketModFix.Unturned.Redist.Client](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client?label=RocketModFix.Unturned.Redist.Client&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client)  
+[![RocketModFix.Unturned.Redist.Server](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server?label=RocketModFix.Unturned.Redist.Server&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server)  
+[![RocketModFix.Unturned.Redist.Client-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client-Preview?label=RocketModFix.Unturned.Redist.Client-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Client-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview)  
 [![RocketModFix.Unturned.Redist.Server-Preview](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server-Preview?label=RocketModFix.Unturned.Redist.Server-Preview&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FRocketModFix.Unturned.Redist.Server-Preview)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview)
+
+> **Note:**  
+> The main `RocketModFix.Unturned.Redist.Client` and `RocketModFix.Unturned.Redist.Server` packages now also include **preview (prerelease)** versions. These are the same as `RocketModFix.Unturned.Redist.Client-Preview` and `Server-Preview`, just under the main package name.  
+>  
+> This is mainly to simplify things going forward. The older `*-Preview` packages are still supported for backward compatibility, so you don't need to switch if you're already using them.
 
 ## Architecture
 
