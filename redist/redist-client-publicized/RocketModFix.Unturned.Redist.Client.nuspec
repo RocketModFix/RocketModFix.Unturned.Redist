@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>RocketModFix.Unturned.Redist.Client.Publicized</id>
+    <version>3.25.7.2</version>
+    <description>
+      Unturned 3 Client-side redistributables. Standalone and always up-to-date.
+    </description>
+    <authors>SmartlyDressedGames;RocketModFix</authors>
+    <icon>icon.png</icon>
+    <license type="file">../../LICENSE</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <repository type="git" url="https://github.com/RocketModFix/RocketModFix.Unturned.Redist" />
+    <readme>README.md</readme>
+  </metadata>
+  <files>
+    <!-- Common files for all frameworks -->
+    <file src="../../LICENSE" target="LICENSE.txt" />
+    <file src="../../README.md" target="README.md" />
+
+    <!-- Files for .NET Framework 4.0 -->
+    <file src="*.dll" target="lib/net40" />
+    <file src="*.xml" target="lib/net40" />
+
+    <!-- Files for .NET Framework 4.8 -->
+    <file src="*.dll" target="lib/net48" />
+    <file src="*.xml" target="lib/net48" />
+
+    <!-- Files for .NET Standard 2.0 -->
+    <file src="*.dll" target="lib/netstandard2.0" />
+    <file src="*.xml" target="lib/netstandard2.0" />
+
+    <!-- Files for .NET Standard 2.1 -->
+    <file src="*.dll" target="lib/netstandard2.1" />
+    <file src="*.xml" target="lib/netstandard2.1" />
+
+    <file src="../icon.png" target="icon.png" />
+  </files>
+</package>

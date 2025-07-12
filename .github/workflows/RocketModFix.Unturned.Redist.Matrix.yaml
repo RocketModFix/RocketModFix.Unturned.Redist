@@ -1,0 +1,100 @@
+name: RocketModFix.Unturned.Redist.Matrix
+
+on:
+  # push:
+  #   branches: [ master ]
+  #   paths:
+  #     - 'redist/redist-*/**'
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'Which variant to update'
+        required: true
+        type: choice
+        options:
+          - all
+          - Client
+          - Client-Preview
+          - Client-Preview-Old
+          - Client-Preview-Publicized
+          - Client-Publicized
+          - Server
+          - Server-Preview
+          - Server-Preview-Old
+          - Server-Preview-Publicized
+          - Server-Publicized
+
+jobs:
+  build:
+    name: "Build ${{ matrix.variant }}"
+    runs-on: ubuntu-22.04
+    
+    strategy:
+      matrix:
+        include:
+          # Client variants
+          - variant: "Client"
+            nuspec_path: "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec"
+            trigger_path: "redist/redist-client/**"
+            workflow_trigger: "Update Unturned Redist for Client"
+          - variant: "Client-Preview"
+            nuspec_path: "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec"
+            trigger_path: "redist/redist-client-preview/**"
+            workflow_trigger: "Update Unturned Redist for Client Preview"
+          - variant: "Client-Preview-Old"
+            nuspec_path: "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec"
+            trigger_path: "redist/redist-client-preview-old/**"
+            workflow_trigger: "Update Unturned Redist for Client Preview Old"
+          - variant: "Client-Preview-Publicized"
+            nuspec_path: "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
+            trigger_path: "redist/redist-client-preview-publicized/**"
+            workflow_trigger: "Update Unturned Redist for Client Preview"
+          - variant: "Client-Publicized"
+            nuspec_path: "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
+            trigger_path: "redist/redist-client-publicized/**"
+            workflow_trigger: "Update Unturned Redist for Client Publicized"
+          
+          # Server variants
+          - variant: "Server"
+            nuspec_path: "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec"
+            trigger_path: "redist/redist-server/**"
+            workflow_trigger: "Update Unturned Redist for Server"
+          - variant: "Server-Preview"
+            nuspec_path: "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec"
+            trigger_path: "redist/redist-server-preview/**"
+            workflow_trigger: "Update Unturned Redist for Server Preview"
+          - variant: "Server-Preview-Old"
+            nuspec_path: "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec"
+            trigger_path: "redist/redist-server-preview-old/**"
+            workflow_trigger: "Update Unturned Redist for Server Preview Old"
+          - variant: "Server-Preview-Publicized"
+            nuspec_path: "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
+            trigger_path: "redist/redist-server-preview-publicized/**"
+            workflow_trigger: "Update Unturned Redist for Server Preview"
+          - variant: "Server-Publicized"
+            nuspec_path: "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
+            trigger_path: "redist/redist-server-publicized/**"
+            workflow_trigger: "Update Unturned Redist for Server Publicized"
+
+    # Only run if this is a workflow_dispatch with a specific variant or "all", or if the path matches
+    if: |
+      github.event_name == 'workflow_dispatch' && 
+      (github.event.inputs.variant == 'all' || github.event.inputs.variant == matrix.variant) ||
+      github.event_name == 'push' && contains(toJSON(github.event.commits[0].modified), matrix.trigger_path) ||
+      github.event_name == 'workflow_run' && github.event.workflow_run.name == matrix.workflow_trigger
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - uses: nuget/setup-nuget@v2
+      name: Setup NuGet
+      with:
+        nuget-api-key: ${{ secrets.NUGET_DEPLOY_KEY }}
+
+    - uses: ./.github/actions/nuget-pack
+      id: nuget-pack
+      with:
+        nuspec_path: ${{ matrix.nuspec_path }}
+        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_push: true 

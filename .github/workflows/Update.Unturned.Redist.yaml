@@ -18,6 +18,10 @@ on:
           - client-preview
           - server-preview-old
           - client-preview-old
+          - client-publicized
+          - server-publicized
+          - client-preview-publicized
+          - server-preview-publicized
 
 permissions:
   contents: write
@@ -40,14 +44,14 @@ jobs:
         run: |
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
             if [ "$INPUT_VARIANT" = "all" ]; then
-              all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
+              all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old" "client-publicized" "server-publicized" "client-preview-publicized" "server-preview-publicized")
               variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
               echo "variants=$variants_json" >> $GITHUB_OUTPUT
             else
               echo "variants=[\"${INPUT_VARIANT}\"]" >> $GITHUB_OUTPUT
             fi
           else
-            all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old")
+            all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old" "client-publicized" "server-publicized" "client-preview-publicized" "server-preview-publicized")
             variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
             echo "variants=$variants_json" >> $GITHUB_OUTPUT
           fi
@@ -87,6 +91,10 @@ jobs:
             server-preview-old) echo "REDIST_DIR=redist/redist-server-preview-old" >> $GITHUB_ENV ;;
             client) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
             server) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
+            client-publicized) echo "REDIST_DIR=redist/redist-client-publicized" >> $GITHUB_ENV ;;
+            server-publicized) echo "REDIST_DIR=redist/redist-server-publicized" >> $GITHUB_ENV ;;
+            client-preview-publicized) echo "REDIST_DIR=redist/redist-client-preview-publicized" >> $GITHUB_ENV ;;
+            server-preview-publicized) echo "REDIST_DIR=redist/redist-server-preview-publicized" >> $GITHUB_ENV ;;
             *) echo "REDIST_DIR=redist/redist-unknown" >> $GITHUB_ENV ;;
           esac
 
@@ -217,8 +225,53 @@ jobs:
             echo "Changes detected for ${{ matrix.variant }}"
           fi
 
+      - name: Final check for changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected after all processing for ${{ matrix.variant }}. Exiting."
+            exit 0
+          else
+            echo "Changes detected after all processing for ${{ matrix.variant }}"
+          fi
+
+      - name: Install BepInEx Assembly Publicizer
+        if: contains(matrix.variant, 'publicized')
+        run: |
+          dotnet tool install -g BepInEx.AssemblyPublicizer.Cli
+          echo "BepInEx Assembly Publicizer installed"
+
+      - name: Publicize Assembly-CSharp.dll
+        if: contains(matrix.variant, 'publicized')
+        run: |
+          echo "Publicizing Assembly-CSharp.dll for ${{ matrix.variant }}"
+          
+          # Find Assembly-CSharp.dll in the redist directory
+          ASSEMBLY_PATH="$GITHUB_WORKSPACE/$REDIST_DIR/Assembly-CSharp.dll"
+          
+          if [ -f "$ASSEMBLY_PATH" ]; then
+            echo "Found Assembly-CSharp.dll at: $ASSEMBLY_PATH"
+            
+            # Create backup
+            cp "$ASSEMBLY_PATH" "$ASSEMBLY_PATH.backup"
+            
+            # Publicize the assembly
+            bepinex-assembly-publicizer "$ASSEMBLY_PATH" --output "$ASSEMBLY_PATH"
+            
+            if [ $? -eq 0 ]; then
+              echo "Successfully publicized Assembly-CSharp.dll"
+              # Remove backup if successful
+              rm "$ASSEMBLY_PATH.backup"
+            else
+              echo "Failed to publicize Assembly-CSharp.dll, restoring backup"
+              mv "$ASSEMBLY_PATH.backup" "$ASSEMBLY_PATH"
+              exit 1
+            fi
+          else
+            echo "Error: Assembly-CSharp.dll not found at $ASSEMBLY_PATH"
+            exit 1
+          fi
+
       - name: Create Pull Request
-        if: steps.check_changes.outputs.has_changes == 'true'
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
