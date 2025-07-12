@@ -13,16 +13,16 @@ on:
         type: choice
         options:
           - all
-          - Client
-          - Client-Preview
-          - Client-Preview-Old
-          - Client-Preview-Publicized
-          - Client-Publicized
-          - Server
-          - Server-Preview
-          - Server-Preview-Old
-          - Server-Preview-Publicized
-          - Server-Publicized
+          - client
+          - client-preview
+          - client-preview-old
+          - client-preview-publicized
+          - client-publicized
+          - server
+          - server-preview
+          - server-preview-old
+          - server-preview-publicized
+          - server-publicized
 
 jobs:
   build:
@@ -33,45 +33,45 @@ jobs:
       matrix:
         include:
           # Client variants
-          - variant: "Client"
+          - variant: "client"
             nuspec_path: "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client/**"
             workflow_trigger: "Update Unturned Redist for Client"
-          - variant: "Client-Preview"
+          - variant: "client-preview"
             nuspec_path: "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview/**"
             workflow_trigger: "Update Unturned Redist for Client Preview"
-          - variant: "Client-Preview-Old"
+          - variant: "client-preview-old"
             nuspec_path: "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview-old/**"
             workflow_trigger: "Update Unturned Redist for Client Preview Old"
-          - variant: "Client-Preview-Publicized"
+          - variant: "client-preview-publicized"
             nuspec_path: "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview-publicized/**"
             workflow_trigger: "Update Unturned Redist for Client Preview"
-          - variant: "Client-Publicized"
+          - variant: "client-publicized"
             nuspec_path: "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-publicized/**"
             workflow_trigger: "Update Unturned Redist for Client Publicized"
           
           # Server variants
-          - variant: "Server"
+          - variant: "server"
             nuspec_path: "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server/**"
             workflow_trigger: "Update Unturned Redist for Server"
-          - variant: "Server-Preview"
+          - variant: "server-preview"
             nuspec_path: "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview/**"
             workflow_trigger: "Update Unturned Redist for Server Preview"
-          - variant: "Server-Preview-Old"
+          - variant: "server-preview-old"
             nuspec_path: "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview-old/**"
             workflow_trigger: "Update Unturned Redist for Server Preview Old"
-          - variant: "Server-Preview-Publicized"
+          - variant: "server-preview-publicized"
             nuspec_path: "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview-publicized/**"
             workflow_trigger: "Update Unturned Redist for Server Preview"
-          - variant: "Server-Publicized"
+          - variant: "server-publicized"
             nuspec_path: "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-publicized/**"
             workflow_trigger: "Update Unturned Redist for Server Publicized"
