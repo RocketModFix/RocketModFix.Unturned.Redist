@@ -76,6 +76,9 @@ jobs:
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v46
+      with:
+        files: |
+          ${{ matrix.trigger_path }}
 
     - name: Determine if this variant should run
       id: check
@@ -86,14 +89,11 @@ jobs:
           if [[ "${{ github.event.inputs.variant }}" == "all" || "${{ github.event.inputs.variant }}" == "${{ matrix.variant }}" ]]; then
             SHOULD_RUN=true
           fi
-        # For push triggers, check the changed files against the matrix path
+        # For push triggers, use the changed-files output
         elif [[ "${{ github.event_name }}" == "push" ]]; then
-          for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
-            if [[ "$file" == ${{ matrix.trigger_path }} ]]; then
-              SHOULD_RUN=true
-              break
-            fi
-          done
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
+            SHOULD_RUN=true
+          fi
         fi
         echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
 
