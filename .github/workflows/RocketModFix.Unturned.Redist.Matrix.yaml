@@ -65,6 +65,7 @@ jobs:
           - variant: "server-publicized"
             nuspec_path: "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-publicized/**"
+      fail-fast: false
 
     steps:
     - name: Checkout code
