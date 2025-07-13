@@ -36,69 +36,65 @@ jobs:
           - variant: "client"
             nuspec_path: "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client/**"
-            workflow_trigger: "Update Unturned Redist for Client"
           - variant: "client-preview"
             nuspec_path: "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview/**"
-            workflow_trigger: "Update Unturned Redist for Client Preview"
           - variant: "client-preview-old"
             nuspec_path: "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview-old/**"
-            workflow_trigger: "Update Unturned Redist for Client Preview Old"
           - variant: "client-preview-publicized"
             nuspec_path: "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-preview-publicized/**"
-            workflow_trigger: "Update Unturned Redist for Client Preview"
           - variant: "client-publicized"
             nuspec_path: "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
             trigger_path: "redist/redist-client-publicized/**"
-            workflow_trigger: "Update Unturned Redist for Client Publicized"
           
           # Server variants
           - variant: "server"
             nuspec_path: "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server/**"
-            workflow_trigger: "Update Unturned Redist for Server"
           - variant: "server-preview"
             nuspec_path: "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview/**"
-            workflow_trigger: "Update Unturned Redist for Server Preview"
           - variant: "server-preview-old"
             nuspec_path: "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview-old/**"
-            workflow_trigger: "Update Unturned Redist for Server Preview Old"
           - variant: "server-preview-publicized"
             nuspec_path: "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-preview-publicized/**"
-            workflow_trigger: "Update Unturned Redist for Server Preview"
           - variant: "server-publicized"
             nuspec_path: "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
             trigger_path: "redist/redist-server-publicized/**"
-            workflow_trigger: "Update Unturned Redist for Server Publicized"
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        # Fetches all history for the tj-actions/changed-files to work correctly on push
+        fetch-depth: 0
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v46
 
     - name: Determine if this variant should run
       id: check
       run: |
         SHOULD_RUN=false
-
+        # For manual triggers, check the input
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           if [[ "${{ github.event.inputs.variant }}" == "all" || "${{ github.event.inputs.variant }}" == "${{ matrix.variant }}" ]]; then
             SHOULD_RUN=true
           fi
+        # For push triggers, check the changed files against the matrix path
         elif [[ "${{ github.event_name }}" == "push" ]]; then
-          if echo '${{ toJSON(github.event.commits[0].modified) }}' | grep -qE "${{ matrix.trigger_path }}"; then
-            SHOULD_RUN=true
-          fi
-        elif [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-          if [[ "${{ github.event.workflow_run.name }}" == "${{ matrix.workflow_trigger }}" ]]; then
-            SHOULD_RUN=true
-          fi
+          for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
+            if [[ "$file" == ${{ matrix.trigger_path }} ]]; then
+              SHOULD_RUN=true
+              break
+            fi
+          done
         fi
-
         echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
 
     - name: Setup NuGet
