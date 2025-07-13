@@ -165,13 +165,8 @@ jobs:
             echo "manifest_changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Skip unchanged manifest
-        if: steps.compare_manifest.outputs.manifest_changed != 'true'
-        run: |
-          echo "No manifest changes for ${{ matrix.variant }}. Skipping update steps."
-          exit 0
-
       - name: Download update tool
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
         uses: robinraju/release-downloader@v1
         with:
           repository: RocketModFix/UnturnedRedistUpdateTool
@@ -181,9 +176,11 @@ jobs:
           extract: true
 
       - name: Setup SteamCMD
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
         uses: CyberAndrii/setup-steamcmd@v1
 
       - name: Update game files
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
         run: |
           if [[ "$APP_BRANCH_NAME" == "" ]]; then
             steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
@@ -192,6 +189,7 @@ jobs:
           fi
 
       - name: Run redist updater
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
         run: |
           flags=""
               
@@ -218,32 +216,26 @@ jobs:
           dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags
 
       - name: Generate Commit Message
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
         run: |
           msg=$( cat .commit )
           echo "message=$msg" >> "$GITHUB_OUTPUT"
         id: generate_commit_message
 
-      - name: Check for changes
-        id: check_changes
+      - name: Check for git changes
+        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        id: check_git_changes
         run: |
           if git diff --quiet; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected for ${{ matrix.variant }}"
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected for ${{ matrix.variant }}"
-          fi
-
-      - name: Final check for changes
-        run: |
-          if git diff --quiet; then
-            echo "No changes detected after all processing for ${{ matrix.variant }}. Exiting."
-            exit 0
+            echo "No changes detected after all processing for ${{ matrix.variant }}."
+            echo "has_git_changes=false" >> $GITHUB_OUTPUT
           else
             echo "Changes detected after all processing for ${{ matrix.variant }}"
+            echo "has_git_changes=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request
+        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
@@ -283,10 +275,17 @@ jobs:
         run: |
           echo "## Update Summary for ${{ matrix.variant }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Has Changes**: ${{ steps.check_changes.outputs.has_changes }}" >> $GITHUB_STEP_SUMMARY
-          if [[ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]]; then
-            echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
-            echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Manifest Changed**: ${{ steps.compare_manifest.outputs.manifest_changed }}" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.compare_manifest.outputs.manifest_changed }}" == "true" ]]; then
+            echo "- **Git Changes**: ${{ steps.check_git_changes.outputs.has_git_changes }}" >> $GITHUB_STEP_SUMMARY
+            if [[ "${{ steps.check_git_changes.outputs.has_git_changes }}" == "true" ]]; then
+              echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+              echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **Status**: No git changes detected after processing" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "- **Status**: Skipped (no manifest changes)" >> $GITHUB_STEP_SUMMARY
           fi
 
   workflow-keepalive:
