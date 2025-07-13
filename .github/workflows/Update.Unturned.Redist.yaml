@@ -206,7 +206,7 @@ jobs:
           esac
 
           # Add -update-files with all DLL files
-          flags="$flags -update-files [Assembly-CSharp.dll,UnturnedDat.dll,UnityEx.dll,SystemEx.dll,SDG.NetTransport.dll,SDG.NetPak.Runtime.dll,SDG.HostBans.Runtime.dll,SDG.Glazier.Runtime.dll,com.rlabrecque.steamworks.net.dll]"
+          flags="$flags -update-files [Assembly-CSharp.dll,Assembly-CSharp.xml,SDG.NetPak.Runtime.xml,UnturnedDat.dll,UnityEx.dll,SystemEx.dll,SDG.NetTransport.dll,SDG.NetPak.Runtime.dll,SDG.HostBans.Runtime.dll,SDG.Glazier.Runtime.dll,com.rlabrecque.steamworks.net.dll]"
 
           if [[ "${{ matrix.variant }}" == client-publicized || "${{ matrix.variant }}" == server-publicized || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == server-preview-publicized ]]; then
             flags="$flags -publicize [Assembly-CSharp.dll]"
