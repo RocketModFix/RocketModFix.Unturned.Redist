@@ -15,7 +15,7 @@
   </metadata>
   <files>
     <!-- Common files for all frameworks -->
-    <file src="../LICENSE" target="LICENSE" />
+    <file src="..\LICENSE" target="LICENSE" />
     <file src="../README.md" target="README.md" />
 
     <!-- Files for .NET Framework 4.0 -->
