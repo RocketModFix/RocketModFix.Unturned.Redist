@@ -10,13 +10,14 @@
     <icon>icon.png</icon>
     <license type="file">LICENSE</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/RocketModFix/RocketModFix.Unturned.Redist</projectUrl>
     <repository type="git" url="https://github.com/RocketModFix/RocketModFix.Unturned.Redist" />
     <readme>README.md</readme>
   </metadata>
   <files>
     <!-- Common files for all frameworks -->
     <file src="../../LICENSE" target="LICENSE" />
-    <file src="../README.md" target="README.md" />
+    <file src="../../README.md" target="README.md" />
 
     <!-- Files for .NET Framework 4.0 -->
     <file src="*.dll" target="lib/net40" />
