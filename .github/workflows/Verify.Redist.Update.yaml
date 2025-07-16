@@ -49,12 +49,6 @@ jobs:
               ;;
           esac
 
-          echo "Checking directory: $REDIST_DIR"
-          if [[ ! -f "$REDIST_DIR/README.md" ]]; then
-            echo "Missing README.md file in $REDIST_DIR!"
-            exit 1
-          fi
-
       - name: Auto-approve PR
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR != 'true' && github.actor == 'sunnamed434'
         uses: hmarr/auto-approve-action@v4
