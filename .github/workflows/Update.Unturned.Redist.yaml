@@ -143,6 +143,7 @@ jobs:
             -username ${{ secrets.STEAM_USERNAME }} \
             -password ${{ secrets.STEAM_PASSWORD }} \
             -manifest-only \
+            -beta $APP_BRANCH_NAME \
             -dir redist/temp_depots)
               
           current_manifest=$(echo "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1)
