@@ -50,13 +50,13 @@ jobs:
           esac
 
       - name: Auto-approve PR
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR != 'true' && github.actor == 'sunnamed434'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR != 'true' && github.actor == 'rocketmodfixadmin'
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Auto-merge PR
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'sunnamed434'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'rocketmodfixadmin'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.PAT }}
