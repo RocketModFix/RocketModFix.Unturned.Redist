@@ -58,7 +58,7 @@ jobs:
           merge-method: squash
 
       - name: Auto-approve PR
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR != 'true' && github.actor == 'rocketmodfixadmin'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'rocketmodfixadmin'
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
