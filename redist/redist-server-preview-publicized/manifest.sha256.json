@@ -1,4 +1,9 @@
 {
-  "Assembly-CSharp.xml": "6ba5293e2e9dfb370c174919f65e8dded16b93bfb7040aa0dcf20aa2488975f2",
-  "Assembly-CSharp.dll": "a8215ff686e2c74f19b9dcd330ba35e660ab57e04c12399544c06bdbc24b67f4"
+  "Assembly-CSharp.xml": "a9063db2b455ef3926340c726c1b54fb46700328831c46a535c968b64d3b62a5",
+  "SDG.HostBans.Runtime.dll": "34da5fa32623f6da20b9f6123883eacc5d6b4c278df8271fe0f3916a8cb77617",
+  "SDG.NetTransport.dll": "1ab0f12e6c64e07e1820e678a9e7e508f1c6910ab6de08aaf13a22513b87ad92",
+  "Assembly-CSharp.dll": "741176db91b78df00db50ffec7e1db8b276bef04e0be233869bbf0de2fec5a4f",
+  "SystemEx.dll": "ec8c023c463698349031e75486b68040758042863567f2ace0e79693f618ddc1",
+  "UnturnedDat.dll": "dbd7b78d5bd619b78fc0e63d92817f3988a4092ecc77ca5d8029e8b05c7df188",
+  "UnityEx.dll": "2425112bd9f71a178db58d2f37b2fbf54c101174f05ab63e5fb928aec4cf8d7b"
 }
