@@ -251,7 +251,7 @@ jobs:
           commit-message: "${{ steps.generate_commit_message.outputs.message }}"
           title: "🤖 Auto-update ${{ matrix.variant }} redist files"
           committer: rocketmodfixadmin <rocketmodfixadmin@users.noreply.github.com>
-          author: rocketmodfixadmin <rocketmodfixadmin@users.noreply.github.com>
+          #author: rocketmodfixadmin <rocketmodfixadmin@users.noreply.github.com>
           body: |
             ## Automated Redist Update - ${{ matrix.variant }}
             
