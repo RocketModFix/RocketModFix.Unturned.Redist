@@ -5924,6 +5924,11 @@
             [0 to 1] Scales how much the first-person arms move while ADS.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayConfigUtils.COMMENT_PREFIX">
+            <summary>
+            Each generated comment line is prefixed with this string.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.PlayConfigUtils.GetSingleplayerConfigPathV2(System.Int32,SDG.Unturned.EGameMode)">
             <summary>
             Format absolute path to newer txt (UnturnedDat) config file.
@@ -5932,6 +5937,16 @@
         <member name="M:SDG.Unturned.PlayConfigUtils.GetSingleplayerConfigPathV1(System.Int32)">
             <summary>
             Format absolute path to older json serialized config file.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayConfigUtils.GetServerConfigPathV2(System.String)">
+            <summary>
+            Config path used for new servers.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayConfigUtils.GetServerConfigPathV2(System.String,SDG.Unturned.EGameMode)">
+            <summary>
+            Config path used for conversion from Config.json.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayConfigUtils.ParseServerConfig(SDG.Unturned.IDatDictionary,SDG.Unturned.ConfigData)">
@@ -5966,13 +5981,13 @@
             WARNING: This is called on a worker thread.
             
             Add empty dat values (if not yet added), and include code documentation
-            in their comments prefixed with '>'. User-supplied comments are preserved.
+            in their comments prefixed with COMMENT_PREFIX. User-supplied comments are preserved.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayConfigUtils.PopulateConfigFilePropertiesAndComments(SDG.Unturned.UnturnedCodeDocsHelper,SDG.Unturned.IEditableDatDictionary,System.Type,System.Object,System.Object,System.Object)">
             <summary>
             Add empty dat values for every field in category (if not yet added), and include code documentation
-            in their comments prefixed with '>'. User-supplied comments are preserved.
+            in their comments prefixed with COMMENT_PREFIX. User-supplied comments are preserved.
             
             In categories without easy/normal/hard split (server config), only normalObject is set.
             </summary>
@@ -8576,6 +8591,16 @@
         <member name="F:SDG.Unturned.Provider.clUseLegacyJsonConfig">
             <summary>
             Anticipating some hosts will prefer the old format.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.clGameplayConfigNoEmptyValues">
+            <summary>
+            Remove empty strings, dictionaries, and lists.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Provider.clGameplayConfigNoGeneratedComments">
+            <summary>
+            Remove generated comments.
             </summary>
         </member>
         <member name="E:SDG.Unturned.Provider.onCommenceShutdown">
