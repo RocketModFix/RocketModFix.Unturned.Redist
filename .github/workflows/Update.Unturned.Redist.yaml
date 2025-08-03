@@ -238,8 +238,29 @@ jobs:
             echo "has_git_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Pull Request
+      - name: Check for existing PRs
         if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
+        id: check_existing_prs
+        run: |
+          # Check for existing open PRs for this variant created by rocketmodfixadmin
+          existing_prs=$(gh pr list --state open --search "Auto-update ${{ matrix.variant }} redist files" --json number,title,url,author)
+          
+          # Filter to only include PRs created by rocketmodfixadmin
+          filtered_prs=$(echo "$existing_prs" | jq '[.[] | select(.author.login == "rocketmodfixadmin")]')
+          
+          if [ "$(echo "$filtered_prs" | jq length)" -gt 0 ]; then
+            echo "Found existing PRs for ${{ matrix.variant }} created by rocketmodfixadmin:"
+            echo "$filtered_prs" | jq -r '.[] | "- #\(.number): \(.title) by \(.author.login) (\(.url))"'
+            echo "has_existing_pr=true" >> $GITHUB_OUTPUT
+            echo "existing_pr_count=$(echo "$filtered_prs" | jq length)" >> $GITHUB_OUTPUT
+          else
+            echo "No existing PRs found for ${{ matrix.variant }} created by rocketmodfixadmin"
+            echo "has_existing_pr=false" >> $GITHUB_OUTPUT
+            echo "existing_pr_count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true' && steps.check_existing_prs.outputs.has_existing_pr == 'false'
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
@@ -285,8 +306,13 @@ jobs:
           if [[ "${{ steps.compare_manifest.outputs.manifest_changed }}" == "true" ]]; then
             echo "- **Git Changes**: ${{ steps.check_git_changes.outputs.has_git_changes }}" >> $GITHUB_STEP_SUMMARY
             if [[ "${{ steps.check_git_changes.outputs.has_git_changes }}" == "true" ]]; then
-              echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
-              echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+              echo "- **Existing PRs**: ${{ steps.check_existing_prs.outputs.existing_pr_count }}" >> $GITHUB_STEP_SUMMARY
+              if [[ "${{ steps.check_existing_prs.outputs.has_existing_pr }}" == "true" ]]; then
+                echo "- **Status**: Skipped (existing PR already pending)" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+              fi
             else
               echo "- **Status**: No git changes detected after processing" >> $GITHUB_STEP_SUMMARY
             fi
