@@ -1,0 +1,48 @@
+# Dependabot configuration for RocketModFix.Unturned.Redist
+# This file monitors dependencies and automatically creates pull requests to update them
+
+version: 2
+updates:
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "RocketModFix"
+    assignees:
+      - "RocketModFix"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Enable version updates for NuGet packages (if any are added in the future)
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "RocketModFix"
+    assignees:
+      - "RocketModFix"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "nuget"
+    # Only update packages that are explicitly referenced
+    allow:
+      # Allow all packages by default, but this can be restricted if needed
+      - dependency-type: "direct"
