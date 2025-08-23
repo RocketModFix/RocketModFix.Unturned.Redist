@@ -13,9 +13,9 @@ updates:
       timezone: "UTC"
     open-pull-requests-limit: 10
     reviewers:
-      - "RocketModFix"
+      - "@me"
     assignees:
-      - "RocketModFix"
+      - "@me"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -33,9 +33,9 @@ updates:
       timezone: "UTC"
     open-pull-requests-limit: 10
     reviewers:
-      - "RocketModFix"
+      - "@me"
     assignees:
-      - "RocketModFix"
+      - "@me"
     commit-message:
       prefix: "deps"
       include: "scope"
