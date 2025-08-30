@@ -623,6 +623,12 @@
             refer to zombie table from external files, e.g., NPC zombie kills condition.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemDetonatorAsset.shouldFriendlySentryTargetUser">
+            <summary>
+            Nelson 2025-08-20: changing this to affect both sentries and safezones. Some modded safezones allow
+            building but not weapons, so players were using charges to destroy houses. (public issue #5175)
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.SteamPlayer.battlEyeId">
             <summary>
             Not an actual Steam ID or BattlEye ID, instead this is used to map player references to and from BE.
@@ -703,6 +709,13 @@
             OnSteamAuthTicketForWebApiReceived will be invoked when the response is received.
             Note that the client doesn't send anything if the request to Steam fails, so plugins may wish to kick
             players if a certain amount of time passes. (e.g., if a cheat is canceling the request)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPlayer.culledPlayers">
+            <summary>
+            Since this isn't accessible to plugins it isn't necessarily up-to-date. For example, when a player
+            teleports the culledPlayers list isn't updated until the next PlayerManager sync. If this becomes
+            publicly accessible in some way it should be kept in sync.
             </summary>
         </member>
         <member name="T:SDG.Unturned.TacticalLaserScale">
@@ -990,6 +1003,12 @@
         <member name="P:SDG.Unturned.InputEx.NormalizedMousePosition">
             <summary>
             Get mouse position in viewport coordinates where zero is the bottom left and one is the top right.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemThrowableAsset.ExplodeOnImpactDestroyOnClient">
+            <summary>
+            If true, clients destroy Throwable prefab upon collision. Defaults to false.
+            Optional to ensure backwards compatibility for unexpected setups.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EDeadzoneType.DefaultRadiation">
@@ -2692,6 +2711,16 @@
             Turn taillights on/off depending on state.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.GetSeatByIndex(System.Int32)">
+            <summary>
+            Returns null if index is out of bounds or initialization has failed.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.GetClientBySeatIndex(System.Int32)">
+            <summary>
+            Returns null if index is out of bounds, initialization failed, or seat is empty.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.InteractableVehicle.hasDroppedScrapItemsAlready">
             <summary>
             This check should really not be necessary, but somehow it is a recurring issue that servers get slowed down
@@ -3365,6 +3394,21 @@
             <summary>
             Factor e.g. 2 is a 2x multiplier.
             Prior to 2022-04-11 this was the target field of view. (90/fov)
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCFlagMathReward.TextFormatMode">
+            <summary>
+            Determines how NPCFlagMathReward handles formatReward.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NPCFlagMathReward.ETextFormatMode.None">
+            <summary>
+            Use text as-is without formatting. For backwards compatibility.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NPCFlagMathReward.ETextFormatMode.FlagValues">
+            <summary>
+            Format flag A value into {0} and flag B value (or default) into {1}.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemSentryAsset.AmmoConsumptionProbability">
@@ -4267,12 +4311,14 @@
             <summary>
             How quickly RPM can increase in RPM/s.
             e.g., 1000 will take 2 seconds to go from 2000 to 4000 RPM.
+            Defaults to -1 which instantly changes RPM.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.EngineRpmDecreaseRate">
             <summary>
             How quickly RPM can decrease in RPM/s.
             e.g., 1000 will take 2 seconds to go from 4000 to 2000 RPM.
+            Defaults to -1 which instantly changes RPM.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.EngineMaxTorque">
@@ -9440,6 +9486,13 @@
             Kept from prior to introduction of pluginWidgetFlags.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.Player.ServerAllowKnowledgeOfAllClientPositions">
+            <summary>
+            If true, bypass player culling test as if freecam overlay were active.
+            Enables plugins to implement a custom admin culling bypass switch. (Was requested.)
+            Defaults to false.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.Player.AdminUsageFlags">
             <summary>
             Which admin powers are currently in use by the client.
@@ -9466,6 +9519,11 @@
         <member name="M:SDG.Unturned.Player.teleportToBed">
             <summary>
             Teleport to bed, if player has set one.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Player.GatherTeleportRemoteClientConnections(UnityEngine.Vector3)">
+            <summary>
+            Teleport is always handled by owner and locally (loopback), but *not* by culled clients.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Player.maxRateLimitedActionsPerSecond">
@@ -10110,6 +10168,12 @@
             Multiplier for CloudOverrideParticlesPrefab emission rate according to level's clouds intensity.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.LevelAsset.CloudOverrideParticleSystemsPath.MaterialColorPropertyNames">
+            <summary>
+            Particle system's material instance will have these color properties set to the level's cloud color.
+            Defaults to _Color.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.LevelAsset.terrainColorRules">
             <summary>
             Players are kicked from multiplayer if their skin color is within threshold of any of these rules.
@@ -10248,6 +10312,12 @@
             Called with fixed span of indexes e.g. [0, 10), then [10, 20). This function then clamps the final span to the vehicle count.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.VehicleManager.SendExitVehicle">
+            <summary>
+            Plugin devs: if you are using reflection to call this even though it's private, please use sendExitVehicle
+            instead which properly handles player culling.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.VehicleManager.ServerForcePassengerIntoVehicle(SDG.Unturned.Player,SDG.Unturned.InteractableVehicle)">
             <summary>
             Does as few tests as possible while maintaining base game expectations.
@@ -10263,6 +10333,11 @@
         <member name="M:SDG.Unturned.VehicleManager.removePlayerTeleportUnsafe(SDG.Unturned.InteractableVehicle,SDG.Unturned.Player,UnityEngine.Vector3,System.Single)">
             <summary>
             Remove player from vehicle and teleport them to an unchecked destination.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VehicleManager.sendExitVehicle(SDG.Unturned.InteractableVehicle,System.Byte,UnityEngine.Vector3,System.Byte,System.Boolean)">
+            <summary>
+            Handles culling if exit position is not visible to certain clients.
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleManager.canUseSpawnpoint(SDG.Unturned.VehicleSpawnpoint)">
@@ -10851,12 +10926,34 @@
             Remove fuel from target.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.PlayerManager.CulledPosition">
+            <summary>
+            Position to place players outside visible range.
+            Defaults to as far away as supported by default clamped Vector3 precision.
+            Doesn't use world origin because that would potentially increase rendering cost for clients near the origin.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.PlayerManager.IsClientUnderFakeLagPenalty">
             <summary>
             Whether local client is currently penalized for potentially using a lag switch. Server has an equivalent check which reduces
             damage dealt, whereas the clientside check stops shooting in order to prevent abuse of inbound-only lagswitches. For example,
             if a cheater freezes enemy positions by dropping inbound traffic while still sending movement and shooting outbound traffic.
             </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerManager.IsPlayerCulledAtPosition(SDG.Unturned.SteamPlayer,UnityEngine.Vector3,SDG.Unturned.SteamPlayer,UnityEngine.Vector3)">
+             <summary>
+             Will test player be culled for viewer at a given position?
+            
+             Members of the same group are always visible to each other. (Used by map and HUD name overlay.)
+            
+             Admins with the Spectator Overlay enabled are able to see all clients.
+             Similarly, plugins can set ServerAllowKnowledgeOfAllClientPositions to show all clients.
+            
+             Players in vehicles:
+             VehicleManager notifies all clients when a player enters a vehicle, so a client may know the player's
+             position even if this method suggests otherwise. When exiting the vehicle, CulledPosition is sent
+             instead of the real exit position to clients who should cull the new position.
+             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerDashboardInformationUI.mapLocationsContainer">
             <summary>
@@ -15098,6 +15195,12 @@
             Speed to launch players away from blast position.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ItemVestAsset.hasFallbackShirt">
+            <summary>
+            If true and player has no shirt equipped, use fallback shirt as equipped shirt.
+            Used by oversize vest and zip-up vest so they are visible without a shirt equipped.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.FallDamageOverride">
             <summary>
             Overrides how fall damage is calculated when landing on this game object or its descendants.
@@ -18393,7 +18496,7 @@
             player movement inside vehicles.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerInput.getInput(System.Boolean,SDG.Unturned.ERaycastInfoUsage)">
+        <member name="M:SDG.Unturned.PlayerInput.getInput(System.Boolean,SDG.Unturned.ERaycastInfoUsage,System.Nullable{UnityEngine.Vector3})">
             <summary>
             Get the hit result of a raycast on the server. Until a generic way to address net objects is implemented
             this is how legacy features specify which player/animal/zombie/vehicle/etc they want to interact with.
