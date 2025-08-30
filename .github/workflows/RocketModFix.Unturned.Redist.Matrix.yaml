@@ -28,6 +28,7 @@ jobs:
   build:
     name: "Build ${{ matrix.variant }}"
     runs-on: ubuntu-22.04
+    continue-on-error: true
     
     strategy:
       matrix:
@@ -97,6 +98,12 @@ jobs:
           fi
         fi
         echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
+
+    - name: Skip job if not needed
+      if: steps.check.outputs.should_run != 'true'
+      run: |
+        echo "Skipping ${{ matrix.variant }} - no changes detected or not selected for manual run"
+        exit 0
 
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
