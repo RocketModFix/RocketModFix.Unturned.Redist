@@ -223,12 +223,6 @@ jobs:
               
           dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags
 
-      - name: Skip job if no manifest changes
-        if: steps.compare_manifest.outputs.manifest_changed != 'true'
-        run: |
-          echo "Skipping ${{ matrix.variant }} - no manifest changes detected"
-          exit 0
-
       - name: Generate Commit Message
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
         run: |

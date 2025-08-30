@@ -99,12 +99,6 @@ jobs:
         fi
         echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
 
-    - name: Skip job if not needed
-      if: steps.check.outputs.should_run != 'true'
-      run: |
-        echo "Skipping ${{ matrix.variant }} - no changes detected or not selected for manual run"
-        exit 0
-
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
       uses: nuget/setup-nuget@v2
