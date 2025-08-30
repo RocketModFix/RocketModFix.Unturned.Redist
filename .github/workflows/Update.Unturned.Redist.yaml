@@ -245,6 +245,8 @@ jobs:
       - name: Check for existing PRs
         if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
         id: check_existing_prs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Check for existing open PRs for this variant created by rocketmodfixadmin
           existing_prs=$(gh pr list --state open --search "Auto-update ${{ matrix.variant }} redist files" --json number,title,url,author)
