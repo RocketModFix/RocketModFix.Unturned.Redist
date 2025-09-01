@@ -9026,31 +9026,6 @@
             Server list filter for plugin usage.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ClientTextChatMessenger">
-            <summary>
-            Allows Unity events to send text chat messages from the client, for example to execute commands.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
-            <summary>
-            Text to use when SendDefaultTextChatMessage is invoked.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
-            <summary>
-            All players on the server will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
-            <summary>
-            Only nearby players will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
-            <summary>
-            Chat mode to send request in.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.ELightingRain.NONE">
             <summary>
             Corresponds to not active and not blending with new weather system. 
@@ -9135,6 +9110,12 @@
             water is -1024, but atmosphere measure uses a default of zero.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.LevelLighting.EditorDirtyClouds">
+            <summary>
+            Nelson 2025-09-01: hacking this in to reset cloud particle systems when changing time
+            in the level editor. Otherwise, it's hard to tell how the intensity affects them.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.LevelLighting.tickCustomWeatherBlending(System.UInt32)">
             <summary>
             Ticked on dedicated server as well as client so that server can listen for weather events.
@@ -9190,6 +9171,31 @@
             <summary>
             If any volume doesn't use distance fadeout, this is the minimum of their audio fade-out time.
             Only reset when created so that value is available after leaving all volumes.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ClientTextChatMessenger">
+            <summary>
+            Allows Unity events to send text chat messages from the client, for example to execute commands.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
+            <summary>
+            Text to use when SendDefaultTextChatMessage is invoked.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
+            <summary>
+            All players on the server will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
+            <summary>
+            Only nearby players will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
+            <summary>
+            Chat mode to send request in.
             </summary>
         </member>
         <member name="T:SDG.Unturned.ReverbGizmoComponent">
@@ -13671,6 +13677,11 @@
             Optional parameter for error logging and responding to the invoker.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.NetTransportFactory">
+            <summary>
+            Not extendable until transport API is better finalized.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -13706,11 +13717,6 @@
         <member name="M:SDG.Unturned.AudioSourcePool.PlayCoroutine(SDG.Unturned.PooledAudioSource,System.Int32,System.Single)">
             <summary>
             Timer needs playId as well in case source has been recycled by the time duration expires.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.NetTransportFactory">
-            <summary>
-            Not extendable until transport API is better finalized.
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCHintReward.duration">
