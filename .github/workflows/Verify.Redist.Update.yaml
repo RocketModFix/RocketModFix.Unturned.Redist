@@ -49,6 +49,85 @@ jobs:
               ;;
           esac
 
+          echo "📁 Validating redist directory: $REDIST_DIR"
+          
+          if [ ! -d "$REDIST_DIR" ]; then
+            echo "❌ Redist directory does not exist: $REDIST_DIR"
+            exit 1
+          fi
+
+          echo "✅ Redist directory exists: $REDIST_DIR"
+
+      - name: Validate DLL and XML files
+        run: |
+          echo "📋 Validating DLL and XML documentation files..."
+          
+          REQUIRED_DLLS=(
+            "Assembly-CSharp.dll"
+            "SDG.NetPak.Runtime.dll"
+            "com.rlabrecque.steamworks.net.dll"
+            "SDG.Glazier.Runtime.dll"
+            "SDG.HostBans.Runtime.dll"
+            "SDG.NetTransport.dll"
+            "SystemEx.dll"
+            "UnityEx.dll"
+            "UnturnedDat.dll"
+          )
+          
+          declare -A DLL_XML_MAPPING=(
+            ["Assembly-CSharp.dll"]="Assembly-CSharp.xml"
+            ["SDG.NetPak.Runtime.dll"]="SDG.NetPak.Runtime.xml"
+          )
+          
+          MISSING_DLLS=()
+          MISSING_XML_FILES=()
+          
+          echo "🔍 Checking required DLL files..."
+          for dll_file in "${REQUIRED_DLLS[@]}"; do
+            if [ -f "$REDIST_DIR/$dll_file" ]; then
+              echo "✅ Found $dll_file"
+            else
+              echo "❌ Missing $dll_file"
+              MISSING_DLLS+=("$dll_file")
+            fi
+          done
+          
+          echo "🔍 Checking XML documentation files..."
+          for dll_file in "${!DLL_XML_MAPPING[@]}"; do
+            xml_file="${DLL_XML_MAPPING[$dll_file]}"
+            
+            if [ -f "$REDIST_DIR/$dll_file" ]; then
+              if [ -f "$REDIST_DIR/$xml_file" ]; then
+                echo "✅ Found $xml_file (for $dll_file)"
+              else
+                echo "❌ Missing $xml_file (for $dll_file)"
+                MISSING_XML_FILES+=("$xml_file")
+              fi
+            fi
+          done
+          
+          if [ ${#MISSING_DLLS[@]} -eq 0 ] && [ ${#MISSING_XML_FILES[@]} -eq 0 ]; then
+            echo "✅ All required DLL and XML documentation files are present"
+          else
+            if [ ${#MISSING_DLLS[@]} -gt 0 ]; then
+              echo ""
+              echo "❌ Missing required DLL files:"
+              for dll_file in "${MISSING_DLLS[@]}"; do
+                echo "  - $dll_file"
+              done
+            fi
+            if [ ${#MISSING_XML_FILES[@]} -gt 0 ]; then
+              echo ""
+              echo "❌ Missing XML documentation files:"
+              for xml_file in "${MISSING_XML_FILES[@]}"; do
+                echo "  - $xml_file"
+              done
+            fi
+            echo ""
+            echo "All required files must be present for the redistributable."
+            exit 1
+          fi
+
       - name: Enable PR automerge
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'rocketmodfixadmin'
         uses: peter-evans/enable-pull-request-automerge@v3
@@ -63,4 +142,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pull-request-number: ${{ github.event.pull_request.number }}
-          review-message: "Auto approved automated PR"
+          review-message: "All checks passed. Auto approved automated PR."

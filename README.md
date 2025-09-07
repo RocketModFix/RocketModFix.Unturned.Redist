@@ -4,6 +4,8 @@
 
 Do you find it annoying to manually copy libraries from the Managed directory every time Unturned updates? With this NuGet package, you get all the necessary Unturned libraries, and they update automatically. You don't need to wait for manual updates — this package acts like a redistributable that stays current.
 
+> ✅ Officially Approved - This project has explicit written permission from SDG (Smartly Dressed Games) to distribute Unturned libraries. See the [official approval from Nelson Sexton (SDG)](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/8) for legal clarity and peace of mind.
+
 You get:
 
 - **Assembly-CSharp.dll**  
