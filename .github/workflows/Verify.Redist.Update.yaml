@@ -131,7 +131,7 @@ jobs:
           fi
 
       - name: Enable PR automerge
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'rocketmodfixadmin'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.triggering_actor == 'rocketmodfixadmin'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.PAT }}
@@ -139,7 +139,7 @@ jobs:
           merge-method: squash
 
       - name: Auto-approve PR
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.actor == 'rocketmodfixadmin'
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.triggering_actor == 'rocketmodfixadmin'
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
