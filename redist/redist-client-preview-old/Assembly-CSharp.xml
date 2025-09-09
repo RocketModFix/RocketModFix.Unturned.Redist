@@ -15592,7 +15592,7 @@
         </member>
         <member name="F:SDG.Unturned.BoundsHistory.CAPACITY">
             <summary>
-            Half second history at 50 tickrate.
+            One second history at 50 tickrate.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Types.QUATERNION_TYPE">
@@ -18505,6 +18505,13 @@
             Tags how client expects server to use a raycast input.
             For example, client may think they fired a gun while server thinks they dequipped the gun,
             so tagging the input prevents the server from handling it as a punch instead.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ERaycastInfoUsageEx.RequiresBarricadeBoundsTest(SDG.Unturned.ERaycastInfoUsage)">
+            <summary>
+            Nelson 2025-09-09: changing to only require bounds test when usage will
+            apply damage because Detonator usage provides the barricade root transform
+            which may not have a collider. (Public issue #5202.)
             </summary>
         </member>
         <member name="F:SDG.Unturned.WalkingPlayerInputPacket.clientPosition">
