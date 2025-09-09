@@ -3515,6 +3515,12 @@
             vehicle spawner requires to properly set paint color.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ItemBarricadeAsset.hasClipPrefab">
+            <summary>
+            Nelson 2025-09-08: experimentally exposing to PlayerInput for server-side barricade hit validation. If
+            hasClipPrefab is false then client-supplied colliderTransform must be valid.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.CollisionEventHook">
             <summary>
             Can be added to any GameObject with a Trigger to receive events.
@@ -9026,6 +9032,31 @@
             Server list filter for plugin usage.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ClientTextChatMessenger">
+            <summary>
+            Allows Unity events to send text chat messages from the client, for example to execute commands.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
+            <summary>
+            Text to use when SendDefaultTextChatMessage is invoked.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
+            <summary>
+            All players on the server will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
+            <summary>
+            Only nearby players will see the message.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
+            <summary>
+            Chat mode to send request in.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ELightingRain.NONE">
             <summary>
             Corresponds to not active and not blending with new weather system. 
@@ -9110,7 +9141,7 @@
             water is -1024, but atmosphere measure uses a default of zero.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.LevelLighting.EditorDirtyClouds">
+        <member name="M:SDG.Unturned.LevelLighting.MarkParticleCloudsNeedRestart">
             <summary>
             Nelson 2025-09-01: hacking this in to reset cloud particle systems when changing time
             in the level editor. Otherwise, it's hard to tell how the intensity affects them.
@@ -9171,31 +9202,6 @@
             <summary>
             If any volume doesn't use distance fadeout, this is the minimum of their audio fade-out time.
             Only reset when created so that value is available after leaving all volumes.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.ClientTextChatMessenger">
-            <summary>
-            Allows Unity events to send text chat messages from the client, for example to execute commands.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.DefaultText">
-            <summary>
-            Text to use when SendDefaultTextChatMessage is invoked.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Global">
-            <summary>
-            All players on the server will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.EChannel.Local">
-            <summary>
-            Only nearby players will see the message.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ClientTextChatMessenger.Channel">
-            <summary>
-            Chat mode to send request in.
             </summary>
         </member>
         <member name="T:SDG.Unturned.ReverbGizmoComponent">
@@ -9929,6 +9935,12 @@
             Defaults to ammoMax for EAction.Break.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemGunAsset.ShouldEjectCasingAfterShooting">
+            <summary>
+            If true, emit particles when a shot is fired.
+            Defaults to true for EAction.Trigger and EAction.Minigun.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.DialogueMessage.prevGuid">
             <summary>
             Please refer to <see cref="M:SDG.Unturned.DialogueMessage.FindPrevDialogueAsset"/>.
@@ -9962,6 +9974,29 @@
             <summary>
             Does useable have a menu open?
             If so pause menu, dashboard, and other menus cannot be opened.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.EPlaceableExplosionEffectFlags">
+            <summary>
+            Determines how the "Explosion" effect is spawned when a barricade or structure is destroyed.
+            
+            Nelson 2025-09-08: although explosion effect currently exists in Barricade and Structure
+            sub-classes I think it makes sense to share this option (and ideally more in future).
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlaceableExplosionEffectFlags.None">
+            <summary>
+            Legacy behavior.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlaceableExplosionEffectFlags.CopyModelPosition">
+            <summary>
+            Effect spawns exactly at the model position without any offset.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlaceableExplosionEffectFlags.CopyModelRotation">
+            <summary>
+            Effect spawns with same rotation as the model.
             </summary>
         </member>
         <member name="T:SDG.Unturned.ItemPlaceableAsset">
@@ -13677,11 +13712,6 @@
             Optional parameter for error logging and responding to the invoker.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.NetTransportFactory">
-            <summary>
-            Not extendable until transport API is better finalized.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -13717,6 +13747,11 @@
         <member name="M:SDG.Unturned.AudioSourcePool.PlayCoroutine(SDG.Unturned.PooledAudioSource,System.Int32,System.Single)">
             <summary>
             Timer needs playId as well in case source has been recycled by the time duration expires.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.NetTransportFactory">
+            <summary>
+            Not extendable until transport API is better finalized.
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCHintReward.duration">
