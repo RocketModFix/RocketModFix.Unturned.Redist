@@ -58,6 +58,8 @@ jobs:
 
           echo "✅ Redist directory exists: $REDIST_DIR"
 
+          echo "REDIST_DIR=$REDIST_DIR" >> $GITHUB_ENV
+
       - name: Validate DLL and XML files
         run: |
           echo "📋 Validating DLL and XML documentation files..."
