@@ -12822,6 +12822,11 @@
             If set (>0), alerts nearby entities when all sections are destroyed.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ObjectAsset.RubbleRespawnAllSectionsSimultaneously">
+            <summary>
+            If true, all sections respawn at the same time.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ObjectAsset.shouldAddKillTriggers">
             <summary>
             Should colliders in the Triggers GameObject with "Kill" name kill players?
@@ -19317,6 +19322,21 @@
             Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.SleekLevel">
+            <summary>
+            Button in a list of levels.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekFilterLevel">
+            <summary>
+            Button in the list of levels for server browser filters.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekEditorLevel">
+            <summary>
+            Button in the list of levels for the map editor.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -19343,21 +19363,6 @@
         <member name="M:SDG.Unturned.PhysicsEx.SphereCast(UnityEngine.Ray,System.Single,UnityEngine.RaycastHit@,System.Single,System.Int32,UnityEngine.QueryTriggerInteraction)">
             <summary>
             Wrapper that respects landscape hole volumes.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekLevel">
-            <summary>
-            Button in a list of levels.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekFilterLevel">
-            <summary>
-            Button in the list of levels for server browser filters.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekEditorLevel">
-            <summary>
-            Button in the list of levels for the map editor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
