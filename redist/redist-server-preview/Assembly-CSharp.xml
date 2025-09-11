@@ -5516,6 +5516,16 @@
             Should cardio, diving, exercise, and parkour default to max level?
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Skillset_Reduces_Skill_Cost">
+            <summary>
+            If true, skills related to player's skillset/speciality are half cost.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Skillset_Prevents_Skill_Loss">
+            <summary>
+            If true, skills related to player's skillset/speciality cannot lose levels on death.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayersConfigData.Allow_Instakill_Headshots">
             <summary>
             Should guns with Instakill Headshots (snipers) bypass armor?
@@ -10188,6 +10198,20 @@
             Volume weather mask used while not inside an ambience volume.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelAsset.SkillRule.baseCostOverride">
+            <summary>
+            If >= 0, overrides vanilla skill cost.
+            Defaults to -1.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelAsset.SkillRule.perLevelCostIncreaseOverride">
+            <summary>
+            If >= 0, overrides vanilla increase in skill cost with each level.
+            For example, if the base cost is 10 and this is 15, the first level will cost 10 XP,
+            the second level 25 XP, the third 40 XP, so on and so forth.
+            Defaults to -1.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.LevelAsset.skillRules">
             <summary>
             Allows level to override skill max levels.
@@ -10213,6 +10237,14 @@
             <summary>
             Particle system's material instance will have these color properties set to the level's cloud color.
             Defaults to _Color.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelAsset.DefaultSkillsetLoadouts">
+            <summary>
+            If set, overrides the per-skillset items players spawn with.
+            Can be used to prevent skillset default items in singleplayer.
+            Server "Loadout" command takes priority over this option.
+            Defaults to null.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LevelAsset.terrainColorRules">
@@ -17808,6 +17840,36 @@
             Get sleek color for UI. If HasNameColor, get NameColor. Otherwise, preferred font color.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.ESlotType">
+            <summary>
+            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.NONE">
+            <summary>
+            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
+            <summary>
+            Can be placed in primary slot, but cannot be equipped in secondary or bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
+            <summary>
+            Can be placed in primary or secondary slot, but cannot be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
+            <summary>
+            Only used by NPCs.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.ANY">
+            <summary>
+            Can be placed in primary, secondary, or equipped while in bag.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.CraftingTagModifierComponent">
             <summary>
             Allows Unity events to modify which crafting tags are provided by owning object.
@@ -17847,36 +17909,6 @@
         <member name="M:SDG.Unturned.CraftingTagModifierComponent.GetTagRefs">
             <summary>
             Get wrapper method rather than Awake because component might be inactive but should still apply modifiers.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.ESlotType">
-            <summary>
-            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.NONE">
-            <summary>
-            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
-            <summary>
-            Can be placed in primary slot, but cannot be equipped in secondary or bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
-            <summary>
-            Can be placed in primary or secondary slot, but cannot be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
-            <summary>
-            Only used by NPCs.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.ANY">
-            <summary>
-            Can be placed in primary, secondary, or equipped while in bag.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESensitivityScalingMode.ProjectionRatio">
@@ -19322,21 +19354,6 @@
             Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.SleekLevel">
-            <summary>
-            Button in a list of levels.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekFilterLevel">
-            <summary>
-            Button in the list of levels for server browser filters.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekEditorLevel">
-            <summary>
-            Button in the list of levels for the map editor.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -19363,6 +19380,21 @@
         <member name="M:SDG.Unturned.PhysicsEx.SphereCast(UnityEngine.Ray,System.Single,UnityEngine.RaycastHit@,System.Single,System.Int32,UnityEngine.QueryTriggerInteraction)">
             <summary>
             Wrapper that respects landscape hole volumes.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekLevel">
+            <summary>
+            Button in a list of levels.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekFilterLevel">
+            <summary>
+            Button in the list of levels for server browser filters.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekEditorLevel">
+            <summary>
+            Button in the list of levels for the map editor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
