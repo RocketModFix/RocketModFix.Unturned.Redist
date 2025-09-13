@@ -906,6 +906,11 @@
             Used by plugins to respawn the player bypassing timers. Issue #2701
             </summary>
         </member>
+        <member name="M:SDG.Unturned.PlayerLife.SendReviveTeleport(UnityEngine.Vector3,System.Byte)">
+            <summary>
+            Very similar to VehicleManager.sendExitVehicle. Please refer to that for comments.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.PlayerLife.sendRevive">
             <summary>
             Used to refill all client stats like stamina
@@ -5514,6 +5519,16 @@
         <member name="F:SDG.Unturned.PlayersConfigData.Spawn_With_Stamina_Skills">
             <summary>
             Should cardio, diving, exercise, and parkour default to max level?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Skillset_Reduces_Skill_Cost">
+            <summary>
+            If true, skills related to player's skillset/speciality are half cost.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Skillset_Prevents_Skill_Loss">
+            <summary>
+            If true, skills related to player's skillset/speciality cannot lose levels on death.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayersConfigData.Allow_Instakill_Headshots">
@@ -10188,6 +10203,20 @@
             Volume weather mask used while not inside an ambience volume.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelAsset.SkillRule.baseCostOverride">
+            <summary>
+            If >= 0, overrides vanilla skill cost.
+            Defaults to -1.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelAsset.SkillRule.perLevelCostIncreaseOverride">
+            <summary>
+            If >= 0, overrides vanilla increase in skill cost with each level.
+            For example, if the base cost is 10 and this is 15, the first level will cost 10 XP,
+            the second level 25 XP, the third 40 XP, so on and so forth.
+            Defaults to -1.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.LevelAsset.skillRules">
             <summary>
             Allows level to override skill max levels.
@@ -10213,6 +10242,14 @@
             <summary>
             Particle system's material instance will have these color properties set to the level's cloud color.
             Defaults to _Color.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelAsset.DefaultSkillsetLoadouts">
+            <summary>
+            If set, overrides the per-skillset items players spawn with.
+            Can be used to prevent skillset default items in singleplayer.
+            Server "Loadout" command takes priority over this option.
+            Defaults to null.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LevelAsset.terrainColorRules">
@@ -10379,6 +10416,7 @@
         <member name="M:SDG.Unturned.VehicleManager.sendExitVehicle(SDG.Unturned.InteractableVehicle,System.Byte,UnityEngine.Vector3,System.Byte,System.Boolean)">
             <summary>
             Handles culling if exit position is not visible to certain clients.
+            If adjusting how this works, PlayerLife.SendReviveTeleport may need revision.
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleManager.canUseSpawnpoint(SDG.Unturned.VehicleSpawnpoint)">
@@ -19322,21 +19360,6 @@
             Note: If barricade is attached to a vehicle this is the local rotation.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.SleekLevel">
-            <summary>
-            Button in a list of levels.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekFilterLevel">
-            <summary>
-            Button in the list of levels for server browser filters.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekEditorLevel">
-            <summary>
-            Button in the list of levels for the map editor.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.PhysicsEx">
             <summary>
             Extensions to the built-in Physics class.
@@ -19363,6 +19386,21 @@
         <member name="M:SDG.Unturned.PhysicsEx.SphereCast(UnityEngine.Ray,System.Single,UnityEngine.RaycastHit@,System.Single,System.Int32,UnityEngine.QueryTriggerInteraction)">
             <summary>
             Wrapper that respects landscape hole volumes.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekLevel">
+            <summary>
+            Button in a list of levels.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekFilterLevel">
+            <summary>
+            Button in the list of levels for server browser filters.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekEditorLevel">
+            <summary>
+            Button in the list of levels for the map editor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GlazierElementBase_IMGUI">
