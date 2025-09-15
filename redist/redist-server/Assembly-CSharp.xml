@@ -906,6 +906,11 @@
             Used by plugins to respawn the player bypassing timers. Issue #2701
             </summary>
         </member>
+        <member name="M:SDG.Unturned.PlayerLife.SendReviveTeleport(UnityEngine.Vector3,System.Byte)">
+            <summary>
+            Very similar to VehicleManager.sendExitVehicle. Please refer to that for comments.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.PlayerLife.sendRevive">
             <summary>
             Used to refill all client stats like stamina
@@ -10411,6 +10416,7 @@
         <member name="M:SDG.Unturned.VehicleManager.sendExitVehicle(SDG.Unturned.InteractableVehicle,System.Byte,UnityEngine.Vector3,System.Byte,System.Boolean)">
             <summary>
             Handles culling if exit position is not visible to certain clients.
+            If adjusting how this works, PlayerLife.SendReviveTeleport may need revision.
             </summary>
         </member>
         <member name="M:SDG.Unturned.VehicleManager.canUseSpawnpoint(SDG.Unturned.VehicleSpawnpoint)">
@@ -17840,36 +17846,6 @@
             Get sleek color for UI. If HasNameColor, get NameColor. Otherwise, preferred font color.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ESlotType">
-            <summary>
-            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.NONE">
-            <summary>
-            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
-            <summary>
-            Can be placed in primary slot, but cannot be equipped in secondary or bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
-            <summary>
-            Can be placed in primary or secondary slot, but cannot be equipped from bag.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
-            <summary>
-            Only used by NPCs.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ESlotType.ANY">
-            <summary>
-            Can be placed in primary, secondary, or equipped while in bag.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.CraftingTagModifierComponent">
             <summary>
             Allows Unity events to modify which crafting tags are provided by owning object.
@@ -17909,6 +17885,36 @@
         <member name="M:SDG.Unturned.CraftingTagModifierComponent.GetTagRefs">
             <summary>
             Get wrapper method rather than Awake because component might be inactive but should still apply modifiers.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ESlotType">
+            <summary>
+            Used for item placement in displays / holsters, and whether useable can be placed in primary/secondary slot.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.NONE">
+            <summary>
+            Cannot be placed in primary nor secondary slots, but can be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.PRIMARY">
+            <summary>
+            Can be placed in primary slot, but cannot be equipped in secondary or bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.SECONDARY">
+            <summary>
+            Can be placed in primary or secondary slot, but cannot be equipped from bag.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.TERTIARY">
+            <summary>
+            Only used by NPCs.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESlotType.ANY">
+            <summary>
+            Can be placed in primary, secondary, or equipped while in bag.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESensitivityScalingMode.ProjectionRatio">
