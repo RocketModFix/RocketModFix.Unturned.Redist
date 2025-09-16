@@ -10244,6 +10244,11 @@
             Defaults to _Color.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelAsset.CloudOverrideParticleSystemsPath.WarmupTime">
+            <summary>
+            t passed into ParticleSystem.Simulate when clouds need an update.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.LevelAsset.DefaultSkillsetLoadouts">
             <summary>
             If set, overrides the per-skillset items players spawn with.
@@ -11555,15 +11560,15 @@
             regardless of which glazier is used.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.EditorEnvironmentNodesUI.SyncSettings">
+            <summary>
+            Other menus can modify DevkitSelectionToolOptions so we need to sync our menu when opened.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.MenuPlaySingleplayerUI.featuredItemDefId">
             <summary>
             Stockpile item definition id with rev-share for the level creators.
             Randomly selected from associated items list.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.EditorEnvironmentNodesUI.SyncSettings">
-            <summary>
-            Other menus can modify DevkitSelectionToolOptions so we need to sync our menu when opened.
             </summary>
         </member>
         <member name="P:SDG.Unturned.StructureManager.instance">
@@ -13755,6 +13760,11 @@
             Optional parameter for error logging and responding to the invoker.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.NetTransportFactory">
+            <summary>
+            Not extendable until transport API is better finalized.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -13790,11 +13800,6 @@
         <member name="M:SDG.Unturned.AudioSourcePool.PlayCoroutine(SDG.Unturned.PooledAudioSource,System.Int32,System.Single)">
             <summary>
             Timer needs playId as well in case source has been recycled by the time duration expires.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.NetTransportFactory">
-            <summary>
-            Not extendable until transport API is better finalized.
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCHintReward.duration">
@@ -19746,6 +19751,21 @@
             Hold onto collider and gameobject separately because collider isn't necessarily attached to gameobject.
             </summary>
         </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.None">
+            <summary>
+            Volume doesn't override fog.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.Constant">
+            <summary>
+            Volume fog settings are the same at all times of day.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.PerTimeOfDay">
+            <summary>
+            Volume fog settings vary throughout the day.
+            </summary>
+        </member>
         <member name="F:SDG.Framework.Devkit.AmbianceVolume._id">
             <summary>
             Kept because lots of modders have been using this script in Unity,
@@ -19755,6 +19775,11 @@
         <member name="F:SDG.Framework.Devkit.AmbianceVolume.weatherMask">
             <summary>
             If per-weather mask AND is non zero the weather will blend in.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.AmbianceVolume._overrideFog">
+            <summary>
+            Kept for backwards compatibility with fog volumes created in Unity / by mods.
             </summary>
         </member>
         <member name="F:SDG.Framework.Devkit.AmbianceVolume.enableFalloff">
