@@ -11560,15 +11560,15 @@
             regardless of which glazier is used.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.EditorEnvironmentNodesUI.SyncSettings">
-            <summary>
-            Other menus can modify DevkitSelectionToolOptions so we need to sync our menu when opened.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.MenuPlaySingleplayerUI.featuredItemDefId">
             <summary>
             Stockpile item definition id with rev-share for the level creators.
             Randomly selected from associated items list.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.EditorEnvironmentNodesUI.SyncSettings">
+            <summary>
+            Other menus can modify DevkitSelectionToolOptions so we need to sync our menu when opened.
             </summary>
         </member>
         <member name="P:SDG.Unturned.StructureManager.instance">
@@ -13760,11 +13760,6 @@
             Optional parameter for error logging and responding to the invoker.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.NetTransportFactory">
-            <summary>
-            Not extendable until transport API is better finalized.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -13800,6 +13795,11 @@
         <member name="M:SDG.Unturned.AudioSourcePool.PlayCoroutine(SDG.Unturned.PooledAudioSource,System.Int32,System.Single)">
             <summary>
             Timer needs playId as well in case source has been recycled by the time duration expires.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.NetTransportFactory">
+            <summary>
+            Not extendable until transport API is better finalized.
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCHintReward.duration">
@@ -15598,6 +15598,17 @@
             Should the OnStateEnabled and OnStateDisabled events be invoked when the object is loaded, becomes relevant
             in multiplayer, and is reset? True is useful when visuals need to be kept in sync with the state, whereas
             false is useful for transient interactions.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.InvokeEventsAuthorityOnly">
+            <summary>
+            If true, OnStateEnabled and OnStateDisabled are only invoked in singleplayer and on the server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.ChangeStateAuthorityOnly">
+            <summary>
+            If true, calls to GotoEnabledState, GotoDisabledState, and ToggleState are only processed in singleplayer
+            and on the server.
             </summary>
         </member>
         <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.ListenServerHostMode">
@@ -19262,6 +19273,12 @@
         <member name="F:SDG.Unturned.UseableMelee.playUseSoundTime">
             <summary>
             For non-repeat weapons the "Use" audio clip is played once time reaches this point.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.NPCEventReward.ShouldReplicate">
+            <summary>
+            If true, the server will replicate the event to clients.
+            Defaults to true.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableGenerator.updatePowerableIsWired(SDG.Unturned.InteractablePower,System.Boolean)">
