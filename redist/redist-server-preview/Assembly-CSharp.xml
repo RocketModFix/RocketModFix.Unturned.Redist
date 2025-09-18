@@ -10244,6 +10244,11 @@
             Defaults to _Color.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelAsset.CloudOverrideParticleSystemsPath.WarmupTime">
+            <summary>
+            t passed into ParticleSystem.Simulate when clouds need an update.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.LevelAsset.DefaultSkillsetLoadouts">
             <summary>
             If set, overrides the per-skillset items players spawn with.
@@ -15595,6 +15600,17 @@
             false is useful for transient interactions.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.InvokeEventsAuthorityOnly">
+            <summary>
+            If true, OnStateEnabled and OnStateDisabled are only invoked in singleplayer and on the server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.ChangeStateAuthorityOnly">
+            <summary>
+            If true, calls to GotoEnabledState, GotoDisabledState, and ToggleState are only processed in singleplayer
+            and on the server.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.InteractableObjectBinaryStateEventHook.ListenServerHostMode">
             <summary>
             Controls how state change requests are performed when running as both client and server ("listen server").
@@ -19259,6 +19275,12 @@
             For non-repeat weapons the "Use" audio clip is played once time reaches this point.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.NPCEventReward.ShouldReplicate">
+            <summary>
+            If true, the server will replicate the event to clients.
+            Defaults to true.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.InteractableGenerator.updatePowerableIsWired(SDG.Unturned.InteractablePower,System.Boolean)">
             <summary>
             Catch exceptions to prevent a broken powerable from breaking all the other powerable items in the area.
@@ -19746,6 +19768,21 @@
             Hold onto collider and gameobject separately because collider isn't necessarily attached to gameobject.
             </summary>
         </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.None">
+            <summary>
+            Volume doesn't override fog.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.Constant">
+            <summary>
+            Volume fog settings are the same at all times of day.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.EAmbianceVolumeFogOverrideMode.PerTimeOfDay">
+            <summary>
+            Volume fog settings vary throughout the day.
+            </summary>
+        </member>
         <member name="F:SDG.Framework.Devkit.AmbianceVolume._id">
             <summary>
             Kept because lots of modders have been using this script in Unity,
@@ -19755,6 +19792,11 @@
         <member name="F:SDG.Framework.Devkit.AmbianceVolume.weatherMask">
             <summary>
             If per-weather mask AND is non zero the weather will blend in.
+            </summary>
+        </member>
+        <member name="F:SDG.Framework.Devkit.AmbianceVolume._overrideFog">
+            <summary>
+            Kept for backwards compatibility with fog volumes created in Unity / by mods.
             </summary>
         </member>
         <member name="F:SDG.Framework.Devkit.AmbianceVolume.enableFalloff">
