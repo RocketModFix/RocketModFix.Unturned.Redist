@@ -10545,16 +10545,6 @@
             At low framerate deltaTime can be so high the spring explodes unless we use a fixed timestep.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.AirdropAsset.barricadeRef">
-            <summary>
-            Interactable storage barricade to spawn at the drop position.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.AirdropAsset.model">
-            <summary>
-            Prefab to spawn falling from the aircraft.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.HousingEdge">
             <summary>
             Initially these were structs so that they would be adjacent in memory and therefore faster to iterate lots of them,
@@ -10812,6 +10802,16 @@
         <member name="T:SDG.Unturned.OncePerFrameGuard">
             <summary>
             True once per frame, false otherwise.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.AirdropAsset.barricadeRef">
+            <summary>
+            Interactable storage barricade to spawn at the drop position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.AirdropAsset.model">
+            <summary>
+            Prefab to spawn falling from the aircraft.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Carepackage.barricadeID">
@@ -11248,6 +11248,11 @@
             <summary>
             Splits string and compares substrings ignoring case.
             Tokens containing a colon ':' are ignored so that they can represent special filters like MasterBundleSearchFilter.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCEffectReward.AtPlayerPosition">
+            <summary>
+            If true, spawn effect at player's position (rather than Spawnpoint).
             </summary>
         </member>
         <member name="F:SDG.Unturned.NPCEffectReward.IsReliable">
