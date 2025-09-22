@@ -1520,6 +1520,16 @@
             request the server to do X we may as well support a "mod hook" that works with all three.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Passenger.turretEventHook">
+            <summary>
+            Optional component on Turret_# GameObject for modding UnityEvents.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Passenger.collider">
+            <summary>
+            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.EAimAlignmentTransformOwner">
             <summary>
             Controls where attachments looks for ADS alignment transform.
@@ -1591,16 +1601,6 @@
         <member name="F:SDG.Unturned.ItemSightAsset.DistanceMarker.hasLabel">
             <summary>
             If true, text label for distance is visible.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Passenger.turretEventHook">
-            <summary>
-            Optional component on Turret_# GameObject for modding UnityEvents.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Passenger.collider">
-            <summary>
-            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
             </summary>
         </member>
         <member name="T:SDG.Unturned.SleekItemStoreMainMenuButton">
@@ -10545,6 +10545,16 @@
             At low framerate deltaTime can be so high the spring explodes unless we use a fixed timestep.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.AirdropAsset.barricadeRef">
+            <summary>
+            Interactable storage barricade to spawn at the drop position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.AirdropAsset.model">
+            <summary>
+            Prefab to spawn falling from the aircraft.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.HousingEdge">
             <summary>
             Initially these were structs so that they would be adjacent in memory and therefore faster to iterate lots of them,
@@ -10802,16 +10812,6 @@
         <member name="T:SDG.Unturned.OncePerFrameGuard">
             <summary>
             True once per frame, false otherwise.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.AirdropAsset.barricadeRef">
-            <summary>
-            Interactable storage barricade to spawn at the drop position.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.AirdropAsset.model">
-            <summary>
-            Prefab to spawn falling from the aircraft.
             </summary>
         </member>
         <member name="F:SDG.Unturned.Carepackage.barricadeID">
