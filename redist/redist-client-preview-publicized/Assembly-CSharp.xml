@@ -198,6 +198,58 @@
             whereas most only need the collider for general-purpose selection in the level editor.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Items.onItemRemoved">
+            <summary>
+            Nelson 2025-02-24: Warning that this is invoked *before* the item is actually removed from the items list.
+            (public issue #4894)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
+            checks whether a space contains any filled slots
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceDrag(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Boolean)">
+            checks whether an item can be dragged and takes into account if the item overlaps its old self
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceSwap(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            checks whether the spot currently used by the old item is big enough to fit the new item
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set ItemType to type.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType,System.UInt16,System.Boolean)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set ItemType to type.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
+            • Set CaliberId to caliber.
+            • Set IncludeUnspecifiedCaliber to allowZeroCaliber.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},System.UInt16,System.Boolean,System.Boolean)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set AssetRef to id.
+            • Set IncludeEmpty to findEmpty.
+            • Set IncludeMaxQuality to findHealthy.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.has(System.UInt16)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set MaxResultsCount to 1.
+            • Set AssetRef to id.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.EVehicleThirdPersonCameraMode.RotationDetached">
             <summary>
             Camera does not rotate when the car rotates.
@@ -332,58 +384,6 @@
         <member name="F:SDG.Unturned.OptionsSettings.didProceedThroughOnlineSafetyMenuThisSession">
             <summary>
             Prevents menu from being shown twice without a restart.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Items.onItemRemoved">
-            <summary>
-            Nelson 2025-02-24: Warning that this is invoked *before* the item is actually removed from the items list.
-            (public issue #4894)
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
-            checks whether a space contains any filled slots
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceDrag(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Boolean)">
-            checks whether an item can be dragged and takes into account if the item overlaps its old self
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceSwap(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
-            <summary>
-            checks whether the spot currently used by the old item is big enough to fit the new item
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set ItemType to type.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType,System.UInt16,System.Boolean)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set ItemType to type.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
-            • Set CaliberId to caliber.
-            • Set IncludeUnspecifiedCaliber to allowZeroCaliber.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},System.UInt16,System.Boolean,System.Boolean)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set AssetRef to id.
-            • Set IncludeEmpty to findEmpty.
-            • Set IncludeMaxQuality to findHealthy.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.has(System.UInt16)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set MaxResultsCount to 1.
-            • Set AssetRef to id.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
             </summary>
         </member>
         <member name="E:SDG.Unturned.PlayerSkills.OnExperienceChanged_Global">
@@ -1520,16 +1520,6 @@
             request the server to do X we may as well support a "mod hook" that works with all three.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.Passenger.turretEventHook">
-            <summary>
-            Optional component on Turret_# GameObject for modding UnityEvents.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Passenger.collider">
-            <summary>
-            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.EAimAlignmentTransformOwner">
             <summary>
             Controls where attachments looks for ADS alignment transform.
@@ -1601,6 +1591,16 @@
         <member name="F:SDG.Unturned.ItemSightAsset.DistanceMarker.hasLabel">
             <summary>
             If true, text label for distance is visible.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Passenger.turretEventHook">
+            <summary>
+            Optional component on Turret_# GameObject for modding UnityEvents.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Passenger.collider">
+            <summary>
+            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
             </summary>
         </member>
         <member name="T:SDG.Unturned.SleekItemStoreMainMenuButton">
@@ -3776,7 +3776,7 @@
         </member>
         <member name="F:SDG.Unturned.EWheelSteeringMode.SteeringAngle">
             <summary>
-            Set steering angle according to <see cref="P:SDG.Unturned.VehicleAsset.steerMin"/> and <see cref="P:SDG.Unturned.VehicleAsset.steerMax"/>.
+            Set steering angle according to <see cref="P:SDG.Unturned.VehicleAsset.MaxSteeringAngleAtFullSpeed"/> and <see cref="P:SDG.Unturned.VehicleAsset.MaxSteeringAngle"/>.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWheelSteeringMode.CrawlerTrack">
@@ -4030,14 +4030,16 @@
             Maximum speed to aim for while accelerating forward.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.VehicleAsset.steerMin">
-            <summary>
-            Steering angle range at zero speed.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.VehicleAsset.steerMax">
+        <member name="P:SDG.Unturned.VehicleAsset.MaxSteeringAngleAtFullSpeed">
             <summary>
             Steering angle range at target maximum speed (for the current forward/backward direction).
+            Reducing steering range at higher speeds keeps the vehicle controlable with digital (non-analog) input.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.MaxSteeringAngle">
+            <summary>
+            Steering angle range at zero speed (idle/parked).
+            For example, 45 means the wheels connected to steering can rotate ±45 degrees.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.SteeringAngleTurnSpeed">
@@ -9224,9 +9226,34 @@
             Visualizes reverb zone in-game.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.None">
+            <summary>
+            Do not override zombie health.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.MultiplyEditorHealth">
+            <summary>
+            Per-speciality value is a multiplier for health configured in the level editor.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.MultiplyDefaultHealth">
+            <summary>
+            Per-speciality value is a multiplier for vanilla health value.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.Replace">
+            <summary>
+            Per-speciality value replaces zombie's health.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ZombieDifficultyAsset.Allow_Horde_Beacon">
             <summary>
             Can horde beacons be placed in the associated bounds?
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ZombieDifficultyAsset.SpecialityHealthOverrides">
+            <summary>
+            Can be null if not assigned.
             </summary>
         </member>
         <member name="T:SDG.Unturned.VehiclePhysicsProfileAsset">
@@ -9668,6 +9695,11 @@
         <member name="F:SDG.Unturned.EPlayerMessage.TUTORIAL_WORKSTATION">
             <summary>
             Explaining that some blueprints require workstations.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.INSIDE_NO_STRUCTURES_VOLUME">
+            <summary>
+            Barricades are allowed here but not structures.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GunStatsExporter">
@@ -18069,6 +18101,14 @@
             Re-submit previous query after a query failure.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.SleekFullscreenBox">
+            <summary>
+            Almost every menu has a container element for its contents which spans the entire screen. This element is then
+            animated into and out of view. In the IMGUI implementation this was fine because containers off-screen were not
+            processed, but with uGUI they were still considered active. To solve the uGUI performance overhead this class
+            was introduced to disable visibility after animating out of view.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.UndergroundWhitelist.adjustPosition(UnityEngine.Vector3@,System.Single,System.Single)">
             <summary>
             If level is using underground whitelist then conditionally clamp world-space position.
@@ -18087,14 +18127,6 @@
         <member name="M:SDG.Unturned.UndergroundAllowlist.IsPositionBuildable(UnityEngine.Vector3)">
             <summary>
             Used by housing validation to check item isn't placed underground.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.SleekFullscreenBox">
-            <summary>
-            Almost every menu has a container element for its contents which spans the entire screen. This element is then
-            animated into and out of view. In the IMGUI implementation this was fine because containers off-screen were not
-            processed, but with uGUI they were still considered active. To solve the uGUI performance overhead this class
-            was introduced to disable visibility after animating out of view.
             </summary>
         </member>
         <member name="T:SDG.Unturned.TriggerEffectParameters">
