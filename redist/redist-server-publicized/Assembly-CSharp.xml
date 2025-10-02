@@ -921,11 +921,6 @@
             Used by UI. True when underwater or inside non-breathable oxygen volume.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.ArenaNode.radius">
-            <summary>
-            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.ItemTool.getItem(System.UInt16,System.UInt16,System.Byte,System.Byte[],System.Boolean,SDG.Unturned.GetStatTrackerValueHandler)">
             <summary>
             No longer used in vanilla. Kept in case plugins are using it.
@@ -954,6 +949,11 @@
         <member name="M:SDG.Unturned.ItemTool.CalculateOrthographicSize(SDG.Unturned.ItemAsset,UnityEngine.GameObject,UnityEngine.Transform,System.Int32,System.Int32)">
             <summary>
             Unity's Camera.orthographicSize is half the height of the viewing volume. Width is calculated from aspect ratio.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ArenaNode.radius">
+            <summary>
+            This value is confusing because in the level editor it is the normalized radius, but in-game it is the radius.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWeatherStatusChange.BeginTransitionIn">
@@ -1520,16 +1520,6 @@
             request the server to do X we may as well support a "mod hook" that works with all three.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.Passenger.turretEventHook">
-            <summary>
-            Optional component on Turret_# GameObject for modding UnityEvents.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.Passenger.collider">
-            <summary>
-            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.EAimAlignmentTransformOwner">
             <summary>
             Controls where attachments looks for ADS alignment transform.
@@ -1601,6 +1591,16 @@
         <member name="F:SDG.Unturned.ItemSightAsset.DistanceMarker.hasLabel">
             <summary>
             If true, text label for distance is visible.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Passenger.turretEventHook">
+            <summary>
+            Optional component on Turret_# GameObject for modding UnityEvents.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Passenger.collider">
+            <summary>
+            Optional collider matching the player capsule to prevent short vehicles (e.g. bikes) from clipping into walls.
             </summary>
         </member>
         <member name="T:SDG.Unturned.SleekItemStoreMainMenuButton">
@@ -3776,7 +3776,7 @@
         </member>
         <member name="F:SDG.Unturned.EWheelSteeringMode.SteeringAngle">
             <summary>
-            Set steering angle according to <see cref="P:SDG.Unturned.VehicleAsset.steerMin"/> and <see cref="P:SDG.Unturned.VehicleAsset.steerMax"/>.
+            Set steering angle according to <see cref="P:SDG.Unturned.VehicleAsset.MaxSteeringAngleAtFullSpeed"/> and <see cref="P:SDG.Unturned.VehicleAsset.MaxSteeringAngle"/>.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EWheelSteeringMode.CrawlerTrack">
@@ -4030,14 +4030,16 @@
             Maximum speed to aim for while accelerating forward.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.VehicleAsset.steerMin">
-            <summary>
-            Steering angle range at zero speed.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.VehicleAsset.steerMax">
+        <member name="P:SDG.Unturned.VehicleAsset.MaxSteeringAngleAtFullSpeed">
             <summary>
             Steering angle range at target maximum speed (for the current forward/backward direction).
+            Reducing steering range at higher speeds keeps the vehicle controlable with digital (non-analog) input.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.MaxSteeringAngle">
+            <summary>
+            Steering angle range at zero speed (idle/parked).
+            For example, 45 means the wheels connected to steering can rotate ±45 degrees.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.SteeringAngleTurnSpeed">
@@ -9224,9 +9226,34 @@
             Visualizes reverb zone in-game.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.None">
+            <summary>
+            Do not override zombie health.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.MultiplyEditorHealth">
+            <summary>
+            Per-speciality value is a multiplier for health configured in the level editor.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.MultiplyDefaultHealth">
+            <summary>
+            Per-speciality value is a multiplier for vanilla health value.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyHealthOverrideMode.Replace">
+            <summary>
+            Per-speciality value replaces zombie's health.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ZombieDifficultyAsset.Allow_Horde_Beacon">
             <summary>
             Can horde beacons be placed in the associated bounds?
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ZombieDifficultyAsset.SpecialityHealthOverrides">
+            <summary>
+            Can be null if not assigned.
             </summary>
         </member>
         <member name="T:SDG.Unturned.VehiclePhysicsProfileAsset">
@@ -9668,6 +9695,11 @@
         <member name="F:SDG.Unturned.EPlayerMessage.TUTORIAL_WORKSTATION">
             <summary>
             Explaining that some blueprints require workstations.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.INSIDE_NO_STRUCTURES_VOLUME">
+            <summary>
+            Barricades are allowed here but not structures.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GunStatsExporter">
