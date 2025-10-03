@@ -198,58 +198,6 @@
             whereas most only need the collider for general-purpose selection in the level editor.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.Items.onItemRemoved">
-            <summary>
-            Nelson 2025-02-24: Warning that this is invoked *before* the item is actually removed from the items list.
-            (public issue #4894)
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
-            checks whether a space contains any filled slots
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceDrag(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Boolean)">
-            checks whether an item can be dragged and takes into account if the item overlaps its old self
-        </member>
-        <member name="M:SDG.Unturned.Items.checkSpaceSwap(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
-            <summary>
-            checks whether the spot currently used by the old item is big enough to fit the new item
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set ItemType to type.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType,System.UInt16,System.Boolean)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set ItemType to type.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
-            • Set CaliberId to caliber.
-            • Set IncludeUnspecifiedCaliber to allowZeroCaliber.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},System.UInt16,System.Boolean,System.Boolean)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set AssetRef to id.
-            • Set IncludeEmpty to findEmpty.
-            • Set IncludeMaxQuality to findHealthy.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Items.has(System.UInt16)">
-            <summary>
-            Please use SearchContents instead! To perform an equivalent search:
-            • Set MaxResultsCount to 1.
-            • Set AssetRef to id.
-            • Set IncludeEmpty to false.
-            • Set IncludeMaxQuality to true.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.EVehicleThirdPersonCameraMode.RotationDetached">
             <summary>
             Camera does not rotate when the car rotates.
@@ -384,6 +332,58 @@
         <member name="F:SDG.Unturned.OptionsSettings.didProceedThroughOnlineSafetyMenuThisSession">
             <summary>
             Prevents menu from being shown twice without a restart.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Items.onItemRemoved">
+            <summary>
+            Nelson 2025-02-24: Warning that this is invoked *before* the item is actually removed from the items list.
+            (public issue #4894)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceEmpty(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
+            checks whether a space contains any filled slots
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceDrag(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Boolean)">
+            checks whether an item can be dragged and takes into account if the item overlaps its old self
+        </member>
+        <member name="M:SDG.Unturned.Items.checkSpaceSwap(System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            checks whether the spot currently used by the old item is big enough to fit the new item
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set ItemType to type.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},SDG.Unturned.EItemType,System.UInt16,System.Boolean)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set ItemType to type.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
+            • Set CaliberId to caliber.
+            • Set IncludeUnspecifiedCaliber to allowZeroCaliber.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.search(System.Collections.Generic.List{SDG.Unturned.InventorySearch},System.UInt16,System.Boolean,System.Boolean)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set AssetRef to id.
+            • Set IncludeEmpty to findEmpty.
+            • Set IncludeMaxQuality to findHealthy.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Items.has(System.UInt16)">
+            <summary>
+            Please use SearchContents instead! To perform an equivalent search:
+            • Set MaxResultsCount to 1.
+            • Set AssetRef to id.
+            • Set IncludeEmpty to false.
+            • Set IncludeMaxQuality to true.
             </summary>
         </member>
         <member name="E:SDG.Unturned.PlayerSkills.OnExperienceChanged_Global">
@@ -18101,14 +18101,6 @@
             Re-submit previous query after a query failure.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.SleekFullscreenBox">
-            <summary>
-            Almost every menu has a container element for its contents which spans the entire screen. This element is then
-            animated into and out of view. In the IMGUI implementation this was fine because containers off-screen were not
-            processed, but with uGUI they were still considered active. To solve the uGUI performance overhead this class
-            was introduced to disable visibility after animating out of view.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.UndergroundWhitelist.adjustPosition(UnityEngine.Vector3@,System.Single,System.Single)">
             <summary>
             If level is using underground whitelist then conditionally clamp world-space position.
@@ -18127,6 +18119,14 @@
         <member name="M:SDG.Unturned.UndergroundAllowlist.IsPositionBuildable(UnityEngine.Vector3)">
             <summary>
             Used by housing validation to check item isn't placed underground.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.SleekFullscreenBox">
+            <summary>
+            Almost every menu has a container element for its contents which spans the entire screen. This element is then
+            animated into and out of view. In the IMGUI implementation this was fine because containers off-screen were not
+            processed, but with uGUI they were still considered active. To solve the uGUI performance overhead this class
+            was introduced to disable visibility after animating out of view.
             </summary>
         </member>
         <member name="T:SDG.Unturned.TriggerEffectParameters">
