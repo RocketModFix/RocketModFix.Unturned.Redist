@@ -11287,6 +11287,11 @@
             If true, spawn effect at player's position (rather than Spawnpoint).
             </summary>
         </member>
+        <member name="P:SDG.Unturned.NPCEffectReward.IsOnlyRelevantToInstigator">
+            <summary>
+            If true, only spawn effect on player's machine. (Singleplayer or client.)
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.NPCEffectReward.IsReliable">
             <summary>
             Should the RPC be called in reliable mode? Unreliable effects might not be received.
@@ -12856,6 +12861,11 @@
             Same as interactabilityDialogueRef, not public because it really needs to be cleaned up. :(
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ObjectAsset.InteractabilityDialogueDisplayName">
+            <summary>
+            If set, overrides objectName as character name in dialogue.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ObjectAsset.rubbleEffectGuid">
             <summary>
             Effect played when single segment is destroyed.
@@ -13586,6 +13596,13 @@
             Used by master bundle pointer as a default.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.Assets.currentAsset">
+            <summary>
+            While an asset is being loaded, this is the asset.
+            Used by some error logging.
+            Note: not ideal because any global state like this prevents parallelization.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Assets.find(SDG.Unturned.EAssetType,System.UInt16)">
             <summary>
             This method supports <see cref="T:SDG.Unturned.RedirectorAsset"/>.
@@ -14299,6 +14316,7 @@
         <member name="M:SDG.Unturned.DamageTool.TryFindOwnership(UnityEngine.Transform,System.UInt64@,System.UInt64@)">
             <summary>
             Somewhat hacked-together to find owner of a vehicle, barricade, or structure descendant.
+            Checks each IOwnershipInfo up the hierarchy until one returns true.
             </summary>
         </member>
         <member name="M:SDG.Unturned.DamageTool.getPlayerExplosionArmor(SDG.Unturned.Player)">
@@ -14846,6 +14864,24 @@
             Plugin-only event when throwable is spawned on server.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ENPCEventReplicationMode.AuthorityOnly">
+            <summary>
+            Do not replicate to clients. Run the event on the listen server (singleplayer) / dedicated server.
+            Equivalent to the `shouldReplicate = false` parameter.
+            Default.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ENPCEventReplicationMode.AuthorityAndClients">
+            <summary>
+            Replicate to clients. Run the event everywhere.
+            Replaces the `shouldReplicate = true` parameter.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ENPCEventReplicationMode.InstigatorOnly">
+            <summary>
+            Only runs the event for the instigating player.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.NPCEventManager">
             <summary>
             Allows NPCs to trigger plugin or script events.
@@ -14886,6 +14922,13 @@
         <member name="F:SDG.Unturned.ServerListCurationFile.latestBlockedServerCount">
             <summary>
             Incremented during server list refresh for each server blocked by this rule.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.GunStateIndices">
+            <summary>
+            Nelson 2025-10-06: better late than never. Current indices into the gun state array (and
+            other item state arrays, for that matter) being unnamed makes it hard to read. Updates to
+            gun-related code should prefer using these names.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BulletInfo.origin">
@@ -17394,11 +17437,6 @@
             If true, button tooltip will be overridden with tooltip from states array.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.OxygenVolume.isBreathable">
-            <summary>
-            If true oxygen is restored while in this volume, otherwise if false oxygen is depleted.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.LevelBatching">
             <summary>
             Merges textures used in the level into an atlas to assist runtime draw call batching.
@@ -17501,6 +17539,11 @@
             <summary>
             StaticBatchingUtility.Combine requires input renderers are enabled and active in hierarchy,
             so we temporarily activate/enable them to keep this logic out of LevelObject/ResourceSpawnpoint.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.OxygenVolume.isBreathable">
+            <summary>
+            If true oxygen is restored while in this volume, otherwise if false oxygen is depleted.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageAnimalParameters">
@@ -19310,12 +19353,6 @@
         <member name="F:SDG.Unturned.UseableMelee.playUseSoundTime">
             <summary>
             For non-repeat weapons the "Use" audio clip is played once time reaches this point.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.NPCEventReward.ShouldReplicate">
-            <summary>
-            If true, the server will replicate the event to clients.
-            Defaults to true.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableGenerator.updatePowerableIsWired(SDG.Unturned.InteractablePower,System.Boolean)">
