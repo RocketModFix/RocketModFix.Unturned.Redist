@@ -3123,6 +3123,16 @@
             Ladder forward ray is 0.75m, so we move slightly less than that away from the ladder.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.NPCVolumeOverlapCondition.VolumeId">
+            <summary>
+            Check volumes matching this ID.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCVolumeOverlapCondition.PlayerCount">
+            <summary>
+            Compare number of players in volume to this number.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.EconAssetsReport">
             <summary>
             Export JSON report of Unturned's assets for economy usage.
@@ -9580,6 +9590,11 @@
             Teleport is always handled by owner and locally (loopback), but *not* by culled clients.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Player.GetCapsuleCenter">
+            <summary>
+            Get simulation center of mass.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Player.maxRateLimitedActionsPerSecond">
             <summary>
             How many calls to <see cref="M:SDG.Unturned.Player.tryToPerformRateLimitedAction"/> will succeed per second.
@@ -9700,6 +9715,11 @@
         <member name="F:SDG.Unturned.EPlayerMessage.INSIDE_NO_STRUCTURES_VOLUME">
             <summary>
             Barricades are allowed here but not structures.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EPlayerMessage.VOLUME_DESTROYED">
+            <summary>
+            Alternative to VOLUME_WATER or VOLUME_FUEL shown when object is destroyed.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GunStatsExporter">
@@ -10187,6 +10207,12 @@
         </member>
         <member name="M:SDG.Unturned.ClaimManager.canBuildOnVehicle(UnityEngine.Transform,Steamworks.CSteamID,Steamworks.CSteamID)">
             <param name="isClaim">True if it's a new claim flag.</param>
+        </member>
+        <member name="P:SDG.Unturned.LevelAsset.UnderwaterFogDensity">
+            <summary>
+            Intensity of fog effect while camera is inside a water volume.
+            Defaults to 0.075.
+            </summary>
         </member>
         <member name="F:SDG.Unturned.LevelAsset.minStealthRadius">
             <summary>
@@ -11413,6 +11439,11 @@
         <member name="F:SDG.Unturned.ESteamCall.PEERS">
             <summary>
             May have been used by voice in early versions, but has been completely removed.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableCarlockpick.isUnlockingFailure">
+            <summary>
+            If true, unlocking has failed.
             </summary>
         </member>
         <member name="T:SDG.Unturned.CommandLineValue`1">
@@ -13278,6 +13309,11 @@
         <member name="P:SDG.Unturned.ItemGearAsset.hairOverride">
             <summary>
             If set, find a child meshrenderer with this name and change its material to the character hair material.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemGearAsset.BeardOverride">
+            <summary>
+            If set, find a child meshrenderer with this name and change its material to the character beard material.
             </summary>
         </member>
         <member name="F:SDG.Unturned.SpawnTable.legacyAssetId">
@@ -17437,6 +17473,11 @@
             If true, button tooltip will be overridden with tooltip from states array.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.OxygenVolume.isBreathable">
+            <summary>
+            If true oxygen is restored while in this volume, otherwise if false oxygen is depleted.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.LevelBatching">
             <summary>
             Merges textures used in the level into an atlas to assist runtime draw call batching.
@@ -17539,11 +17580,6 @@
             <summary>
             StaticBatchingUtility.Combine requires input renderers are enabled and active in hierarchy,
             so we temporarily activate/enable them to keep this logic out of LevelObject/ResourceSpawnpoint.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.OxygenVolume.isBreathable">
-            <summary>
-            If true oxygen is restored while in this volume, otherwise if false oxygen is depleted.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageAnimalParameters">
@@ -18450,6 +18486,11 @@
             If true, visible in chart and satellite UIs.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemMagazineAsset.ProjectilePrefabOverride">
+            <summary>
+            If set and gun is a Projectile launcher, overrides Projectile prefab.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemMagazineAsset.projectileDamageMultiplier">
             <summary>
             Multiplier for explosive projectile damage.
@@ -18463,6 +18504,19 @@
         <member name="P:SDG.Unturned.ItemMagazineAsset.projectileLaunchForceMultiplier">
             <summary>
             Multiplier for explosive projectile's initial force.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemMagazineAsset.ProjectileLifespanOverride">
+            <summary>
+            Only applicable if Projectile prefab override is used.
+            Seconds before physics projectile is destroyed.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemMagazineAsset.ExplosionPlaysImpactEffects">
+            <summary>
+            If true, per-surface effects like blood splatter are created.
+            Defaults to true, but can be disabled particularly if a performance issue (e.g., an
+            explosive many-pellet shotgun shell).
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemMagazineAsset.shouldFillAfterDetach">
@@ -18590,6 +18644,11 @@
             False by default for trunk storage because player is inside vehicle.
             Plugins needed to be able to set this to false for "virtual storage" plugins,
             so we default to false and set to true if asset enables it.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.InteractableObject.IsRubbleNullOrAllAlive">
+            <summary>
+            True if rubble is not applicable or all sections are alive.
             </summary>
         </member>
         <member name="T:SDG.Unturned.UnturnedCanvasSortOrders">
@@ -19014,6 +19073,11 @@
             Invoked when Magazine game object is activated.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemVehicleLockpickToolAsset.FailureProbability">
+            <summary>
+            If greater than zero, picking the lock can fail.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.EffectManager.tmpTexts">
             <summary>
             TextMesh Pro uGUI text components.
@@ -19129,6 +19193,12 @@
             </summary>
             <param name="position">The position of the alert.</param>
             <param name="radius">The detection radius.</param>
+        </member>
+        <member name="T:SDG.Unturned.CollisionDamage">
+            <summary>
+            Can be added to any GameObject with a Trigger collider.
+            Ensure that Layer will detect player overlaps. Trap is a good candidate.
+            </summary>
         </member>
         <member name="T:SDG.Unturned.ContinuousIntegration">
             <summary>
