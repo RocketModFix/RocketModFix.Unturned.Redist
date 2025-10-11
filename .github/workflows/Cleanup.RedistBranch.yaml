@@ -15,6 +15,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Lock PR conversation
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          echo "Locking PR #$PR_NUMBER to prevent further comments"
+          gh pr lock "$PR_NUMBER" --repo "${{ github.repository }}" --reason resolved
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Delete PR branch
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
