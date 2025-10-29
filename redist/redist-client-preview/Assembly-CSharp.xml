@@ -10621,6 +10621,11 @@
             Hash of Objects.dat
             </summary>
         </member>
+        <member name="M:SDG.Unturned.LevelObjects.FindLevelObjectByInstanceId(System.UInt32)">
+            <summary>
+            Note: refers to per-LevelObject unique ID, not Unity object instance ID.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.LevelObjects.ImmediatelySyncRegionalVisibility">
             <summary>
             Called by navmesh baking to complete pending object changes that may affect which nav objects are enabled.
@@ -11553,9 +11558,20 @@
             Exposed for Rocket transition to modules backwards compatibility.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ZombieManager.CheckCustomCooldown(System.String,System.Double)">
+            <summary>
+            False if time since this was last called with same cooldownId is less than duration.
+            True otherwise.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ZombieManager.getDifficultyInBound(System.Byte)">
             <summary>
             Find difficulty asset (if valid) for navigation bound index.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ZombieManager.GetDifficultyInBoundForTable(System.Byte,SDG.Unturned.ZombieTable,System.Boolean)">
+            <summary>
+            Allows level to override whether per-table or per-navmesh difficulty asset takes priority.
             </summary>
         </member>
         <member name="T:SDG.Unturned.ZombieManager.ZombieSpecialityWeightedRandom">
@@ -12472,17 +12488,6 @@
             OR use the nearly drop-in replacements FindFirstItemByAsset or HasItemByAsset.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
-            <summary>
-            In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
-            so we simply remove them from the in-game text.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
-            <summary>
-            Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
-            </summary>
-        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -12549,6 +12554,17 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
+            <summary>
+            In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
+            so we simply remove them from the in-game text.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
+            <summary>
+            Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
@@ -14068,6 +14084,34 @@
             Path within the asset bundle.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.NPCZombieReward.ZombieSpeciality">
+            <summary>
+            Spawned zombie will be changed to this speciality type.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCZombieReward.SpawnpointId">
+            <summary>
+            Zombie(s) will be spawned at a Spawnpoint node matching this ID.
+            If multiple Spawnpoints match this ID a random spawnpoint is chosen for each zombie.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCZombieReward.LevelTableUniqueId">
+            <summary>
+            If greater than zero, find this zombie type configured in the level editor. For example, if the level editor
+            lists "0 Fire (4)", then 4 is the unique ID, and if assigned to this reward a zombie from the "Fire"
+            table will spawn.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCZombieReward.SpawnQuantity">
+            <summary>
+            Number of zombies to spawn.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCZombieReward.CooldownId">
+            <summary>
+            If set, zombies will not spawn unless CooldownDuration seconds have passed since last run.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.UseableStructure.placementPreviewTransform">
             <summary>
             Stripped-down version of structure prefab for previewing where the structure will be spawned.
@@ -14223,6 +14267,18 @@
         <member name="F:SDG.Unturned.FallDamageOverride.EMode.PreventFallDamage">
             <summary>
             Character will not take any fall damage.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyAssetPrioritization.NavmeshOverridesTable">
+            <summary>
+            Default. Per-navmesh difficulty asset takes priority over per-table/type difficulty asset.
+            If per-navmesh asset is null the per-table asset is the fallback.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EZombieDifficultyAssetPrioritization.TableOverridesNavmesh">
+            <summary>
+            Per-table/type difficulty asset takes priority over per-navmesh difficulty asset.
+            If per-table asset is null the per-navmesh asset is the fallback.
             </summary>
         </member>
         <member name="P:SDG.Unturned.LevelAsset.UnderwaterFogDensity">
