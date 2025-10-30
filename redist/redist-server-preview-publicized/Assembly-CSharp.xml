@@ -3552,31 +3552,6 @@
             Is the Ctrl-C or Ctrl-Break signal being handled?
             </summary>
         </member>
-        <member name="T:SDG.Unturned.DamagePlayerParameters">
-            <summary>
-            Payload for the DamageTool.damagePlayer function.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
-            <summary>
-            Should armor worn on matching limb be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
-            <summary>
-            Should game mode config damage multiplier be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
-            <summary>
-            If player dies should it count towards quests?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
-            <summary>
-            Effect to apply to ragdoll if dead.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.ELoadingTip.MAX">
             <summary>
             Marker for counting number of tips.
@@ -3602,6 +3577,31 @@
         <member name="M:SDG.Unturned.LoadingUI.PickNonLevelBackgroundImage">
             <summary>
             Select a loading image while on the startup screen or a level without any images.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.DamagePlayerParameters">
+            <summary>
+            Payload for the DamageTool.damagePlayer function.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
+            <summary>
+            Should armor worn on matching limb be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
+            <summary>
+            Should game mode config damage multiplier be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
+            <summary>
+            If player dies should it count towards quests?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
+            <summary>
+            Effect to apply to ragdoll if dead.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESteamCallValidation.ONLY_FROM_SERVER">
@@ -5560,7 +5560,7 @@
         <member name="F:SDG.Unturned.ProfanityFilter.hardcodedBannedWords">
             <summary>
             2023-04-17: suggestion is to have a hardcoded list of hate speech that gets filtered
-            regardless of whether profanity filter is enabled. (https://forum.smartlydressedgames.com/t/22477)
+            regardless of whether profanity filter is enabled.
             </summary>
         </member>
         <member name="M:SDG.Unturned.BarricadeDrop.ReceiveTransformRequest(SDG.Unturned.ServerInvocationContext@,UnityEngine.Vector3,UnityEngine.Quaternion)">
@@ -8178,6 +8178,11 @@
             Used for engine RPM calculation.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.VehicleAsset.ShouldIncludeAirbornWheelsInAverageRpm">
+            <summary>
+            If false, only grounded wheels are included when calculating wheel RPM.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.VehicleAsset.AllowsEngineRpmAndGearsInHud">
             <summary>
             If this and UsesEngineRpmAndGears are true, HUD will show RPM and gear number.
@@ -8201,6 +8206,12 @@
         <member name="P:SDG.Unturned.VehicleAsset.GearShiftInterval">
             <summary>
             How long between changing gears to allow another automatic gear change.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.GearShiftAllowSkippingGears">
+            <summary>
+            If true, engine can skip from (for example) 1st to 3rd gear if it keeps RPM within
+            the acceptable range.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.EngineIdleRpm">
@@ -8230,6 +8241,40 @@
         <member name="P:SDG.Unturned.VehicleAsset.EngineMaxTorque">
             <summary>
             Maximum torque (multiplied by output of torque curve).
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmMismatchTorqueReductionEnabled">
+            <summary>
+            If true, wheel RPM is reduced according to the difference between expected and actual
+            wheel RPM divided by torque reduction threshold.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmMismatchTorqueReductionThreshold">
+            <summary>
+            If torque reduction is enabled, torque is reduced to zero when difference between
+            expected and actual RPM is greater than this threshold.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmMismatchGearShiftPreventShifting">
+            <summary>
+            If true, prevent changing gears when the difference between expected and actual
+            wheel RPM exceeds threshold.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:SDG.Unturned.VehicleAsset.EngineRpmMismatchGearShiftUpMinThreshold" -->
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmMismatchGearShiftUpMaxThreshold">
+            <summary>
+            If prevent shifting is enabled, prevent changing gears up when the difference between
+            expected and actual wheel RPM is greater than this threshold.
+            I.e., if (expected - actual > max) it cannot shift up.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:SDG.Unturned.VehicleAsset.EngineRpmMismatchGearShiftDownMinThreshold" -->
+        <member name="P:SDG.Unturned.VehicleAsset.EngineRpmMismatchGearShiftDownMaxThreshold">
+            <summary>
+            If prevent shifting is enabled, prevent changing gears down when the difference between
+            expected and actual wheel RPM is greater than this threshold.
+            I.e., if (expected - actual > max) it cannot shift down.
             </summary>
         </member>
         <member name="P:SDG.Unturned.VehicleAsset.hasCenterOfMassOverride">
@@ -8496,6 +8541,21 @@
         <member name="P:SDG.Unturned.DamageAnimalParameters.AlertPosition">
             <summary>
             If not null and damage is applied, <see cref="M:SDG.Unturned.Animal.alertDamagedFromPoint(UnityEngine.Vector3)"/> is called with this position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamageAnimalParameters.instigator">
+            <summary>
+            Object responsible for creating this AnimalDamageParameters.
+            However, can be null if calling code didn't assign one.
+            Example types as of 2025-10-30:
+            - Kill Volume
+            - Bumper (vehicle impact)
+            - Interactable Sentry
+            - Interactable Trap
+            - Barrier (legacy per-object kill volume)
+            - Player Equipment (punch)
+            - Useable Gun
+            - Useable Melee
             </summary>
         </member>
         <member name="F:SDG.Unturned.ENPCEventReplicationMode.AuthorityOnly">
@@ -12556,6 +12616,16 @@
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
             <summary>
             In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
@@ -12565,16 +12635,6 @@
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
             <summary>
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
