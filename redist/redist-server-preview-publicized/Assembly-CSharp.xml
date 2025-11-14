@@ -2313,8 +2313,7 @@
              <summary>
              Utility for getting local hardware ID.
             
-             One option for future improvement would be using Windows Management Infrastructure (WMI) API:
-             https://github.com/SmartlyDressedGames/Unturned-3.x/issues/1593
+             One option for future improvement would be using Windows Management Infrastructure (WMI) API.
              </summary>
         </member>
         <member name="F:SDG.Unturned.LocalHwid.MAX_HWIDS">
@@ -2325,6 +2324,11 @@
         <member name="M:SDG.Unturned.LocalHwid.GetHwids">
             <summary>
             Get the local hardware ID(s).
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.VehicleHealthEventHook">
+            <summary>
+            Can be added to descendants of Vehicle GameObject to receive events.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ELevelObjectPlacementOrigin.MANUAL">
@@ -3020,6 +3024,15 @@
             is collected after populating the asset.)
             </summary>
         </member>
+        <member name="P:SDG.Unturned.Asset.Localization">
+            <summary>
+            Translation data associated with this asset. Only kept if per-asset property
+            "Keep_Localization_Loaded" is true.
+            (Otherwise, memory is collected after populating the asset.)
+            Nelson 2025-11-07: hacking this in so that NPC hints replicated from the server don't
+            use the server's language.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.Asset.originMasterBundle">
             <summary>
             Master bundle this asset loaded from.
@@ -3308,6 +3321,11 @@
             Essentially deprecated for now.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.VehicleGearshiftEventHook">
+            <summary>
+            Can be added to descendants of Vehicle GameObject to receive events.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.BarricadeRegion.IndexOfBarricadeByRootTransform(UnityEngine.Transform)">
             <summary>
             New code should not use this. Only intended for backwards compatibility.
@@ -3486,6 +3504,14 @@
             Can be placed in primary, secondary, or equipped while in bag.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.DecalRenderer">
+            <summary>
+            Before they became an official engine feature, I was obsessed with getting projected decals into Unturned.
+            I remember noticing them in so many games at the time like, for example, Overwatch. Aras P at Unity wrote
+            a blog post explaining how command buffers could be used to achieve them which set us on the right course:
+            https://unity.com/blog/engine-platform/extending-unity-5-rendering-pipeline-command-buffers
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ENPCWeatherStatus.Active">
             <summary>
             True while fading in or fully transitioned in. 
@@ -3552,6 +3578,31 @@
             Is the Ctrl-C or Ctrl-Break signal being handled?
             </summary>
         </member>
+        <member name="T:SDG.Unturned.DamagePlayerParameters">
+            <summary>
+            Payload for the DamageTool.damagePlayer function.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
+            <summary>
+            Should armor worn on matching limb be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
+            <summary>
+            Should game mode config damage multiplier be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
+            <summary>
+            If player dies should it count towards quests?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
+            <summary>
+            Effect to apply to ragdoll if dead.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ELoadingTip.MAX">
             <summary>
             Marker for counting number of tips.
@@ -3577,31 +3628,6 @@
         <member name="M:SDG.Unturned.LoadingUI.PickNonLevelBackgroundImage">
             <summary>
             Select a loading image while on the startup screen or a level without any images.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.DamagePlayerParameters">
-            <summary>
-            Payload for the DamageTool.damagePlayer function.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
-            <summary>
-            Should armor worn on matching limb be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
-            <summary>
-            Should game mode config damage multiplier be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
-            <summary>
-            If player dies should it count towards quests?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
-            <summary>
-            Effect to apply to ragdoll if dead.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESteamCallValidation.ONLY_FROM_SERVER">
@@ -5901,8 +5927,8 @@
         </member>
         <member name="T:SDG.Unturned.MenuStartup">
             <summary>
-            Ideally component Awake/Start order should not matter, but Unturned's menu is a mess.
-            For most players the default order was fine, but it seems it was not deterministic so it would break for some players.
+            Ideally component Awake/Start order should not matter, but Unturned's menu does rely on it.
+            For most players the default order was fine, but it seems it was not deterministic so it would break for some players?
             </summary>
         </member>
         <member name="T:SDG.Unturned.RateLimitedAction">
@@ -7281,10 +7307,7 @@
         </member>
         <member name="M:SDG.Unturned.ThreadUtil.IsGameThread(System.Threading.Thread)">
             <summary>
-            Extension method for Thread class.
-            Plugins use this.
-            I might have accidentally removed it due to zero refs and Pustalorc was mad:
-            https://github.com/SmartlyDressedGames/Unturned-3.x-Community/discussions/4131
+            Extension method for Thread class. Plugins use this.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ThreadUtil.assertIsGameThread">
@@ -7395,6 +7418,11 @@
         <member name="M:SDG.Unturned.Local.FormatOrNull(System.String)">
             <summary>
             Unlike format, this returns null if key doesn't exist.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Local.FormatOrEmpty(System.String)">
+            <summary>
+            Unlike format, this returns string.Empty if key doesn't exist.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.loadedBlueprints">
@@ -9441,7 +9469,7 @@
             <summary>
             Event for plugins to be notified when a server update is detected.
             
-            Pandahut requested this because they run the game as a Windows service and need to shutdown
+            Some hosts requested this because they run the game as a Windows service and need to shutdown
             through their central management system rather than per-process.
             </summary>
         </member>
@@ -9649,7 +9677,7 @@
         </member>
         <member name="M:SDG.Unturned.PlayerDashboardInventoryUI.setMiscButtonsEnabled(System.Boolean)">
             <summary>
-            Annoying frustrating workaround for IMGUI. Disable inventory headers, grids and slots while selection is open
+            Workaround for IMGUI. Disable inventory headers, grids and slots while selection is open
             to prevent them from interfering with selection menu.
             </summary>
         </member>
@@ -11109,7 +11137,7 @@
         </member>
         <member name="M:SDG.Unturned.PlayerSkills.TryParseIndices(System.String,System.Int32@,System.Int32@)">
             <summary>
-            Ugly hack for the awful skills enums. Eventually skills should be replaced.
+            Hack to parse both the speciality enum and per-speciality skill enum given the name.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayerSkills.ServerUnlockAllSkills">
@@ -11382,7 +11410,7 @@
             <summary>
             Register a new vehicle as a valid parent for barricades.
             Each train car is registered after the root of the train.
-            Note: Nobody knows why these are called plants.
+            Note: why they are called "plants", refer to "only god and i" meme. 
             </summary>
         </member>
         <member name="M:SDG.Unturned.BarricadeManager.uprootPlant(UnityEngine.Transform)">
@@ -11546,7 +11574,7 @@
         <member name="F:SDG.Unturned.LODGroupAdditionalData.ELODBiasOverride.IgnoreLODBias">
             <summary>
             Unturned will adjust per-LOD sizes to counteract LOD bias.
-            Elver has carefully tuned LOD sizes for the interior of the mall, so LOD bias affecting them is undesirable.
+            Some maps have very carefully tuned LOD sizes, so LOD bias affecting them is undesirable.
             Note that due to a Unity bug only LOD0 can be greater than 100%.
             </summary>
         </member>
@@ -12616,16 +12644,6 @@
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
             <summary>
             In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
@@ -12635,6 +12653,16 @@
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
             <summary>
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -13952,6 +13980,21 @@
         <member name="T:SDG.Unturned.PlayerGroupUI">
             <summary>
             HUD with projected labels for teammates.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCRemoveZombieReward.ZombieSpeciality">
+            <summary>
+            If not none, only remove zombies of this type.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCRemoveZombieReward.LevelTableUniqueId">
+            <summary>
+            If greater than zero, only remove zombies matching this table unique ID.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.NPCRemoveZombieReward.NavmeshIndex">
+            <summary>
+            Navmesh index to remove zombies within. If set to byte.MaxValue then zombies are removed everywhere.
             </summary>
         </member>
         <member name="T:SDG.Unturned.GunStateIndices">
@@ -17110,6 +17153,12 @@
             Called if dialogue animation is disabled, and when the player presses Interact [F] during animation.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ZombieClothing.clothes">
+            <summary>
+            The main reason for this silliness is older versions didn't have a layered clothing shader, rather they
+            pre-baked shirt/pant texture combinations according to the level's zombie configurations.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Types.QUATERNION_TYPE">
             <summary>
             Not originally supported by networking. Added temporarily during netpak rewrite because the quaternion
@@ -18051,13 +18100,13 @@
         <member name="M:SDG.Unturned.ChatManager.clientSendMessage_UnityEvent(SDG.Unturned.EChatMode,System.String,SDG.Unturned.ClientTextChatMessenger)">
             <summary>
             Allows Unity events to send text chat messages from the client, for example to execute commands.
-            Messenger context is logged to help track down abusive assets.
+            Messenger context is logged to help track down assets using it in inappropriate ways.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ChatManager.serverSendMessage_UnityEvent(System.String,UnityEngine.Color,System.String,System.Boolean,SDG.Unturned.ServerTextChatMessenger)">
             <summary>
             Allows Unity events to broadcast text chat messages from the server.
-            Messenger context is logged to help track down abusive assets.
+            Messenger context is logged to help track down assets using it in inappropriate ways.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ChatManager.say(Steamworks.CSteamID,System.String,UnityEngine.Color,System.Boolean)">
@@ -18262,6 +18311,26 @@
         <member name="P:SDG.Unturned.ItemSentryAsset.CanTargetVehicles">
             <summary>
             If true, this sentry can attack vehicles. Defaults to true.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.BypassesPvEMode">
+            <summary>
+            If true, sentry can damage players and vehicles in PvE mode.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.CanReactToAttacks">
+            <summary>
+            If true, sentry immediately focuses on attacking player.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.SweepHalfYaw">
+            <summary>
+            Degrees away from forward sentry yaw sweeps left/right.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemSentryAsset.SweepPeriod">
+            <summary>
+            Duration in seconds for sentry to complete a sweep from left to right and back again.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESteamRejection.NAME_PLAYER_INVALID">
@@ -20170,7 +20239,7 @@
         <member name="F:SDG.Unturned.AssetBundleCustomData.ownerWorkshopFileId">
             <summary>
             If Unturned is loading this asset bundle from a Steam workshop file but the file ID does not match then
-            loading will be canceled. Prevents the asset bundle from being easily copied/stolen.
+            loading will be canceled. Makes it somewhat harder to copy/re-upload without permission.
             </summary>
         </member>
         <member name="F:SDG.Unturned.AssetBundleCustomData.ownerWorkshopFileIds">
@@ -21162,7 +21231,7 @@
         </member>
         <member name="M:SDG.Provider.CachedUGCDetails.GetTitle">
             <summary>
-            Some workshop thieves use an empty title, in which case we show the file ID as title text.
+            Some workshop copyright infringers use an empty title, in which case we show the file ID as title text.
             </summary>
         </member>
         <member name="F:SDG.Provider.TempSteamworksWorkshop.COMPATIBILITY_VERSION">
@@ -21575,7 +21644,7 @@
         </member>
         <member name="F:SDG.NetTransport.SteamNetworkingSockets.TransportBase_SteamNetworkingSockets.debugOutputFunc">
             <summary>
-            Thanks DiFFoZ! Ensures GC does not release the delegate.
+            Ensures GC does not release the delegate.
             </summary>
         </member>
         <member name="F:SDG.NetTransport.SteamNetworkingSockets.TransportBase_SteamNetworkingSockets.clLogSteamNetworkingSockets">
@@ -21845,10 +21914,10 @@
         </member>
         <member name="M:UnityEngine.CharacterControllerExtension.CheckedMove(UnityEngine.CharacterController,UnityEngine.Vector3)">
             <summary>
-            Perform a move, then do a capsule cast to determine if Unity PhysX went through a wall.
+            Perform a move, then do a capsule cast to determine if physics simulation went through a wall.
             
             Required when disabling overlap recovery because there are issues when walking toward slopes that bend inward.
-            To test if Unity works properly in the future; walk toward the inside of a barracks building in the PEI base.
+            To test if physics simulation handles this better in the future: walk toward the inside of a barracks building in the PEI base.
             </summary>
         </member>
         <member name="M:UnityEngine.CharacterControllerExtension.DisableDetectCollisions(UnityEngine.CharacterController)">
