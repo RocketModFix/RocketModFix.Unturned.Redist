@@ -70,7 +70,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         # Fetches all history for the tj-actions/changed-files to work correctly on push
         fetch-depth: 0
