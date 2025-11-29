@@ -105,7 +105,7 @@ jobs:
           echo "BRANCH_NAME=redist-update/${{ matrix.variant }}-${timestamp}" >> $GITHUB_ENV
       
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
