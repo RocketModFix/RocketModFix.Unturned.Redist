@@ -12575,6 +12575,17 @@
             OR use the nearly drop-in replacements FindFirstItemByAsset or HasItemByAsset.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
+            <summary>
+            In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
+            so we simply remove them from the in-game text.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
+            <summary>
+            Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -12641,17 +12652,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
-            <summary>
-            In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
-            so we simply remove them from the in-game text.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.SteamBBCodeUtils.removeCodeFormatting(System.String@)">
-            <summary>
-            Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
@@ -17102,6 +17102,11 @@
         <member name="F:SDG.Unturned.InteractableVehicle.decayLastUpdatePosition">
             <summary>
             transform.position used to test whether vehicle is moving.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.InteractableVehicle.NotifyFirstSpawned">
+            <summary>
+            Should be called AFTER replication (if applicable) so that events can call methods relying on replication.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerNPCDialogueUI.hasNextDialogue">
