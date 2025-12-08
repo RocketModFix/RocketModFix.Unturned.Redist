@@ -1,13 +1,13 @@
 {
-  "SDG.HostBans.Runtime.dll": "44636e2fec7a8a520a206120d2aa83c58ed6781efa3ed28d92b10707001e8ab4",
-  "com.rlabrecque.steamworks.net.dll": "ffa53d3b4cea49d8bba803f6044014d66a6cc07fc2d97af114665c2e0d134afb",
-  "Assembly-CSharp.dll": "8279f487b661cdb6e45d511b964d5e5f57cfa058e51abc197afd8d72032e80f6",
-  "SDG.NetTransport.dll": "4a3a2b31607ce8fc3373ec6b599abb19571f357b991067485fa2af2518663d01",
-  "Assembly-CSharp.xml": "c0024ce5d054dfd2e6ef37900533f2e66d4629ee7e60c225fa51c3f696708491",
-  "SDG.NetPak.Runtime.xml": "032c8d2d0a3e1f15ef1139b98f5370eb1fb94d65bf01c4462a0c0e6578bb705a",
-  "SystemEx.dll": "db63f1daf4b25d2cc84c068369597bd85510067c2c4603098551befa3b1def28",
-  "UnturnedDat.dll": "9324fa2ed0b07cfe0a264e0dc27640b00843b18429831f74edf65bece27fcc4d",
-  "SDG.NetPak.Runtime.dll": "839c43f8630d6a08d83c8cebf92d8c7648a63df03e4dbb1b1b95917839c622f0",
-  "UnityEx.dll": "6acc28456e01c456579050d70289c0cec22e6900d2bbaa744222009a8c25e57d",
-  "SDG.Glazier.Runtime.dll": "220f32fab233cd2b188e68abc325223398e2a4429f141baaa9107911c955227b"
+  "SDG.HostBans.Runtime.dll": "f747ce788400638d948c0cfdff8994def67ac95a30ecfb1de46dde6b3a04130e",
+  "com.rlabrecque.steamworks.net.dll": "610215e9588efe25a417d3ec8b04f166080af2c67ec7e6e49e807ac184d0a00f",
+  "Assembly-CSharp.dll": "b23dc5221e5f55eef203acf3bb5fabf3a625a929814dc0cc3e2a511bfbfea7a5",
+  "SDG.NetTransport.dll": "28f5f0d2337c1d2f33a5f40dd7b2eb12c3ef1485d4e734155e0e37b2b2fe9131",
+  "Assembly-CSharp.xml": "82477f67f70e2b0267b30f496fb15b385ecb83094bbb0e9c95b14626816208b9",
+  "SDG.NetPak.Runtime.xml": "f9592fc449fbf9564e4d5d6b28d2d6c9cda75e94bc38250e65c1a1ff064aad11",
+  "SystemEx.dll": "3764ea4f8c213b1caf5c417f00eec8bab9950ecac9a2283f592cd65f7ede14d6",
+  "UnturnedDat.dll": "d1dd5d11ee0d6a51612a1cc4ab9f871000af1a9793b09c36a3c2070ad5272451",
+  "SDG.NetPak.Runtime.dll": "eb1e08358035f7c59001d4d02fb4f0ba0a04f9685f4064cd1cc69a097fefea14",
+  "UnityEx.dll": "a96d3a3849a84d53f3141505cc535088c957510e26829248538c79d5dec2041a",
+  "SDG.Glazier.Runtime.dll": "6bb0514ffaf842c60aca335f504a975bf21a04050d2be69527547432199bbb08"
 }
