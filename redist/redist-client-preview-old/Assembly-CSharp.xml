@@ -2610,6 +2610,19 @@
             If true, the server will replicate the event to clients.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemStorageAsset.CanPlayersOpen">
+            <summary>
+            If true, players can interact with the barricade to open storage.
+            Defaults to true.
+            Useful for pre-placed sentries to prevent stealing their guns.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemStorageAsset.ShouldDeleteContainedItemsOnDestroy">
+            <summary>
+            If true, any stored items are despawned rather than dropped when destroyed.
+            Defaults to false.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.NPCWeatherBlendAlphaCondition">
             <summary>
             Compares weather intensity to value.
@@ -3053,7 +3066,7 @@
         <member name="F:SDG.Unturned.Asset.ignoreNPOT">
             <summary>
             Should texture non-power-of-two warnings be ignored?
-            Unfortunately some third party assets have odd setups.
+            Unfortunately some already-included third-party assets have NPOT textures.
             </summary>
         </member>
         <member name="P:SDG.Unturned.Asset.ignoreTextureReadable">
@@ -6461,7 +6474,7 @@
         </member>
         <member name="M:SDG.Unturned.ServerMessageHandler_ReadyToConnect.IsNameBlockedByNelsonFilter(System.String)">
             <summary>
-            Kick players maybe trying to impersonate me. I guess nobody else named Nelson is allowed in the game!
+            Kick players maybe trying to impersonate devs. (Reports of sad/bad experiences with pretenders, unfortunately.)
             2023-09-19: relaxed this a bit by trimming names and using Equals/Starts/Ends rather than Contains
             because there was a player with Nelson in their username.
             </summary>
@@ -11774,6 +11787,22 @@
             Maximum number of items to recover when salvaged.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemPlaceableAsset.SalvageItemFullHealthRef">
+            <summary>
+            Item or spawn table recovered when picked up at 100% health.
+            Defaults to self.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemPlaceableAsset.MinItemsRecoveredOnSalvageFullHealth">
+            <summary>
+            Minimum number of items to recover when salvaged at full health.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemPlaceableAsset.MaxItemsRecoveredOnSalvageFullHealth">
+            <summary>
+            Maximum number of items to recover when salvaged at full health.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemPlaceableAsset.minItemsDroppedOnDestroy">
             <summary>
             Minimum number of items to drop when destroyed.
@@ -12575,6 +12604,16 @@
             OR use the nearly drop-in replacements FindFirstItemByAsset or HasItemByAsset.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
             <summary>
             In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
@@ -12652,16 +12691,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -16606,6 +16635,13 @@
             transform's localRotation when the vehicle was instantiated.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.TrainCar.objectsToRoot">
+            <summary>
+            Objects transform relative to Root.
+            Identity in vanilla, but may be otherwise in mods.
+            Necessary for fix interpolation issue with front/back transform.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.TrainCar.rootRigidbody">
             <summary>
             Rigidbody component on the root game object.
@@ -18596,7 +18632,8 @@
         </member>
         <member name="P:SDG.Unturned.AnimalAsset.shouldPlayAnimsOnDedicatedServer">
             <summary>
-            Temporary until something better makes sense? For Spyjack.
+            Temporary until something better makes sense?
+            Originally added for modded animals triggering damage from animations.
             </summary>
         </member>
         <member name="P:SDG.Unturned.AnimalAsset.ShouldPreventMoveDuringStartle">
