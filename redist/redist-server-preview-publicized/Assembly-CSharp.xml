@@ -12604,16 +12604,6 @@
             OR use the nearly drop-in replacements FindFirstItemByAsset or HasItemByAsset.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.SteamBBCodeUtils.removeYouTubePreviews(System.String@)">
             <summary>
             In-game rich text does not support embedded YouTube videos, but they look great in the web browser,
@@ -12691,6 +12681,16 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -17843,7 +17843,7 @@
         <member name="P:SDG.Unturned.ItemWeaponAsset.allowFleshFx">
             <summary>
             Should player/animal/zombie surface be nulled on hit?
-            Requested by spyjack for a chainsaw-style shield that was overboard with the blood.
+            May be useful for weapons going overboard with the blood splatters.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemWeaponAsset.bypassAllowedToDamagePlayer">
@@ -19615,7 +19615,7 @@
         <member name="F:SDG.Unturned.ItemGunAsset.requiresNonZeroAttachmentCaliber">
             <summary>
             Defaults to false. If true, attachments must specify at least one non-zero caliber.
-            Requested by Great Hero J to block vanilla attachments in VGR.
+            Useful for blocking vanilla attachments.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGunAsset.RechamberAfterMagazineAttached">
