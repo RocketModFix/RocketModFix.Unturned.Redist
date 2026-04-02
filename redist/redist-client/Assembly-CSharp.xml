@@ -834,12 +834,9 @@
             Water volume marked as being sea level.
             </summary>
         </member>
-        <member name="M:SDG.Framework.Water.WaterUtility.isPointUnderwater(UnityEngine.Vector3,SDG.Framework.Water.WaterVolume@)">
-            <param name="volume">Null if under old water level, otherwise the volume.</param>
-        </member>
-        <member name="M:SDG.Framework.Water.WaterUtility.getWaterSurfaceElevation(UnityEngine.Vector3)">
+        <member name="M:SDG.Framework.Water.WaterVolumeManager.GetFishingVolume(UnityEngine.Vector3)">
             <summary>
-            Find the water elevation underneath point, or above point if underwater.
+            Prioritizes volumes with a fishing override.
             </summary>
         </member>
         <member name="F:SDG.Framework.Water.WaterVolume.sharedMaterial">
@@ -852,9 +849,27 @@
             If true rain will be occluded below the surface on the Y axis.
             </summary>
         </member>
+        <member name="F:SDG.Framework.Water.WaterVolume._fishSpawnTableGuid">
+            <summary>
+            Not using CachingAssetRef so it works with copy-paste. (Can we implement serialization for CachingAssetRef?)
+            </summary>
+        </member>
+        <member name="P:SDG.Framework.Water.WaterVolume.FishingMinimumDepthOverride">
+            <summary>
+            If set, depth at bobber must exceed this to catch fish.
+            </summary>
+        </member>
         <member name="F:SDG.Framework.Water.WaterVolume.isManagedByLighting">
             <summary>
             Flag for legacy sea level.
+            </summary>
+        </member>
+        <member name="M:SDG.Framework.Water.WaterUtility.isPointUnderwater(UnityEngine.Vector3,SDG.Framework.Water.WaterVolume@)">
+            <param name="volume">Null if under old water level, otherwise the volume.</param>
+        </member>
+        <member name="M:SDG.Framework.Water.WaterUtility.getWaterSurfaceElevation(UnityEngine.Vector3)">
+            <summary>
+            Find the water elevation underneath point, or above point if underwater.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Regions.getUnsafeCoordinates(UnityEngine.Vector3,System.Int32@,System.Int32@)">
@@ -1106,7 +1121,8 @@
         <member name="F:SDG.Unturned.SafezoneNode.noBuildables">
             <summary>
             Please check CurrentlyAllowsBuilding.
-            Bypassed by LevelAsset's ShouldAllowBuildingInSafezonesInSingleplayer option.
+            Bypassed by LevelAsset's ShouldAllowBuildingInSafezonesInSingleplayer option as well as
+            Gameplay config's Bypass_Building_In_Safezones option.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ItemToolAsset.canBeUsedInSafezone(SDG.Unturned.SafezoneNode,System.Boolean)">
@@ -1590,7 +1606,7 @@
             Loading master bundles.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.Assets.coreMasterBundle">
+        <member name="P:SDG.Unturned.Assets.coreMasterBundle">
             <summary>
             Master bundle from root /Bundles directory containing vanilla assets.
             </summary>
@@ -1986,6 +2002,13 @@
             make life easier we will do the same for the main menu announcement feed.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.InteractableCharge.explosion2">
+            <summary>
+            Kept because lots of modders have been these scripts in Unity,
+            so removing legacy effect id would break their content.
+            Note: unsure about this one because it is private and not serialized.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.InputEx">
             <summary>
             Extensions to the built-in Input class.
@@ -2241,7 +2264,7 @@
             Called by quest details UI to request server to abandon quest.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerQuests.ClientChooseNextDialogue(System.Guid,System.Byte)">
+        <member name="M:SDG.Unturned.PlayerQuests.ClientChooseDefaultNextDialogue(System.Guid,System.Byte)">
             <summary>
             Called when there are no responses to choose, but server has indicated a next dialogue is available.
             </summary>
@@ -2372,6 +2395,24 @@
              "Let's just keep this between the two of us." shown with "prev" dialogue
              set to the NPC's root dialogue asset.
              </summary>
+        </member>
+        <member name="T:SDG.Unturned.UnturnedPathfinding">
+            <summary>
+            Abstracts pathfinding/navmesh library available.
+            (ASPFP implementation not included in SDK release, but this way licensees of the plugin can
+            re-enable it in custom builds.)
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IUnturnedPathfindingInterface.CreateFlag(SDG.Unturned.Flag)">
+            <summary>
+            Create editor-only per-navmesh marker.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IUnturnedPathfindingInterface.CreateCutForIOBS(SDG.Unturned.InteractableObjectBinaryState)">
+            <summary>
+            IOBS gets or adds a NavmeshCut component in some situations.
+            Returns null if not applicable.
+            </summary>
         </member>
         <member name="P:SDG.Unturned.ItemGlassesAsset.isNightvisionAllowedInThirdPerson">
             <summary>
@@ -2699,6 +2740,11 @@
         <member name="M:SDG.Unturned.PlayerLook.GetEyesPositionWithoutLeaning">
             <summary>
             Get point of view in worldspace without the left/right leaning modifier.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerLook.UpdateScopeGrayscaleEnabled">
+            <summary>
+            Moves legacy image effect dependency out of SDK release.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PlayerLook.RestoreSavedLightingVision">
@@ -3109,18 +3155,6 @@
             Planning ahead to potentially convert the game to use Unity's newer Addressables feature.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.EWorkshopMenuSubmissionMode">
-            <summary>
-            Nelson 2024-12-16: This menu and ESteamUGCType are far from ideal, but I'm just trying to hack in a new tag for
-            server browser curation assets before the update. :P
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.PublishedFileUpdateButton">
-            <summary>
-            Nelson 2025-02-20: Hacking this in to address duplicate buttons when onPublishedAdded is called for a second
-            page of published files. (public issue #4882)
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.EZombieSpeciality.DL_RED_VOLATILE">
             <summary>
             Crossover from Dying Light. Only spawns during night. Explodes into fire at dawn.
@@ -3159,6 +3193,18 @@
         <member name="M:SDG.Unturned.TransformRecursiveFind.FindChildRecursiveWithExclusion(UnityEngine.Transform,System.String,UnityEngine.Transform)">
             <summary>
             Same as FindChildRecursive, but skip specific child.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.EWorkshopMenuSubmissionMode">
+            <summary>
+            Nelson 2024-12-16: This menu and ESteamUGCType are far from ideal, but I'm just trying to hack in a new tag for
+            server browser curation assets before the update. :P
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.PublishedFileUpdateButton">
+            <summary>
+            Nelson 2025-02-20: Hacking this in to address duplicate buttons when onPublishedAdded is called for a second
+            page of published files. (public issue #4882)
             </summary>
         </member>
         <member name="F:SDG.Unturned.CullingVolume.isManagedByLevelObject">
@@ -3817,6 +3863,12 @@
             <summary>
             Set handles pivot point according to selection transform.
             Doesn't apply if handle is currently being dragged.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ConfigWarnIfTrueAttribute">
+            <summary>
+            When this attribute is enabled a warning is shown in the server lobby.
+            Applied to options which reduce accessibility.
             </summary>
         </member>
         <member name="F:SDG.Unturned.BrowserConfigData.Icon">
@@ -4804,6 +4856,11 @@
             Percentage [0 to 1] of XP to retain when killed by the environment (e.g., zombies).
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Skill_Cost_Multiplier">
+            <summary>
+            Scales XP cost to purchase/upgrade skills.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayersConfigData.Lose_Items_PvP">
             <summary>
             Percentage [0 to 1] chance to lose each inventory item when killed by another player.
@@ -5220,6 +5277,16 @@
             Are sentry guns and beds allowed on vehicles?
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Bypass_No_Building_Zones">
+            <summary>
+            If true, buildables can be placed in "no building" zones.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Bypass_Building_In_Safezones">
+            <summary>
+            If true, buildables can be placed in safezones.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Allow_Holidays">
             <summary>
             Should holiday (Halloween and Christmas) content like NPC outfits and decorations be loaded?
@@ -5257,11 +5324,22 @@
             If true, client-side options like damage flinch, explosion camera shake, viewmodel bob are ignored.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Disable_Foliage_Off">
+            <summary>
+            If true, minimum foliage density of "Low" is enforced.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Use_2D_Scope_Overlay">
             <summary>
             If true, hide viewmodel while aiming a dual-render scope and show a 2D overlay instead.
             Useful for backwards compatibility with modded scopes that have a small enough
             dual-render surface to zoom-*out* when aiming in.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Enable_Fishing_Catch_Challenge">
+            <summary>
+            If true, a challenge must be completed before catching a fish.
+            Only applicable for supported maps and fishing rods. (I.e., not older custom maps.)
             </summary>
         </member>
         <member name="F:SDG.Unturned.GameplayConfigData.Timer_Exit">
@@ -5339,6 +5417,21 @@
         <member name="F:SDG.Unturned.GameplayConfigData.Viewmodel_AimingMisalignmentMultiplier">
             <summary>
             [0 to 1] Scales how much the first-person arms move while ADS.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Min_Fishing_Bite_Interval">
+            <summary>
+            Shortest amount of time before a fish takes the bait.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Max_Fishing_Bite_Interval">
+            <summary>
+            Longest amount of time before a fish takes the bait.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GameplayConfigData.Fishing_MaxStrength_Bite_Interval_Multiplier">
+            <summary>
+            Multiplier for fishing bite interval when casting strength bar is full.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayConfigUtils.COMMENT_PREFIX">
@@ -5895,6 +5988,140 @@
         <member name="M:SDG.Unturned.TimeSliceHash`1.computeHash">
             <summary>
             Get the computed hash after processing stream.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EFishingRewardMode.Rod">
+            <summary>
+            Fishing rod itself defines rewards. Ignore per-volume rewards.
+            Default. (backwards compatibility)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EFishingRewardMode.WaterVolumes">
+            <summary>
+            Use per-volume (or per-level if volume unspecified) rewards.
+            If level doesn't support volume rewards, fallback to Rod rewards.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.FishingCatchableProperties">
+            <summary>
+            Items that can be caught while fishing can optionally override these properties.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.FIXED_POINT_SCALE">
+            <summary>
+            Values that would be [0.0, 1.0] floats are fixed-point integers to ensure deterministic client/server results.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.TIME_SCALE">
+            <summary>
+            Time values are multiplied by this to allow for fishing rod capture time multipliers.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxUpwardAcceleration">
+            <summary>
+            Upward acceleration cannot increase beyond this limit.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxDownwardAcceleration">
+            <summary>
+            Downward acceleration cannot increase beyond this limit.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxUpwardSpeed">
+            <summary>
+            Upward speed cannot increase beyond this limit.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxDownwardSpeed">
+            <summary>
+            Downward speed cannot increase beyond this limit.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.upperRestitution">
+            <summary>
+            How much velocity to preserve when bouncing off the top.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.lowerRestitution">
+            <summary>
+            How much velocity to preserve when bouncing off the bottom.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.minTargetDelta">
+            <summary>
+            When choosing a new position, it will be at least this far away.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxTargetDelta">
+            <summary>
+            When choosing a new position, it will be at most this far away.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.minTargetPosition">
+            <summary>
+            Minimum choosable position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.maxTargetPosition">
+            <summary>
+            Maximum choosable position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.captureTicks">
+            <summary>
+            How long before item is caught.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.FishingCatchableProperties.escapeTicks">
+            <summary>
+            How long before item gets away.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.FishBiteIntervalMultiplier">
+            <summary>
+            Multiplier for interval before a fish takes the bait.
+            Defaults to 1.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.EnableCatchChallenge">
+            <summary>
+            If true, player must complete a challenge when fish takes the bait before catching.
+            Defaults to false for backwards compatibility.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeCursorSize">
+            <summary>
+            Size of window item must be within to catch.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeGravity">
+            <summary>
+            Downward acceleration while input is not held.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeAcceleration">
+            <summary>
+            Upward acceleration while input is held.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeUpperRestitution">
+            <summary>
+            How much velocity to preserve when bouncing off the top.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeLowerRestitution">
+            <summary>
+            How much velocity to preserve when bouncing off the bottom.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeCaptureSpeedMultiplier">
+            <summary>
+            Multiplier for how long item must be within cursor before catching.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemFisherAsset.CatchChallengeEscapeSpeedMultiplier">
+            <summary>
+            Multiplier for how long item must be outside cursor before failure.
             </summary>
         </member>
         <member name="M:SDG.Unturned.PowerTool.GetBarricadeTransformsInSphere(UnityEngine.Vector3,System.Single,System.Collections.Generic.List{UnityEngine.Transform})">
@@ -6534,7 +6761,7 @@
         <member name="F:SDG.Unturned.NPCZombieKillsCondition.sqrMinRadius">
             <summary>
             Only kills outside this radius around the player are tracked.
-            NSTM requested this for a sniping zombies quest.
+            Useful for quests incentivizing sniping.
             </summary>
         </member>
         <member name="P:SDG.Unturned.NPCZombieKillsCondition.usesBossInterval">
@@ -6610,9 +6837,25 @@
             If set, find a child meshrenderer with this name and change its material to the character hair material.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemGearAsset.hairOverrideNonGoldColor">
+            <summary>
+            For items using hairOverride, the hair material color will default to this for players without the
+            Gold Upgrade. (Since the Gold Upgrade is required for full RGB control, the default hair colors may
+            look boring for items that cover the hair but aren't hair in of themselves.) Also used as the color
+            in the cosmetic preview.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemGearAsset.BeardOverride">
             <summary>
             If set, find a child meshrenderer with this name and change its material to the character beard material.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ItemGearAsset.beardOverrideNonGoldColor">
+            <summary>
+            For items using BeardOverride, the beard material color will default to this for players without the
+            Gold Upgrade. (Since the Gold Upgrade is required for full RGB control, the default beard colors may
+            look boring for items that cover the beard but aren't beards in of themselves.)
+            Also used as the color in the cosmetic preview.
             </summary>
         </member>
         <member name="P:SDG.Unturned.TagAsset.PlainTextName">
@@ -6686,6 +6929,81 @@
             Messenger context is logged to help track down abusive assets.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.GraphicsSettings.planarReflectionUpdateIndex">
+            <summary>
+            Planar reflection component updates its culling distance and culling mask when this is incremented.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GraphicsSettings.uiScale">
+            <summary>
+            Overrides in-game UI scale setting.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.terrainBasemapDistance">
+            <summary>
+            Distance to use terrain shaders before fallback to a baked texture.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.terrainHeightmapPixelError">
+            <summary>
+            Higher error reduces vertex density as distance increases.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GraphicsSettings.clFarClipDistance">
+            <summary>
+            Added for players who want to see if they can get better performance with a ridiculously low max draw distance.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.NormalizedFarClipDistance">
+            <summary>
+            Multiplier for far clip plane distance.
+            Clamped within [0, 1] range to prevent editing config files for an advantage.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.normalizedDrawDistance">
+            <summary>
+            Multiplier for draw distance.
+            Clamped within [0, 1] range to prevent editing config files for an advantage.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.normalizedLandmarkDrawDistance">
+            <summary>
+            Multiplier for draw distance of optional super-low LOD models.
+            Clamped within [0, 1] range to prevent editing config files for an advantage.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.GraphicsSettings.sqrVehicleCullDistanceWithMargin">
+            <summary>
+            Vehicles outside this distance are not rendered.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.GraphicsSettings.validateSettings">
+            <summary>
+            Called after loading graphics settings from disk so that their values can be adjusted.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.GraphicsSettings.fixDefaultResolution">
+            <summary>
+            If default resolution is zero, try falling back to a higher one.
+            Used when restoring defaults and validating loaded settings.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.GraphicsSettings.WantsCinematicMode">
+            <summary>
+            If true, make the game look as nice as possible.
+            Note: certain limits are imposed except in singleplayer to prevent this from being exploited.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.GraphicsSettings.ApplySunShaftsSettings">
+            <summary>
+            Moves legacy image effect dependency out of SDK release.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.GraphicsSettings.ApplyOutlineSettings">
+            <summary>
+            Moves highlighting plugin dependency out of SDK release.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.InteractableSign.text">
             <summary>
             Actual unfiltered text.
@@ -6706,6 +7024,27 @@
         <member name="F:SDG.Unturned.InteractableSign.label_1">
             <summary>
             Legacy uGUI text on canvas.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayerLifeUI.repeatChatIndex">
+            <summary>
+            Reset to -1 when not chatting. If player presses up/down we get index 0 (most recent).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerLifeUI.repeatChat(System.Int32)">
+            <summary>
+            Fill chat field with previous sent message.
+            Useful for repeating commands with minor changes.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerLifeUI.updateHotbar">
+            <summary>
+            Use the latest hotbar items in the UI.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerLifeUI.UpdateGrayscaleEffectPartial">
+            <summary>
+            Moves legacy image effect dependency out of SDK release.
             </summary>
         </member>
         <member name="P:SDG.Unturned.Provider.APP_VERSION_PACKED">
@@ -7514,57 +7853,6 @@
             This overload doesn't support legacy Condition_# format.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.EServerListCurationAction">
-            <summary>
-            Determines how to handle a server if it matches a rule.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EServerListCurationAction.Label">
-            <summary>
-            Apply label and continue processing rules. 
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EServerListCurationAction.Allow">
-            <summary>
-            Show the server in the list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EServerListCurationAction.Deny">
-            <summary>
-            Hide the server from the list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ServerListCurationRule.action">
-            <summary>
-            Note: Port (if set) refers to the Steam query port.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ServerListCurationRule.inverted">
-            <summary>
-            If true, negate whether this rule matches. i.e., binary NOT.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ServerListCurationRule.latestBlockedServerCount">
-            <summary>
-            Incremented during server list refresh for each server blocked by this rule.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.ServerListCurationAsset.Icon">
-            <summary>
-            Optional image bundled alongside the asset file.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.TextChatEventHook">
             <summary>
             Can be added to any GameObject to receive text chat events.
@@ -7624,6 +7912,57 @@
         <member name="F:SDG.Unturned.TextChatEventHook.OnTriggered">
             <summary>
             Invoked when a player message passes the filters.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.EServerListCurationAction">
+            <summary>
+            Determines how to handle a server if it matches a rule.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListCurationAction.Label">
+            <summary>
+            Apply label and continue processing rules. 
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListCurationAction.Allow">
+            <summary>
+            Show the server in the list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EServerListCurationAction.Deny">
+            <summary>
+            Hide the server from the list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerListCurationRule.action">
+            <summary>
+            Note: Port (if set) refers to the Steam query port.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerListCurationRule.inverted">
+            <summary>
+            If true, negate whether this rule matches. i.e., binary NOT.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ServerListCurationRule.latestBlockedServerCount">
+            <summary>
+            Incremented during server list refresh for each server blocked by this rule.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.ServerListCurationAsset.Icon">
+            <summary>
+            Optional image bundled alongside the asset file.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EditorEnvironmentRoadsUI.listModeButton">
@@ -8513,13 +8852,6 @@
             Chat message values to show.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.InteractableCharge.explosion2">
-            <summary>
-            Kept because lots of modders have been these scripts in Unity,
-            so removing legacy effect id would break their content.
-            Note: unsure about this one because it is private and not serialized.
-            </summary>
-        </member>
         <member name="F:SDG.Unturned.ServerMessageHandler_GetWorkshopFiles.rateLimiter">
             <summary>
             Nelson 2025-05-13: replacing the "workshop request log" which used transport connection hash code with this
@@ -8941,6 +9273,85 @@
         <member name="M:SDG.Unturned.GroupManager.cancelGroupExit(SDG.Unturned.Player)">
             <summary>
             Remove player from queue if they're waiting to exit their group.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.EFishingState.Idle">
+            <summary>
+            Standing with the rod out, not using it.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.EFishingState.PreparingToCast">
+            <summary>
+            Strength gauge is active.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.EFishingState.LineDeployed">
+            <summary>
+            Bobber is floating in the water.
+            The line is out and can be reeled back in.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.EFishingState.CatchChallenge">
+            <summary>
+            Only applicable for fishing rods which opt-in.
+            Player is doing the challenge before the item is received.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.isWaitingForAnimationTrigger">
+            <summary>
+            If true, bobber will spawn or destroy once animation trigger is reached.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.isWaitingForBobberToFindWater">
+            <summary>
+            If false, bobber has started floating.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.nextRewardItem">
+            <summary>
+            Server decides which item will be caught next.
+            Client is notified shortly before they can catch the item.
+            Used in the challenge UI on the client.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.nextRewardSeed">
+            <summary>
+            Server sends a random seed for challenge.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.challengeInputPosition">
+            <summary>
+            Position of challenge player cursor.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.challengeInputVelocity">
+            <summary>
+            Velocity of fishing challenge player cursor.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.serverTimeUntilFishAppears">
+            <summary>
+            Decreased until a notification is sent to the client they can catch a fish.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.timeSinceFishNotification">
+            <summary>
+            Increased after fish notification is sent/received.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.hasPlayedTugAnimation">
+            <summary>
+            Whether animation to indicate the fish can be caught has played yet.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.UseableFisher.hasClosedMainHud">
+            <summary>
+            If true, this item has closed PlayerLifeUI.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.UseableFisher.HasReachedAnimationTrigger">
+            <summary>
+            If true, enough time passed since starting Cast or Reel animation to apply its effects (e.g., spawning projectile).
             </summary>
         </member>
         <member name="T:SDG.Unturned.RedirectorAsset">
@@ -10084,22 +10495,6 @@
             </summary>
             <returns>Total amount deleted.</returns>
         </member>
-        <member name="F:SDG.Unturned.PlayerLifeUI.repeatChatIndex">
-            <summary>
-            Reset to -1 when not chatting. If player presses up/down we get index 0 (most recent).
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.PlayerLifeUI.repeatChat(System.Int32)">
-            <summary>
-            Fill chat field with previous sent message.
-            Useful for repeating commands with minor changes.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.PlayerLifeUI.updateHotbar">
-            <summary>
-            Use the latest hotbar items in the UI.
-            </summary>
-        </member>
         <member name="P:SDG.Unturned.InteractableFarm.growth">
             <summary>
             Number of seconds to finish growing.
@@ -10960,6 +11355,28 @@
         <member name="F:SDG.Unturned.SteamPlayer.battlEyeId">
             <summary>
             Not an actual Steam ID or BattlEye ID, instead this is used to map player references to and from BE.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPlayer.skinItems">
+            <summary>
+            Steam itemdef IDs of equipped weapon and vehicle skins.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPlayer.skinTags">
+            <summary>
+            Unique per-item tags.
+            Indices correspond to those in skinItems array.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPlayer.skinDynamicProps">
+            <summary>
+            Unique per-item dynamic properties.
+            Indices correspond to those in skinItems array.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPlayer.modifiedItems">
+            <summary>
+            Steam item def IDs of items with dynamic property updates.
             </summary>
         </member>
         <member name="P:SDG.Unturned.SteamPlayer.IsLocalServerHost">
@@ -12615,6 +13032,16 @@
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -12681,16 +13108,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -12895,71 +13312,6 @@
         <member name="F:SDG.Unturned.OptionsSettings.didProceedThroughOnlineSafetyMenuThisSession">
             <summary>
             Prevents menu from being shown twice without a restart.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.GraphicsSettings.planarReflectionUpdateIndex">
-            <summary>
-            Planar reflection component updates its culling distance and culling mask when this is incremented.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.GraphicsSettings.uiScale">
-            <summary>
-            Overrides in-game UI scale setting.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.terrainBasemapDistance">
-            <summary>
-            Distance to use terrain shaders before fallback to a baked texture.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.terrainHeightmapPixelError">
-            <summary>
-            Higher error reduces vertex density as distance increases.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.GraphicsSettings.clFarClipDistance">
-            <summary>
-            Added for players who want to see if they can get better performance with a ridiculously low max draw distance.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.NormalizedFarClipDistance">
-            <summary>
-            Multiplier for far clip plane distance.
-            Clamped within [0, 1] range to prevent editing config files for an advantage.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.normalizedDrawDistance">
-            <summary>
-            Multiplier for draw distance.
-            Clamped within [0, 1] range to prevent editing config files for an advantage.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.normalizedLandmarkDrawDistance">
-            <summary>
-            Multiplier for draw distance of optional super-low LOD models.
-            Clamped within [0, 1] range to prevent editing config files for an advantage.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.GraphicsSettings.sqrVehicleCullDistanceWithMargin">
-            <summary>
-            Vehicles outside this distance are not rendered.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.GraphicsSettings.validateSettings">
-            <summary>
-            Called after loading graphics settings from disk so that their values can be adjusted.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.GraphicsSettings.fixDefaultResolution">
-            <summary>
-            If default resolution is zero, try falling back to a higher one.
-            Used when restoring defaults and validating loaded settings.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.GraphicsSettings.WantsCinematicMode">
-            <summary>
-            If true, make the game look as nice as possible.
-            Note: certain limits are imposed except in singleplayer to prevent this from being exploited.
             </summary>
         </member>
         <member name="P:SDG.Unturned.ActionBlueprint.Index">
@@ -13170,6 +13522,11 @@
             Sound clip to play. Volume matches the intensity.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.WeatherAssetBase.IsAudioHigherPriorityThanAmbianceVolumes">
+            <summary>
+            If true, this weather's ambientAudio is higher priority than volumes.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.WeatherAssetBase.componentType">
             <summary>
             Component to spawn for additional weather logic.
@@ -13178,6 +13535,12 @@
         <member name="P:SDG.Unturned.WeatherAssetBase.volumeMask">
             <summary>
             If per-volume mask AND is non zero the weather will blend in.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.WeatherAssetBase.FishBiteIntervalMultiplier">
+            <summary>
+            Multiplier for interval before a fish takes the bait.
+            Defaults to 1.
             </summary>
         </member>
         <member name="T:SDG.Unturned.ENetInvocationDeferMode">
@@ -13380,6 +13743,11 @@
             Get seat (if any), otherwise null.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.PlayerMovement.GetVehicleRagdollEffect">
+            <summary>
+            Get ragdoll effect to use when running enemies over with the current vehicle.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.PlayerMovement.forceRemoveFromVehicle">
             <summary>
             Serverside force player to exit vehicle regardless of safe exit points.
@@ -13413,6 +13781,12 @@
         <member name="T:SDG.Unturned.LodGroupEnumerator">
             <summary>
             Allows foreach loop to iterate renderers defined in lod group.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.HumanClothes.extraHairOverrideMaterials">
+            <summary>
+            For non-gold players' hairOverride and beardOverride cosmetics default color.
+            Worst case scenario is 3 hair overrides and 3 beard overrides.
             </summary>
         </member>
         <member name="M:SDG.Unturned.HumanClothes.centerHeadEffect(UnityEngine.Transform,UnityEngine.Transform)">
@@ -13687,6 +14061,123 @@
             Number of samples to zero after writing new audio data.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelLighting.rainyness">
+            <summary>
+            Kept for backwards compatibility with mod hooks, plugins, and events.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.snowyness">
+            <summary>
+            Kept for backwards compatibility with mod hooks, plugins, and events.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.CustomWeatherInstance.eventBlendAlpha">
+            <summary>
+            [0, 1] used to avoid invoking BlendAlphaChanged every frame.
+            Compared against globalBlendAlpha not taking into account local volume.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelLighting.hash">
+            <summary>
+            Hash of lighting config.
+            Prevents using the level editor to make night time look like day.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.levelFogColor">
+            <summary>
+            Level designed target fog color.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.levelFogIntensity">
+            <summary>
+            Level designed target fog intensity.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.levelAtmosphericFog">
+            <summary>
+            Level designed target atmospheric fog intensity.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.getWaterSurfaceElevation(System.Single)">
+            <summary>
+            If global ocean plane is enabled then return the worldspace height,
+            otherwise return the optional default value. Default for volume based
+            water is -1024, but atmosphere measure uses a default of zero.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.MarkParticleCloudsNeedRestart">
+            <summary>
+            Nelson 2025-09-01: hacking this in to reset cloud particle systems when changing time
+            in the level editor. Otherwise, it's hard to tell how the intensity affects them.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.tickCustomWeatherBlending(System.UInt32)">
+            <summary>
+            Ticked on dedicated server as well as client so that server can listen for weather events.
+            </summary>
+            <param name="localVolumeMask">On dedicated server this is always 0xFFFFFFFF.</param>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.resetForMainMenu">
+            <summary>
+            Reset any global shader properties that may affect the main menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.effect">
+            <summary>
+            Source effect to group multiple volumes.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.audioSource">
+            <summary>
+            Audio source added to AmbianceAudioGameObject.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.isAnyVolumeOverlapping">
+            <summary>
+            Reset to false before updating volumes.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.isAnyNonDistanceVolumeOverlapping">
+            <summary>
+            Reset to false before updating volumes.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.maxDistanceAlpha">
+            <summary>
+            Reset to zero before updating volumes. If any volume uses distance fadeout, this is the maximum alpha.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.timeAlpha">
+            <summary>
+            If any volume doesn't use distance fadeout, this is the alpha based on time spent inside..
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.maxPriority">
+            <summary>
+            Highest priority of overlapping volumes.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.minFadeInDuration">
+            <summary>
+            If any volume doesn't use distance fadeout, this is the minimum of their audio fade-in time.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.minFadeOutDuration">
+            <summary>
+            If any volume doesn't use distance fadeout, this is the minimum of their audio fade-out time.
+            Only reset when created so that value is available after leaving all volumes.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.UpdateSunShafts(UnityEngine.Transform,UnityEngine.Color)">
+            <summary>
+            Moves legacy image effect dependency out of SDK release.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelLighting.UpdateSunShaftsIntensity(System.Single)">
+            <summary>
+            Moves legacy image effect dependency out of SDK release.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.OneShotAudioHandle">
             <summary>
             Wraps audio source to prevent caller from meddling with it, and to allow the implementation
@@ -13694,6 +14185,11 @@
             </summary>
         </member>
         <member name="M:SDG.Unturned.OneShotAudioParameters.#ctor(UnityEngine.AudioClip)">
+            <summary>
+            2D audio.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.OneShotAudioParameters.#ctor(SDG.Unturned.AudioReference)">
             <summary>
             2D audio.
             </summary>
@@ -13706,6 +14202,13 @@
         <member name="F:SDG.Unturned.OneShotAudioParameters.spatialBlend">
             <summary>
             0 = 2D, 1 = 3D
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.OneShotAudioParameters.looping">
+            <summary>
+            If true, caller is responsible for returning audio source to the pool.
+            Antithetical to the OneShot naming (originally referring to AudioSource.PlayOneShot),
+            but this struct is moreso for requesting an audio source from the pool.
             </summary>
         </member>
         <member name="T:SDG.Unturned.PooledAudioSource">
@@ -14567,6 +15070,18 @@
             Blueprints can test for these tags. (Future extension here?)
             </summary>
         </member>
+        <member name="P:SDG.Unturned.LevelAsset.DefaultFishSpawnTable">
+            <summary>
+            Fishing rods using per-water-volume fishing spawn table fallback to this table.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.LevelAsset.SupportsFishingVolumes">
+            <summary>
+            If true, this level has assigned fishing spawn tables to water volumes and/or set
+            the default table. Defaults to false. Enables fishing rods to work on all maps
+            regardless of when they were designed.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.EAimAlignmentTransformOwner">
             <summary>
             Controls where attachments looks for ADS alignment transform.
@@ -15196,6 +15711,11 @@
         <member name="F:SDG.Unturned.LevelObject.areRenderersEnabled">
             <summary>
             Assume renderers default to enabled.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.LevelObject.OnDestroy">
+            <summary>
+            Unlike destroy() this is called when Unity object is destroyed for any reason.
             </summary>
         </member>
         <member name="T:SDG.Unturned.PlayerHashValidation">
@@ -16314,6 +16834,12 @@
             Skips checking for base textures if item cannot have skins.
             </summary>
         </member>
+        <member name="P:SDG.Unturned.ItemAsset.FishingCatchable">
+            <summary>
+            Defaults to null.
+            Allows items (specifically fish) to override fishing settings.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ItemAsset.updateUseableType(SDG.Unturned.IDatDictionary)">
             <summary>
             Find useableType by useable name.
@@ -17233,15 +17759,15 @@
             Update timers and UI for current page index.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.PlayerNPCDialogueUI.AdvancePage">
-            <summary>
-            Called when the player presses Interact [F] in dialogue screen.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.PlayerNPCDialogueUI.SkipAnimation">
             <summary>
             Show complete text for the current page and make responses visible.
             Called if dialogue animation is disabled, and when the player presses Interact [F] during animation.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.PlayerNPCDialogueUI.HandleInteractPressed">
+            <summary>
+            Called when the player presses Interact [F] in dialogue screen.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ZombieClothing.clothes">
@@ -18918,6 +19444,13 @@
             Get asset ref to replace this one for holiday, or null if it should not be redirected.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.LevelNavigation.nonExpandedNavmeshBounds">
+            <summary>
+            Nelson 2026-03-04: the "bounds" list contains navmesh baking bounds + "BOUNDS_SIZE" expansion.
+            Several parts of the code were looping through ASPFP active graphs and checking whether a
+            point is within those bounds, so we'll now duplicate some bounds data for that purpose.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.ReadWrite.populateJSON(System.String,System.Object,System.Boolean)">
             <summary>
             Deserialize JSON onto an existing object instance.
@@ -19043,113 +19576,6 @@
         <member name="F:SDG.Unturned.ELightingSnow.POST_BLIZZARD">
             <summary>
             Corresponds to transitioning out with new weather system. 
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.rainyness">
-            <summary>
-            Kept for backwards compatibility with mod hooks, plugins, and events.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.snowyness">
-            <summary>
-            Kept for backwards compatibility with mod hooks, plugins, and events.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.CustomWeatherInstance.eventBlendAlpha">
-            <summary>
-            [0, 1] used to avoid invoking BlendAlphaChanged every frame.
-            Compared against globalBlendAlpha not taking into account local volume.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.LevelLighting.hash">
-            <summary>
-            Hash of lighting config.
-            Prevents using the level editor to make night time look like day.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.levelFogColor">
-            <summary>
-            Level designed target fog color.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.levelFogIntensity">
-            <summary>
-            Level designed target fog intensity.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.levelAtmosphericFog">
-            <summary>
-            Level designed target atmospheric fog intensity.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelLighting.getWaterSurfaceElevation(System.Single)">
-            <summary>
-            If global ocean plane is enabled then return the worldspace height,
-            otherwise return the optional default value. Default for volume based
-            water is -1024, but atmosphere measure uses a default of zero.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelLighting.MarkParticleCloudsNeedRestart">
-            <summary>
-            Nelson 2025-09-01: hacking this in to reset cloud particle systems when changing time
-            in the level editor. Otherwise, it's hard to tell how the intensity affects them.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.LevelLighting.tickCustomWeatherBlending(System.UInt32)">
-            <summary>
-            Ticked on dedicated server as well as client so that server can listen for weather events.
-            </summary>
-            <param name="localVolumeMask">On dedicated server this is always 0xFFFFFFFF.</param>
-        </member>
-        <member name="M:SDG.Unturned.LevelLighting.resetForMainMenu">
-            <summary>
-            Reset any global shader properties that may affect the main menu.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.effect">
-            <summary>
-            Source effect to group multiple volumes.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.audioSource">
-            <summary>
-            Audio source added to AmbianceAudioGameObject.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.isAnyVolumeOverlapping">
-            <summary>
-            Reset to false before updating volumes.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.isAnyNonDistanceVolumeOverlapping">
-            <summary>
-            Reset to false before updating volumes.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.maxDistanceAlpha">
-            <summary>
-            Reset to zero before updating volumes. If any volume uses distance fadeout, this is the maximum alpha.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.timeAlpha">
-            <summary>
-            If any volume doesn't use distance fadeout, this is the alpha based on time spent inside..
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.maxPriority">
-            <summary>
-            Highest priority of overlapping volumes.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.minFadeInDuration">
-            <summary>
-            If any volume doesn't use distance fadeout, this is the minimum of their audio fade-in time.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.LevelLighting.AmbianceAudioInstance.minFadeOutDuration">
-            <summary>
-            If any volume doesn't use distance fadeout, this is the minimum of their audio fade-out time.
-            Only reset when created so that value is available after leaving all volumes.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LandscapeMaterialAsset.christmasRedirect">
@@ -20000,6 +20426,12 @@
             Is cosmetic or skin equipped?
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Characters.TryGetEquippedSkinInstanceIdByItemDefId(System.Int32,System.UInt64@)">
+            <summary>
+            Given the itemdefid of an equipped skin, try to find its corresponding Steam unique instance ID.
+            (A.K.A. "Package" in older code?)
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Bumper.getInstigatorSteamID">
             <summary>
             Get SteamID of vehicle's driver, or nil if not driven.
@@ -20036,11 +20468,6 @@
         <member name="M:SDG.Unturned.LevelRoads.ImmediatelySyncRegionalVisibility">
             <summary>
             Called by navmesh baking to complete pending object changes that may affect which nav objects are enabled.
-            </summary>
-        </member>
-        <member name="P:SDG.Unturned.SleekTagButton.TooltipAppendedText">
-            <summary>
-            Extra text added to tooltip.
             </summary>
         </member>
         <member name="T:SDG.Unturned.TransformHandles">
@@ -20180,6 +20607,11 @@
         <member name="F:SDG.Unturned.TransformHandles.dragRotationTangent">
             <summary>
             Drag along this tangent to the circle.
+            </summary>
+        </member>
+        <member name="P:SDG.Unturned.SleekTagButton.TooltipAppendedText">
+            <summary>
+            Extra text added to tooltip.
             </summary>
         </member>
         <member name="F:SDG.Unturned.LevelNodes.hasLegacyVolumesForConversion">
@@ -20943,6 +21375,23 @@
         <member name="P:SDG.Unturned.SteamConnectedClientBase.transportConnection">
             <summary>
             Only set on server. Associates player with their connection.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPending.skinItems">
+            <summary>
+            Steam itemdef IDs of equipped weapon and vehicle skins.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPending.skinTags">
+            <summary>
+            Unique per-item tags.
+            Indices correspond to those in skinItems array.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SteamPending.skinDynamicProps">
+            <summary>
+            Unique per-item dynamic properties.
+            Indices correspond to those in skinItems array.
             </summary>
         </member>
         <member name="M:SDG.Unturned.SteamPending.GetQueueStateDebugString">
@@ -21855,147 +22304,6 @@
             Not much of a mathematician. :(
             </summary>
         </member>
-        <member name="T:LegacyAIPath">
-            <summary>
-            Nelson 2025-04-30: carrying this over from whatever very old version of the A* Pathfinding Project the game was
-            using because it has a few hacked-in behaviors the newer components don't. Ideally, we should write a custom
-            movement component using the newer AIBase class.
-            </summary>
-        </member>
-        <member name="F:LegacyAIPath.repathRate">
-            Determines how often it will search for new paths. 
-            If you have fast moving targets or AIs, you might want to set it to a lower value.
-            The value is in seconds between path requests.
-        </member>
-        <member name="F:LegacyAIPath.target">
-            Target to move towards.
-            The AI will try to follow/move towards this target.
-            It can be a point on the ground where the player has clicked in an RTS for example, or it can be the player object in a zombie game.
-        </member>
-        <member name="F:LegacyAIPath.canSearch">
-            Enables or disables searching for paths.
-            Setting this to false does not stop any active path requests from being calculated or stop it from continuing to follow the current path.
-            \see #canMove
-        </member>
-        <member name="F:LegacyAIPath.canMove">
-            Enables or disables movement.
-            \see #canSearch 
-        </member>
-        <member name="F:LegacyAIPath.speed">
-            Maximum velocity.
-            This is the maximum speed in world units per second.
-        </member>
-        <member name="F:LegacyAIPath.turningSpeed">
-            Rotation speed.
-            Rotation is calculated using Quaternion.SLerp. This variable represents the damping, the higher, the faster it will be able to rotate.
-        </member>
-        <member name="F:LegacyAIPath.slowdownDistance">
-            Distance from the target point where the AI will start to slow down.
-            	 * Note that this doesn't only affect the end point of the path
-             	 * but also any intermediate points, so be sure to set #forwardLook and #pickNextWaypointDist to a higher value than this
-        </member>
-        <member name="F:LegacyAIPath.pickNextWaypointDist">
-            Determines within what range it will switch to target the next waypoint in the path 
-        </member>
-        <member name="F:LegacyAIPath.forwardLook">
-            Target point is Interpolated on the current segment in the path so that it has a distance of #forwardLook from the AI.
-            See the detailed description of AIPath for an illustrative image 
-        </member>
-        <member name="F:LegacyAIPath.endReachedDistance">
-            Distance to the end point to consider the end of path to be reached.
-            When this has been reached, the AI will not move anymore until the target changes and OnTargetReached will be called.
-        </member>
-        <member name="F:LegacyAIPath.closestOnPathCheck">
-            Do a closest point on path check when receiving path callback.
-            Usually the AI has moved a bit between requesting the path, and getting it back, and there is usually a small gap between the AI
-            and the closest node.
-            If this option is enabled, it will simulate, when the path callback is received, movement between the closest node and the current
-            AI position. This helps to reduce the moments when the AI just get a new path back, and thinks it ought to move backwards to the start of the new path
-            even though it really should just proceed forward.
-        </member>
-        <member name="F:LegacyAIPath.seeker">
-            Cached Seeker component 
-        </member>
-        <member name="F:LegacyAIPath.tr">
-            Cached Transform component 
-        </member>
-        <member name="F:LegacyAIPath.lastRepath">
-            Time when the last path request was sent 
-        </member>
-        <member name="F:LegacyAIPath.path">
-            Current path which is followed 
-        </member>
-        <member name="F:LegacyAIPath.controller">
-            Cached CharacterController component 
-        </member>
-        <member name="F:LegacyAIPath.currentWaypointIndex">
-            Current index in the path which is current target 
-        </member>
-        <member name="F:LegacyAIPath.targetReached">
-            Holds if the end-of-path is reached
-            \see TargetReached 
-        </member>
-        <member name="F:LegacyAIPath.canSearchAgain">
-            Only when the previous path has been returned should be search for a new path 
-        </member>
-        <member name="P:LegacyAIPath.TargetReached">
-            Returns if the end-of-path has been reached
-            \see targetReached 
-        </member>
-        <member name="M:LegacyAIPath.Awake">
-            Initializes reference variables.
-            	 * If you override this function you should in most cases call base.Awake () at the start of it.
-            	  * 
-        </member>
-        <member name="M:LegacyAIPath.OnEnable">
-            Run at start and when reenabled.
-            Starts RepeatTrySearchPath.
-            
-            \see Start
-        </member>
-        <member name="M:LegacyAIPath.SearchPath">
-            Requests a path to the target 
-        </member>
-        <member name="M:LegacyAIPath.OnPathComplete(Pathfinding.Path)">
-            Called when a requested path has finished calculation.
-            A path is first requested by #SearchPath, it is then calculated, probably in the same or the next frame.
-            Finally it is returned to the seeker which forwards it to this function.\n
-        </member>
-        <member name="F:LegacyAIPath.targetPoint">
-            Point to where the AI is heading.
-            Filled in by #CalculateVelocity 
-        </member>
-        <member name="F:LegacyAIPath.targetDirection">
-            Relative direction to where the AI is heading.
-            Filled in by #CalculateVelocity 
-        </member>
-        <member name="M:LegacyAIPath.CalculateVelocity(UnityEngine.Vector3)">
-            Calculates desired velocity.
-            Finds the target path segment and returns the forward direction, scaled with speed.
-            A whole bunch of restrictions on the velocity is applied to make sure it doesn't overshoot, does not look too far ahead,
-            and slows down when close to the target.
-            /see speed
-            /see endReachedDistance
-            /see slowdownDistance
-            /see CalculateTargetPoint
-            /see targetPoint
-            /see targetDirection
-            /see currentWaypointIndex
-        </member>
-        <member name="M:LegacyAIPath.RotateTowards(UnityEngine.Vector3)">
-            Rotates in the specified direction.
-            Rotates around the Y-axis.
-            \see turningSpeed
-        </member>
-        <member name="M:LegacyAIPath.CalculateTargetPoint(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean)">
-            Calculates target point from the current line segment.
-            \param p Current position
-            \param a Line segment start
-            \param b Line segment end
-            The returned point will lie somewhere on the line segment.
-            \see #forwardLook
-            \todo This function uses .magnitude quite a lot, can it be optimized?
-        </member>
         <member name="M:UnityEngine.CharacterControllerExtension.wasHitInitialOverlap(UnityEngine.RaycastHit,System.Int32)">
             <summary>
             Does initialOverlaps array contain hit collider?
@@ -22035,6 +22343,147 @@
             Intentionally Update, not FixedUpdate. Physics transforms are applied between frames, whereas at low frame
             rates there may be multiple FixedUpdates per frame.
             </summary>
+        </member>
+        <member name="T:LegacyAIPathNoRedist">
+            <summary>
+            Nelson 2025-04-30: carrying this over from whatever very old version of the A* Pathfinding Project the game was
+            using because it has a few hacked-in behaviors the newer components don't. Ideally, we should write a custom
+            movement component using the newer AIBase class.
+            </summary>
+        </member>
+        <member name="F:LegacyAIPathNoRedist.repathRate">
+            Determines how often it will search for new paths. 
+            If you have fast moving targets or AIs, you might want to set it to a lower value.
+            The value is in seconds between path requests.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.target">
+            Target to move towards.
+            The AI will try to follow/move towards this target.
+            It can be a point on the ground where the player has clicked in an RTS for example, or it can be the player object in a zombie game.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.canSearch">
+            Enables or disables searching for paths.
+            Setting this to false does not stop any active path requests from being calculated or stop it from continuing to follow the current path.
+            \see #canMove
+        </member>
+        <member name="F:LegacyAIPathNoRedist.canMove">
+            Enables or disables movement.
+            \see #canSearch 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.speed">
+            Maximum velocity.
+            This is the maximum speed in world units per second.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.turningSpeed">
+            Rotation speed.
+            Rotation is calculated using Quaternion.SLerp. This variable represents the damping, the higher, the faster it will be able to rotate.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.slowdownDistance">
+            Distance from the target point where the AI will start to slow down.
+            	 * Note that this doesn't only affect the end point of the path
+             	 * but also any intermediate points, so be sure to set #forwardLook and #pickNextWaypointDist to a higher value than this
+        </member>
+        <member name="F:LegacyAIPathNoRedist.pickNextWaypointDist">
+            Determines within what range it will switch to target the next waypoint in the path 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.forwardLook">
+            Target point is Interpolated on the current segment in the path so that it has a distance of #forwardLook from the AI.
+            See the detailed description of AIPath for an illustrative image 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.endReachedDistance">
+            Distance to the end point to consider the end of path to be reached.
+            When this has been reached, the AI will not move anymore until the target changes and OnTargetReached will be called.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.closestOnPathCheck">
+            Do a closest point on path check when receiving path callback.
+            Usually the AI has moved a bit between requesting the path, and getting it back, and there is usually a small gap between the AI
+            and the closest node.
+            If this option is enabled, it will simulate, when the path callback is received, movement between the closest node and the current
+            AI position. This helps to reduce the moments when the AI just get a new path back, and thinks it ought to move backwards to the start of the new path
+            even though it really should just proceed forward.
+        </member>
+        <member name="F:LegacyAIPathNoRedist.seeker">
+            Cached Seeker component 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.tr">
+            Cached Transform component 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.lastRepath">
+            Time when the last path request was sent 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.path">
+            Current path which is followed 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.controller">
+            Cached CharacterController component 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.currentWaypointIndex">
+            Current index in the path which is current target 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.targetReached">
+            Holds if the end-of-path is reached
+            \see TargetReached 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.canSearchAgain">
+            Only when the previous path has been returned should be search for a new path 
+        </member>
+        <member name="P:LegacyAIPathNoRedist.TargetReached">
+            Returns if the end-of-path has been reached
+            \see targetReached 
+        </member>
+        <member name="M:LegacyAIPathNoRedist.Awake">
+            Initializes reference variables.
+            	 * If you override this function you should in most cases call base.Awake () at the start of it.
+            	  * 
+        </member>
+        <member name="M:LegacyAIPathNoRedist.OnEnable">
+            Run at start and when reenabled.
+            Starts RepeatTrySearchPath.
+            
+            \see Start
+        </member>
+        <member name="M:LegacyAIPathNoRedist.SearchPath">
+            Requests a path to the target 
+        </member>
+        <member name="M:LegacyAIPathNoRedist.OnPathComplete(Pathfinding.Path)">
+            Called when a requested path has finished calculation.
+            A path is first requested by #SearchPath, it is then calculated, probably in the same or the next frame.
+            Finally it is returned to the seeker which forwards it to this function.\n
+        </member>
+        <member name="F:LegacyAIPathNoRedist.targetPoint">
+            Point to where the AI is heading.
+            Filled in by #CalculateVelocity 
+        </member>
+        <member name="F:LegacyAIPathNoRedist.targetDirection">
+            Relative direction to where the AI is heading.
+            Filled in by #CalculateVelocity 
+        </member>
+        <member name="M:LegacyAIPathNoRedist.CalculateVelocity(UnityEngine.Vector3)">
+            Calculates desired velocity.
+            Finds the target path segment and returns the forward direction, scaled with speed.
+            A whole bunch of restrictions on the velocity is applied to make sure it doesn't overshoot, does not look too far ahead,
+            and slows down when close to the target.
+            /see speed
+            /see endReachedDistance
+            /see slowdownDistance
+            /see CalculateTargetPoint
+            /see targetPoint
+            /see targetDirection
+            /see currentWaypointIndex
+        </member>
+        <member name="M:LegacyAIPathNoRedist.RotateTowards(UnityEngine.Vector3)">
+            Rotates in the specified direction.
+            Rotates around the Y-axis.
+            \see turningSpeed
+        </member>
+        <member name="M:LegacyAIPathNoRedist.CalculateTargetPoint(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean)">
+            Calculates target point from the current line segment.
+            \param p Current position
+            \param a Line segment start
+            \param b Line segment end
+            The returned point will lie somewhere on the line segment.
+            \see #forwardLook
+            \todo This function uses .magnitude quite a lot, can it be optimized?
         </member>
     </members>
 </doc>
