@@ -1,13 +1,13 @@
 {
-  "SDG.HostBans.Runtime.dll": "f747ce788400638d948c0cfdff8994def67ac95a30ecfb1de46dde6b3a04130e",
-  "com.rlabrecque.steamworks.net.dll": "610215e9588efe25a417d3ec8b04f166080af2c67ec7e6e49e807ac184d0a00f",
-  "Assembly-CSharp.dll": "31620b58d4c7de481584eee825648e493a817830006d658789f9969d75adeaf2",
-  "SDG.NetTransport.dll": "28f5f0d2337c1d2f33a5f40dd7b2eb12c3ef1485d4e734155e0e37b2b2fe9131",
-  "Assembly-CSharp.xml": "a10c99ea5d0cf7d527b474c7ca6cb45e883a6cfc8d782ba6e424755d9a102572",
+  "SDG.HostBans.Runtime.dll": "92e615e52fac45fa896b22020d36d3c7d09860f7fd062924ff0bb72197d0406c",
+  "UnturnedDat.dll": "ea720a0e90d7c4dfad3b57307b6722622214a4bfcac253b8373a35cb6f083181",
+  "Assembly-CSharp.xml": "3fad869270b3da917959781112ccf93f8745c9e73dc6a25f61c6cbc10ae690f1",
+  "SDG.NetPak.Runtime.dll": "7ac3ae26695fb7deb679b3306767e23a3c9e0c3046daeaf6d996fcff4655b45b",
+  "com.rlabrecque.steamworks.net.dll": "458c97b649e8c7e5b856384bb853d23999003d32c218a7203a4381f29c5b9175",
+  "UnityEx.dll": "d8b410ca5b6d65333965bd39ca96a959147cb17fb0b6edaea0d9c9df49e0e950",
   "SDG.NetPak.Runtime.xml": "f9592fc449fbf9564e4d5d6b28d2d6c9cda75e94bc38250e65c1a1ff064aad11",
-  "SystemEx.dll": "3764ea4f8c213b1caf5c417f00eec8bab9950ecac9a2283f592cd65f7ede14d6",
-  "UnturnedDat.dll": "d1dd5d11ee0d6a51612a1cc4ab9f871000af1a9793b09c36a3c2070ad5272451",
-  "SDG.NetPak.Runtime.dll": "eb1e08358035f7c59001d4d02fb4f0ba0a04f9685f4064cd1cc69a097fefea14",
-  "UnityEx.dll": "a96d3a3849a84d53f3141505cc535088c957510e26829248538c79d5dec2041a",
-  "SDG.Glazier.Runtime.dll": "6bb0514ffaf842c60aca335f504a975bf21a04050d2be69527547432199bbb08"
+  "SystemEx.dll": "aab3891657f8e7594bab7b4fe15362191459ae00c0ba97dc804e9b1a04d34f4a",
+  "Assembly-CSharp.dll": "0f013789a90931db4e9cf65cd647ca5f7a0104e99d6cbd9dff0bfc138e78df60",
+  "SDG.NetTransport.dll": "ac76c2b2e0cc1a859644f8ae375f9e5ddba652e66f931da26b755c6f68ee0635",
+  "SDG.Glazier.Runtime.dll": "74d061456933820f204b111489d3a395b7ddf5256d8e18d503134e8c4ba73a2c"
 }
