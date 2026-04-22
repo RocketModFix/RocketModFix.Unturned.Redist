@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>RocketModFix.Unturned.Redist.Server</id>
-    <version>3.26.2.2-preview22681797</version>
+    <version>3.26.2.3-preview22896486</version>
     <description>
       Unturned 3 Server-side redistributables. Standalone and always up-to-date.
     </description>
