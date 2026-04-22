@@ -6335,6 +6335,12 @@
             Get a random file path in the /Screenshots folder
             </summary>
         </member>
+        <member name="M:SDG.Unturned.LevelInfo.IsMissingAnyDependencies">
+            <summary>
+            If dependency workshop file(s) are configured, check those.
+            Otherwise, always returns false.
+            </summary>
+        </member>
         <member name="E:SDG.Unturned.InteractableDoor.OnDoorChanged_Global">
             <summary>
             Invoked when door is opened/closed, but not when loaded.
@@ -7853,6 +7859,17 @@
             This overload doesn't support legacy Condition_# format.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.TextChatEventHook">
             <summary>
             Can be added to any GameObject to receive text chat events.
@@ -7912,17 +7929,6 @@
         <member name="F:SDG.Unturned.TextChatEventHook.OnTriggered">
             <summary>
             Invoked when a player message passes the filters.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
             </summary>
         </member>
         <member name="T:SDG.Unturned.EServerListCurationAction">
@@ -17419,7 +17425,7 @@
         <member name="M:SDG.Unturned.InteractableVehicle.IsFriendlyToSentry(SDG.Unturned.InteractableSentry)">
             <summary>
             If true, sentry ignores this vehicle early in target scanning.
-            Friendly if locked by owner/group of sentry, or driven by owner/group of sentry.
+            Friendly if locked by owner/group of sentry, or if a passenger is owner/group of sentry.
             </summary>
         </member>
         <member name="M:SDG.Unturned.InteractableVehicle.calculateAverageLocalTireContactPosition">
