@@ -7859,17 +7859,6 @@
             This overload doesn't support legacy Condition_# format.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
-            </summary>
-        </member>
         <member name="T:SDG.Unturned.TextChatEventHook">
             <summary>
             Can be added to any GameObject to receive text chat events.
@@ -7929,6 +7918,17 @@
         <member name="F:SDG.Unturned.TextChatEventHook.OnTriggered">
             <summary>
             Invoked when a player message passes the filters.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
             </summary>
         </member>
         <member name="T:SDG.Unturned.EServerListCurationAction">
@@ -9236,6 +9236,13 @@
         <member name="F:SDG.Unturned.Zombie.undergroundTestTimer">
             <summary>
             Reduces frequency of UndergroundAllowlist checks because it can be expensive with lots of entities and volumes. 
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Zombie.OnUpdate">
+            <summary>
+            2026-04-24: this *was* Unity's Update monobehavior message, but for maps with large numbers of zombies
+            (2500+) it turned out to take a significant chunk of time. As a last-minute hack we now only update
+            zombies in regions with players in them.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Zombie.SetCountedAsAliveInZombieRegion(System.Boolean)">
@@ -13038,6 +13045,16 @@
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -13104,16 +13121,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -13793,6 +13800,11 @@
             <summary>
             For non-gold players' hairOverride and beardOverride cosmetics default color.
             Worst case scenario is 3 hair overrides and 3 beard overrides.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.HumanClothes.TransferEffectTransform(UnityEngine.GameObject,UnityEngine.Transform)">
+            <summary>
+            Used when item takes priority over cosmetic but mythical effect is still visible.
             </summary>
         </member>
         <member name="M:SDG.Unturned.HumanClothes.centerHeadEffect(UnityEngine.Transform,UnityEngine.Transform)">
