@@ -5867,6 +5867,13 @@
             Used early in startup to hopefully install before reaching main menu.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.MapsStatusData.Auto_Unsubscribe">
+            <summary>
+            Workshop files to unsubscribe from during starutp.
+            If the file is not currently subscribed it won't be unsubscribed from again.
+            Only happens once per workshop file. I.e., re-subscribing will be respected.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemMagazineAsset.ProjectilePrefabOverride">
             <summary>
             If set and gun is a Projectile launcher, overrides Projectile prefab.
@@ -7859,6 +7866,17 @@
             This overload doesn't support legacy Condition_# format.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.TextChatEventHook">
             <summary>
             Can be added to any GameObject to receive text chat events.
@@ -7918,17 +7936,6 @@
         <member name="F:SDG.Unturned.TextChatEventHook.OnTriggered">
             <summary>
             Invoked when a player message passes the filters.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
             </summary>
         </member>
         <member name="T:SDG.Unturned.EServerListCurationAction">
