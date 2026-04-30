@@ -5867,6 +5867,13 @@
             Used early in startup to hopefully install before reaching main menu.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.MapsStatusData.Auto_Unsubscribe">
+            <summary>
+            Workshop files to unsubscribe from during starutp.
+            If the file is not currently subscribed it won't be unsubscribed from again.
+            Only happens once per workshop file. I.e., re-subscribing will be respected.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemMagazineAsset.ProjectilePrefabOverride">
             <summary>
             If set and gun is a Projectile launcher, overrides Projectile prefab.
@@ -9236,6 +9243,13 @@
         <member name="F:SDG.Unturned.Zombie.undergroundTestTimer">
             <summary>
             Reduces frequency of UndergroundAllowlist checks because it can be expensive with lots of entities and volumes. 
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Zombie.OnUpdate">
+            <summary>
+            2026-04-24: this *was* Unity's Update monobehavior message, but for maps with large numbers of zombies
+            (2500+) it turned out to take a significant chunk of time. As a last-minute hack we now only update
+            zombies in regions with players in them.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Zombie.SetCountedAsAliveInZombieRegion(System.Boolean)">
@@ -13038,6 +13052,16 @@
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -13104,16 +13128,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -13793,6 +13807,11 @@
             <summary>
             For non-gold players' hairOverride and beardOverride cosmetics default color.
             Worst case scenario is 3 hair overrides and 3 beard overrides.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.HumanClothes.TransferEffectTransform(UnityEngine.GameObject,UnityEngine.Transform)">
+            <summary>
+            Used when item takes priority over cosmetic but mythical effect is still visible.
             </summary>
         </member>
         <member name="M:SDG.Unturned.HumanClothes.centerHeadEffect(UnityEngine.Transform,UnityEngine.Transform)">
