@@ -3654,6 +3654,31 @@
             Is the Ctrl-C or Ctrl-Break signal being handled?
             </summary>
         </member>
+        <member name="T:SDG.Unturned.DamagePlayerParameters">
+            <summary>
+            Payload for the DamageTool.damagePlayer function.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
+            <summary>
+            Should armor worn on matching limb be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
+            <summary>
+            Should game mode config damage multiplier be factored in?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
+            <summary>
+            If player dies should it count towards quests?
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
+            <summary>
+            Effect to apply to ragdoll if dead.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.ELoadingTip.MAX">
             <summary>
             Marker for counting number of tips.
@@ -3679,31 +3704,6 @@
         <member name="M:SDG.Unturned.LoadingUI.PickNonLevelBackgroundImage">
             <summary>
             Select a loading image while on the startup screen or a level without any images.
-            </summary>
-        </member>
-        <member name="T:SDG.Unturned.DamagePlayerParameters">
-            <summary>
-            Payload for the DamageTool.damagePlayer function.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.respectArmor">
-            <summary>
-            Should armor worn on matching limb be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.applyGlobalArmorMultiplier">
-            <summary>
-            Should game mode config damage multiplier be factored in?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.trackKill">
-            <summary>
-            If player dies should it count towards quests?
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.DamagePlayerParameters.ragdollEffect">
-            <summary>
-            Effect to apply to ragdoll if dead.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESteamCallValidation.ONLY_FROM_SERVER">
@@ -4947,6 +4947,11 @@
         <member name="F:SDG.Unturned.PlayersConfigData.Skillset_Prevents_Skill_Loss">
             <summary>
             If true, skills related to player's skillset/speciality cannot lose levels on death.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Prevent_Level_Skill_Overrides">
+            <summary>
+            If true, prevent levels from modifying skill starting levels, costs, and max levels.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayersConfigData.Allow_Instakill_Headshots">
@@ -15075,6 +15080,7 @@
         <member name="F:SDG.Unturned.LevelAsset.skillRules">
             <summary>
             Allows level to override skill max levels.
+            Can be turned off with config Prevent_Level_Skill_Overrides true.
             Null if empty, otherwise matches 1:1 with PlayerSkills._skills.
             </summary>
         </member>
@@ -16029,7 +16035,7 @@
             Auto-registering list of volume manager subclasses for level editor.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.VolumeManager`2.EnableStaticVolumes">
+        <member name="M:SDG.Unturned.VolumeManager`2.InitStaticVolumes">
             <summary>
             Called in play mode if level has asserted that volumes do not move.
             </summary>
@@ -16050,6 +16056,11 @@
             <summary>
             Ideally this might be a BVH or octree/quadtree or something, but RegionList is simple and
             already works / will be good enough for a quick patch.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VolumeManager`2.dynamicVolumes">
+            <summary>
+            Volumes added AFTER regionalVolumes was initialized.
             </summary>
         </member>
         <member name="M:SDG.Unturned.WebUtils.ParseThirdPartyUrl(System.String,System.String@,System.Boolean,System.Boolean)">
