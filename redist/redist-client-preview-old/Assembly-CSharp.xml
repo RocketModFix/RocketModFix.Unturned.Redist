@@ -1118,11 +1118,22 @@
             This value is confusing because in the level editor it is the normalized radius, but in-game it is the square radius.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.SafezoneNode.noWeapons">
+            <summary>
+            If true, players inside the safezone cannot use items categorized as "weapons" (/hostile).
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.SafezoneNode.noBuildables">
             <summary>
             Please check CurrentlyAllowsBuilding.
             Bypassed by LevelAsset's ShouldAllowBuildingInSafezonesInSingleplayer option as well as
             Gameplay config's Bypass_Building_In_Safezones option.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SafezoneNode.noIncomingDamage">
+            <summary>
+            If true, players inside the safezone cannot take damage. (Unless damage's bypassSafezone parameter is true.)
+            For backwards compatibility this is true if noWeapons was true.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ItemToolAsset.canBeUsedInSafezone(SDG.Unturned.SafezoneNode,System.Boolean)">
@@ -4938,6 +4949,11 @@
             If true, skills related to player's skillset/speciality cannot lose levels on death.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.PlayersConfigData.Prevent_Level_Skill_Overrides">
+            <summary>
+            If true, prevent levels from modifying skill starting levels, costs, and max levels.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayersConfigData.Allow_Instakill_Headshots">
             <summary>
             Should guns with Instakill Headshots (snipers) bypass armor?
@@ -6290,6 +6306,11 @@
         <member name="F:SDG.Unturned.LevelInfoConfigData.Enable_Clutter_Option">
             <summary>
             If true, map creator has verified the clutter option works as-expected.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.LevelInfoConfigData.Enable_Static_Volumes">
+            <summary>
+            If true, map creator has verified that volumes are ONLY placed in the level editor (not Unity prefabs).
             </summary>
         </member>
         <member name="M:SDG.Unturned.LevelInfoConfigData.GetPerDifficultyConfigOverrides(SDG.Unturned.EGameMode)">
@@ -13052,6 +13073,16 @@
             Unfortunately in-game rich text does not have code formatting yet, so remove the tags while preserving text.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Get index within bounds assuming list is not empty.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a new item using its default constructor.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.ItemClothingAsset.armor">
             <summary>
             Multiplier to incoming damage. Defaults to 1.0.
@@ -13118,16 +13149,6 @@
             The player can be wearing both a "real" in-game item and a cosmetic item in the same clothing slot.
             This is called on the real item if <see cref="F:SDG.Unturned.ItemClothingAsset.priorityOverCosmeticOverride"/> has not been set.
             If true, the real item is shown rather than the cosmetic item. If false, the cosmetic item can be seen.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.GetRandomIndex``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Get index within bounds assuming list is not empty.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.ListExtension.AddDefaulted``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Add a new item using its default constructor.
             </summary>
         </member>
         <member name="T:SDG.Unturned.DamageZombieParameters">
@@ -13411,6 +13432,17 @@
             <summary>
             Kept because lots of modders have been using this script in Unity,
             so removing legacy effect id would break their content.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SafezoneVolume.noWeapons">
+            <summary>
+            If true, players inside the safezone cannot use items categorized as "weapons" (/hostile).
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.SafezoneVolume.noIncomingDamage">
+            <summary>
+            If true, players inside the safezone cannot take damage. (Unless damage's bypassSafezone parameter is true.)
+            For backwards compatibility this is true if noWeapons was true.
             </summary>
         </member>
         <member name="M:SDG.Unturned.ServerSavedata.GetBackupFilePath(System.String)">
@@ -14413,6 +14445,11 @@
             Re-submit previous query after a query failure.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.RegionList`1.Add(UnityEngine.Bounds,`0)">
+            <summary>
+            Add item to every cell within bounds.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.RegionList`1.GetList(UnityEngine.Vector3)">
             <summary>
             Can be null if nothing has been added at position.
@@ -14423,7 +14460,7 @@
             Does not add new lists to empty cells.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.RegionList`1.LIST_POOL_SIZE">
+        <member name="F:SDG.Unturned.RegionList`1.listPoolSize">
             <summary>
             Number of Lists to preallocate in batches.
             (GRID_SIZE * GRID_SIZE) % LIST_POOL_SIZE should be zero leftover.
@@ -15043,6 +15080,7 @@
         <member name="F:SDG.Unturned.LevelAsset.skillRules">
             <summary>
             Allows level to override skill max levels.
+            Can be turned off with config Prevent_Level_Skill_Overrides true.
             Null if empty, otherwise matches 1:1 with PlayerSkills._skills.
             </summary>
         </member>
@@ -15997,10 +16035,32 @@
             Auto-registering list of volume manager subclasses for level editor.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.VolumeManager`2.InitStaticVolumes">
+            <summary>
+            Called in play mode if level has asserted that volumes do not move.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.VolumeManager`2.allowInstantiation">
             <summary>
             Should calling InstantiateVolume create a new volume?
             False for deprecated (landscape hole volume) types.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VolumeManager`2.benefitsFromStaticVolumes">
+            <summary>
+            Static volumes optimization is only useful for volume types which frequently lookup volume(s)
+            overlapping a given position.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VolumeManager`2.regionalVolumes">
+            <summary>
+            Ideally this might be a BVH or octree/quadtree or something, but RegionList is simple and
+            already works / will be good enough for a quick patch.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.VolumeManager`2.dynamicVolumes">
+            <summary>
+            Volumes added AFTER regionalVolumes was initialized.
             </summary>
         </member>
         <member name="M:SDG.Unturned.WebUtils.ParseThirdPartyUrl(System.String,System.String@,System.Boolean,System.Boolean)">
@@ -22367,6 +22427,11 @@
             <summary>
             Intentionally Update, not FixedUpdate. Physics transforms are applied between frames, whereas at low frame
             rates there may be multiple FixedUpdates per frame.
+            </summary>
+        </member>
+        <member name="F:UnityEngine.CharacterControllerExtension.EnableOverlapRecovery">
+            <summary>
+            Refer to PlayerMovement's comment.
             </summary>
         </member>
         <member name="T:LegacyAIPathNoRedist">
