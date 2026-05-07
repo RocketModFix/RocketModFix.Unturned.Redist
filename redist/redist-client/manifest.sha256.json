@@ -1,6 +1,6 @@
 {
   "SDG.NetPak.Runtime.xml": "f9592fc449fbf9564e4d5d6b28d2d6c9cda75e94bc38250e65c1a1ff064aad11",
-  "Assembly-CSharp.dll": "5316158caa89995c65a9b85c899c4d21b270cd223476ce3751916a854a353de8",
+  "Assembly-CSharp.dll": "3be06580fab70fbc8bc542a1060f5a4181ca2dcc08153e02bcd08ae1d8096d72",
   "SDG.NetPak.Runtime.dll": "7ac3ae26695fb7deb679b3306767e23a3c9e0c3046daeaf6d996fcff4655b45b",
   "SDG.Glazier.Runtime.dll": "74d061456933820f204b111489d3a395b7ddf5256d8e18d503134e8c4ba73a2c",
   "SystemEx.dll": "aab3891657f8e7594bab7b4fe15362191459ae00c0ba97dc804e9b1a04d34f4a",
@@ -8,6 +8,6 @@
   "SDG.NetTransport.dll": "ac76c2b2e0cc1a859644f8ae375f9e5ddba652e66f931da26b755c6f68ee0635",
   "UnturnedDat.dll": "ea720a0e90d7c4dfad3b57307b6722622214a4bfcac253b8373a35cb6f083181",
   "SDG.HostBans.Runtime.dll": "92e615e52fac45fa896b22020d36d3c7d09860f7fd062924ff0bb72197d0406c",
-  "Assembly-CSharp.xml": "9a7d552a4826a71b01a0d307a423c970ad8faa3141c38eacff667cc60fa85e71",
+  "Assembly-CSharp.xml": "e6c170253d855b05292391b01bf6242fa659465ef9ca3c27bada4cf9502b751f",
   "com.rlabrecque.steamworks.net.dll": "458c97b649e8c7e5b856384bb853d23999003d32c218a7203a4381f29c5b9175"
 }
