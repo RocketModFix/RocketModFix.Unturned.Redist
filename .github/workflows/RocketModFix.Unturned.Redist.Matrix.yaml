@@ -101,7 +101,7 @@ jobs:
 
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
-      uses: nuget/setup-nuget@v2
+      uses: nuget/setup-nuget@v3
       with:
         nuget-api-key: ${{ secrets.NUGET_DEPLOY_KEY }}
 
