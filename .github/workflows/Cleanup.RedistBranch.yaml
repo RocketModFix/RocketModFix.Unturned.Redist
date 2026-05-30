@@ -17,19 +17,21 @@ jobs:
       pull-requests: write
     steps:
       - name: Lock PR conversation
-        run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          echo "Locking PR #$PR_NUMBER to prevent further comments"
-          gh pr lock "$PR_NUMBER" --repo "${{ github.repository }}" --reason resolved
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Locking PR #${{ github.event.pull_request.number }}"
+          gh pr lock "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --reason resolved || true
 
-      - name: Delete PR branch
+      # Only delete after a successful merge. Never delete the branch of a PR
+      # that was closed without merging (it may contain work to investigate).
+      # PRs closed-as-unnecessary by create-pull-request are already cleaned up
+      # by its delete-branch:true, so this is the merge case.
+      - name: Delete merged PR branch
+        if: github.event.pull_request.merged == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          echo "Deleting redist PR branch: $BRANCH_NAME"
-          gh api \
-            -X DELETE \
-            "repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "Deleting merged redist PR branch: $BRANCH_NAME"
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME" || true

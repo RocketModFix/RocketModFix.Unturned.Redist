@@ -26,4 +26,9 @@
 !/.gitignore
 !/README.md
 !/LICENSE
+!/ARCHITECTURE.md
 !architecture.jpg
+!architecture.svg
+
+# Never commit build artifacts that may land in redist/ during packing
+redist/**/*.nupkg

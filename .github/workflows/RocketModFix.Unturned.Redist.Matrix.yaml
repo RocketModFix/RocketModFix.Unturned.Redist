@@ -8,100 +8,93 @@ on:
   workflow_dispatch:
     inputs:
       variant:
-        description: 'Which variant to update'
+        description: 'A variant name from .github/variants.json, or "all"'
         required: true
-        type: choice
-        options:
-          - all
-          - client
-          - client-preview
-          - client-preview-old
-          - client-preview-publicized
-          - client-publicized
-          - server
-          - server-preview
-          - server-preview-old
-          - server-preview-publicized
-          - server-publicized
+        default: 'all'
+        type: string
 
 jobs:
+  # Single source of truth: variant definitions live in .github/variants.json.
+  load-variants:
+    name: "Load Variants"
+    runs-on: ubuntu-latest
+    outputs:
+      variants: ${{ steps.load.outputs.variants }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Load variant matrix
+        id: load
+        env:
+          INPUT_VARIANT: ${{ github.event.inputs.variant }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_VARIANT:-}" ] && [ "$INPUT_VARIANT" != "all" ]; then
+            if ! jq -e --arg v "$INPUT_VARIANT" 'any(.[]; .variant == $v)' .github/variants.json >/dev/null; then
+              echo "::error::Unknown variant '$INPUT_VARIANT'. Valid variants:"
+              jq -r '.[].variant' .github/variants.json
+              exit 1
+            fi
+            variants=$(jq -c --arg v "$INPUT_VARIANT" '[.[] | select(.variant == $v)]' .github/variants.json)
+          else
+            variants=$(jq -c '.' .github/variants.json)
+          fi
+          echo "variants=$variants" >> "$GITHUB_OUTPUT"
+
   build:
     name: "Build ${{ matrix.variant }}"
     runs-on: ubuntu-22.04
-    continue-on-error: true
-    
+    needs: load-variants
+    # No job-level continue-on-error: a failed pack/push must surface red.
+    # fail-fast:false keeps the other (independent) variants building.
     strategy:
-      matrix:
-        include:
-          # Client variants
-          - variant: "client"
-            nuspec_path: "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec"
-            trigger_path: "redist/redist-client/**"
-          - variant: "client-preview"
-            nuspec_path: "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec"
-            trigger_path: "redist/redist-client-preview/**"
-          - variant: "client-preview-old"
-            nuspec_path: "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec"
-            trigger_path: "redist/redist-client-preview-old/**"
-          - variant: "client-preview-publicized"
-            nuspec_path: "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
-            trigger_path: "redist/redist-client-preview-publicized/**"
-          - variant: "client-publicized"
-            nuspec_path: "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec"
-            trigger_path: "redist/redist-client-publicized/**"
-          
-          # Server variants
-          - variant: "server"
-            nuspec_path: "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec"
-            trigger_path: "redist/redist-server/**"
-          - variant: "server-preview"
-            nuspec_path: "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec"
-            trigger_path: "redist/redist-server-preview/**"
-          - variant: "server-preview-old"
-            nuspec_path: "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec"
-            trigger_path: "redist/redist-server-preview-old/**"
-          - variant: "server-preview-publicized"
-            nuspec_path: "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
-            trigger_path: "redist/redist-server-preview-publicized/**"
-          - variant: "server-publicized"
-            nuspec_path: "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec"
-            trigger_path: "redist/redist-server-publicized/**"
       fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.load-variants.outputs.variants) }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
-        # Fetches all history for the tj-actions/changed-files to work correctly on push
+        # Full history so we can diff the push range for per-variant change detection.
         fetch-depth: 0
-
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v47
-      with:
-        files: |
-          ${{ matrix.trigger_path }}
 
     - name: Determine if this variant should run
       id: check
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        DIR: ${{ matrix.dir }}
+        BEFORE_SHA: ${{ github.event.before }}
+        AFTER_SHA: ${{ github.sha }}
       run: |
-        SHOULD_RUN=false
-        # For manual triggers, check the input
-        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          if [[ "${{ github.event.inputs.variant }}" == "all" || "${{ github.event.inputs.variant }}" == "${{ matrix.variant }}" ]]; then
-            SHOULD_RUN=true
+        set -euo pipefail
+        should_run=false
+        if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+          # load-variants already filtered the matrix to the requested variant(s).
+          should_run=true
+        else
+          # Native git diff replaces tj-actions/changed-files (one less third-party
+          # action). The Update pipeline squash-merges one variant per commit, so
+          # github.event.before is the prior master tip; fall back to HEAD~1.
+          before="$BEFORE_SHA"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            before="HEAD~1"
           fi
-        # For push triggers, use the changed-files output
-        elif [[ "${{ github.event_name }}" == "push" ]]; then
-          if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
-            SHOULD_RUN=true
+          if ! git rev-parse --verify "$before" >/dev/null 2>&1; then
+            # No usable baseline (e.g. first push to a branch) -> build to be safe.
+            should_run=true
+          elif git diff --name-only "$before" "$AFTER_SHA" -- "$DIR/" | grep -q .; then
+            should_run=true
           fi
         fi
-        echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
+        echo "Variant ${{ matrix.variant }} should_run=$should_run"
+        echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
 
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
-      uses: nuget/setup-nuget@v4
+      uses: nuget/setup-nuget@fd55a6f3b34392fa83fde1454582407d8c714123 # v4
       with:
         nuget-api-key: ${{ secrets.NUGET_DEPLOY_KEY }}
 
@@ -110,6 +103,6 @@ jobs:
       uses: ./.github/actions/nuget-pack
       id: nuget-pack
       with:
-        nuspec_path: ${{ matrix.nuspec_path }}
+        nuspec_path: ${{ matrix.nuspec }}
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true

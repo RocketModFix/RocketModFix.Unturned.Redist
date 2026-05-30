@@ -62,7 +62,11 @@ dotnet add package RocketModFix.Unturned.Redist.Server
 All updates and automation are handled entirely through GitHub Actions.  
 We don't run any of this on external servers — everything happens directly on GitHub.
 
-![Architecture](https://raw.githubusercontent.com/RocketModFix/RocketModFix.Unturned.Redist/master/architecture.jpg)
+📖 **See [ARCHITECTURE.md](ARCHITECTURE.md)** for the full picture: the workflows, the variant matrix (`.github/variants.json`), how the 10 redist directories map to 6 NuGet packages, and how to add a variant.
+
+![Architecture](architecture.svg)
+
+> Diagram source: [`architecture.svg`](architecture.svg) (crisp, version-controlled). `ARCHITECTURE.md` has the details and a Mermaid version.
 
 ---
 
