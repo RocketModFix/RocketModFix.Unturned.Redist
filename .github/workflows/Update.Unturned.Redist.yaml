@@ -116,6 +116,10 @@ jobs:
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
 
+          # '|| true': DepotDownloader can exit non-zero even on a successful
+          # manifest fetch. We don't trust its exit code — the 19-digit
+          # validation below is the real gate (a genuine auth/network failure
+          # yields no manifest id and still fails the step loudly).
           manifest_output=$(depot_downloader/DepotDownloader \
             -app "$APP_ID" \
             -depot "$APP_DEPOT_ID" \
@@ -123,7 +127,7 @@ jobs:
             -password "$STEAM_PASSWORD" \
             -manifest-only \
             "${beta_args[@]}" \
-            -dir redist/temp_depots)
+            -dir redist/temp_depots || true)
 
           current_manifest=$(printf '%s\n' "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1 || true)
 
@@ -172,11 +176,20 @@ jobs:
           APP_ID: ${{ matrix.appId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          # SteamCMD frequently exits non-zero even on a successful download, so
+          # its exit code is not a reliable failure signal. We log it but do not
+          # fail here — the redist tool below is the real gate (it errors if the
+          # game's Managed files aren't present), so a genuinely failed download
+          # still turns the run red.
+          rc=0
           if [ -z "$APP_BRANCH_NAME" ]; then
-            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -validate +quit
+            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -validate +quit || rc=$?
           else
-            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -beta "$APP_BRANCH_NAME" -validate +quit
+            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -beta "$APP_BRANCH_NAME" -validate +quit || rc=$?
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::steamcmd exited with code $rc (often non-fatal); the redist tool will fail if the game files are actually missing."
           fi
 
       - name: Run redist updater
