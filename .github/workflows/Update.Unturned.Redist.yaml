@@ -60,8 +60,15 @@ jobs:
     # fail-fast:false keeps the other variants running if one fails; we no
     # longer swallow failures with continue-on-error so a broken variant turns
     # the run red (and notify-failure files an issue).
+    # max-parallel:1 serializes the variants because a single Steam account can
+    # only hold one login session per LoginID/IP at a time — running the logins
+    # concurrently causes "AlreadyLoggedInElsewhere". Anonymous login (which
+    # would avoid this) works for the client app but NOT the server build, so
+    # credentials — and therefore serialization — are required. The probe-only
+    # path is fast, so serial execution stays well under the 15-minute cron.
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include: ${{ fromJson(needs.load-variants.outputs.variants) }}
 
