@@ -2344,6 +2344,15 @@
             Unsorted list of world space generators turned-on and fueled.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Bundles.getIconsBundle(System.String)">
+            <summary>
+            2026-05-11: previously, code using this called getBundle(path, true). If an asset bundle
+            matching path existed on disk it allowed customizing UI icons, but in practice nobody
+            used this (likely in part because it was undocumented). If an asset bundle *didn't*
+            exist, icons were loaded from the Resources folder. Now this returns a wrapper object
+            to load icons from the core asset bundle.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.ClientInvocationContext">
             <summary>
             Optional parameter for error logging.
@@ -3223,6 +3232,11 @@
             Flag in case levelObject is destroyed.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.StaticIconRef`1">
+            <summary>
+            Substitute for StaticResourceRefs pointing to icons.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.BuildRequestManager">
             <summary>
             When placing structures that snap to grid multiple requests can come
@@ -3851,7 +3865,7 @@
             *ATTEMPTS* to replace IPv4 address(es) with <see cref="P:SDG.Unturned.Logs.RedactionReplacement"/>.
             Should only be called if <see cref="P:SDG.Unturned.Logs.ShouldRedactLogs"/> is enabled.
             Case-by-case redaction should be preferred for performance reasons over using this function. This function
-            is intended for third-party messages (e.g., BattlEye) that we don't have control over.
+            is intended for third-party messages (e.g., anti-cheat) that we don't have control over.
             </summary>
             <returns>True if message was modified.</returns>
         </member>
@@ -3876,93 +3890,14 @@
             Doesn't apply if handle is currently being dragged.
             </summary>
         </member>
-        <member name="T:SDG.Unturned.ConfigWarnIfTrueAttribute">
+        <member name="F:SDG.Unturned.ServerConfigData.BattlEye_Secure">
             <summary>
-            When this attribute is enabled a warning is shown in the server lobby.
-            Applied to options which reduce accessibility.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Icon">
-            <summary>
-            URL of a 64x64 image shown in the upper-left of the server lobby menu.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Thumbnail">
-            <summary>
-            URL of a 32x32 image shown in the server list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Hint">
-            <summary>
-            Short description underneath the server name in the server lobby menu.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Full">
-            <summary>
-            Long description in the lower-right of the server lobby menu.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Server_List">
-            <summary>
-            Short description underneath the server name in the server list.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Login_Token">
-            <summary>
-            Documentation: https://docs.smartlydressedgames.com/en/stable/servers/game-server-login-tokens.html
-            To generate a new token visit: https://steamcommunity.com/dev/managegameservers
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.BookmarkHost">
-             <summary>
-             IP address, DNS name, or a web address (to perform GET request) to advertise.
-            
-             Servers not using Fake IP can specify just a DNS entry. This way if server's IP changes clients can rejoin.
-             For example, if you own the "example.com" domain you could add an A record "myunturnedserver" pointing at
-             your game server IP and set that record here "myunturnedserver.example.com".
-             
-             Servers using Fake IP are assigned random ports at startup, but can implement a web API endpoint to return
-             the IP and port. Clients perform a GET request if this string starts with http:// or https://. The returned
-             text can be an IP address or DNS name with optional query port override. (e.g., "127.0.0.1:27015")
-            
-             Documentation: https://docs.smartlydressedgames.com/en/stable/servers/bookmark-host.html
-             </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Is_Using_Anycast_Proxy">
-            <summary>
-            If true, the server lobby warns that in-game ping may be higher than shown.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Monetization">
-            <summary>
-            How the server is monetized (if at all).
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.BrowserConfigData.Link.Equals(System.Object)">
-            <summary>
-            Used to find overrides in json file.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.BrowserConfigData.Links">
-            <summary>
-            Buttons shown in the server lobby menu. For example:
-            ` Links
-            ` [
-            `     {
-            `         Message Visit our website!
-            `         URL https://smartlydressedgames.com/
-            `     }
-            ` ]
+            Whether to enable BattlEye Anti-Cheat.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ServerConfigData.VAC_Secure">
             <summary>
             Whether to enable Valve Anti-Cheat.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.ServerConfigData.BattlEye_Secure">
-            <summary>
-            Whether to enable BattlEye Anti-Cheat.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ServerConfigData.Max_Ping_Milliseconds">
@@ -4122,6 +4057,85 @@
             <summary>
             Longer than server timeout so that ideally more context is logged on the server
             rather than just "client disconnected."
+            </summary>
+        </member>
+        <member name="T:SDG.Unturned.ConfigWarnIfTrueAttribute">
+            <summary>
+            When this attribute is enabled a warning is shown in the server lobby.
+            Applied to options which reduce accessibility.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Icon">
+            <summary>
+            URL of a 64x64 image shown in the upper-left of the server lobby menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Thumbnail">
+            <summary>
+            URL of a 32x32 image shown in the server list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Hint">
+            <summary>
+            Short description underneath the server name in the server lobby menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Full">
+            <summary>
+            Long description in the lower-right of the server lobby menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Desc_Server_List">
+            <summary>
+            Short description underneath the server name in the server list.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Login_Token">
+            <summary>
+            Documentation: https://docs.smartlydressedgames.com/en/stable/servers/game-server-login-tokens.html
+            To generate a new token visit: https://steamcommunity.com/dev/managegameservers
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.BookmarkHost">
+             <summary>
+             IP address, DNS name, or a web address (to perform GET request) to advertise.
+            
+             Servers not using Fake IP can specify just a DNS entry. This way if server's IP changes clients can rejoin.
+             For example, if you own the "example.com" domain you could add an A record "myunturnedserver" pointing at
+             your game server IP and set that record here "myunturnedserver.example.com".
+             
+             Servers using Fake IP are assigned random ports at startup, but can implement a web API endpoint to return
+             the IP and port. Clients perform a GET request if this string starts with http:// or https://. The returned
+             text can be an IP address or DNS name with optional query port override. (e.g., "127.0.0.1:27015")
+            
+             Documentation: https://docs.smartlydressedgames.com/en/stable/servers/bookmark-host.html
+             </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Is_Using_Anycast_Proxy">
+            <summary>
+            If true, the server lobby warns that in-game ping may be higher than shown.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Monetization">
+            <summary>
+            How the server is monetized (if at all).
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.BrowserConfigData.Link.Equals(System.Object)">
+            <summary>
+            Used to find overrides in json file.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.BrowserConfigData.Links">
+            <summary>
+            Buttons shown in the server lobby menu. For example:
+            ` Links
+            ` [
+            `     {
+            `         Message Visit our website!
+            `         URL https://smartlydressedgames.com/
+            `     }
+            ` ]
             </summary>
         </member>
         <member name="F:SDG.Unturned.ItemsConfigData.Spawn_Chance">
@@ -6638,9 +6652,9 @@
             Client providing Steam login token.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.EServerMessage.BattlEye">
+        <member name="F:SDG.Unturned.EServerMessage.ThirdPartyAntiCheat">
             <summary>
-            Client sending BattlEye payload to server.
+            Client sending thirdparty anti-cheat payload to server.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EServerMessage.PingRequest">
@@ -7038,6 +7052,16 @@
             Moves highlighting plugin dependency out of SDK release.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.ModInfo.Name">
+            <summary>
+            Name shown in the main menu.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ModInfo.Creators">
+            <summary>
+            Author name shown in the main menu.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.InteractableSign.text">
             <summary>
             Actual unfiltered text.
@@ -7091,21 +7115,6 @@
             Path to directory containing "Editor", "Menu", "Player", "Curse_Words.txt", etc files.
             </summary>
         </member>
-        <member name="M:SDG.Unturned.Provider.battlEyeClientSendPacket(System.IntPtr,System.Int32)">
-            <summary>
-            Called clientside by BattlEye when it needs us to send a packet to the server.
-            </summary>
-        </member>
-        <member name="E:SDG.Unturned.Provider.onBattlEyeKick">
-            <summary>
-            Event for plugins when BattlEye wants to kick a player.
-            </summary>
-        </member>
-        <member name="M:SDG.Unturned.Provider.battlEyeServerSendPacket(System.Int32,System.IntPtr,System.Int32)">
-            <summary>
-            Called serverside by BattlEye when it needs us to send a packet to a player.
-            </summary>
-        </member>
         <member name="M:SDG.Unturned.Provider.updateRichPresence">
             <summary>
             Call whenever something impacting rich presence changes for example loading a server or changing lobbies.
@@ -7126,9 +7135,9 @@
             Set after initial response is received.
             </summary>
         </member>
-        <member name="P:SDG.Unturned.Provider.IsBattlEyeActiveOnCurrentServer">
+        <member name="P:SDG.Unturned.Provider.IsThirdpartyAntiCheatActiveOnCurrentServer">
             <summary>
-            On client, is current server protected by BattlEye?
+            On client, is current server protected by thirdparty anti-cheat?
             Set after initial response is received.
             </summary>
         </member>
@@ -7303,10 +7312,10 @@
             Set on clients after initial response is received.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.Provider.isBattlEyeActive">
+        <member name="F:SDG.Unturned.Provider.isThirdpartyAntiCheatActive">
             <summary>
-            Set on the server when initializing BattlEye API.
-            Used to notify pending clients whether BE is active.
+            Set on the server when initializing thirdparty anti-cheat API.
+            Used to notify pending clients whether thirdparty anti-cheat is active.
             Set on clients after initial response is received.
             </summary>
         </member>
@@ -7478,6 +7487,11 @@
             If hosting a server, get the game traffic port.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Provider.GetModInfo">
+            <summary>
+            Non-null if this is a custom build of the game.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.Provider._modeConfigDataOverrides">
             <summary>
             Populated when parsing modeConfigData. Level overrides check whether a property is overridden here before applying.
@@ -7636,6 +7650,21 @@
         <member name="F:SDG.Unturned.Provider.clUnlockSteamAchievements">
             <summary>
             If specified, all Steam achievements are unlocked during startup.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Provider.battlEyeClientSendPacket(System.IntPtr,System.Int32)">
+            <summary>
+            Called clientside by BattlEye when it needs us to send a packet to the server.
+            </summary>
+        </member>
+        <member name="E:SDG.Unturned.Provider.onBattlEyeKick">
+            <summary>
+            Event for plugins when BattlEye wants to kick a player.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.Provider.battlEyeServerSendPacket(System.Int32,System.IntPtr,System.Int32)">
+            <summary>
+            Called serverside by BattlEye when it needs us to send a packet to a player.
             </summary>
         </member>
         <member name="M:SDG.Unturned.CosmeticPreviewCapture.RenderDefaultCharacter">
@@ -7810,6 +7839,11 @@
             Unlike format, this returns string.Empty if key doesn't exist.
             </summary>
         </member>
+        <member name="M:SDG.Unturned.Local.FormatEnglishOrEmpty(System.String)">
+            <summary>
+            If active language is not English always reads from English fallback.
+            </summary>
+        </member>
         <member name="F:SDG.Unturned.PlayerDashboardCraftingUI.loadedBlueprints">
             <summary>
             List of all loaded blueprints potentially craftable by player. Updated when assets are refreshed. This
@@ -7887,6 +7921,17 @@
             This overload doesn't support legacy Condition_# format.
             </summary>
         </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
+            <summary>
+            Each quality tier has different rarities.
+            Legendary: 5% Epic: 20% Rare: 75%
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
+            <summary>
+            Each item has an equal chance regardless of quality.
+            </summary>
+        </member>
         <member name="T:SDG.Unturned.TextChatEventHook">
             <summary>
             Can be added to any GameObject to receive text chat events.
@@ -7946,17 +7991,6 @@
         <member name="F:SDG.Unturned.TextChatEventHook.OnTriggered">
             <summary>
             Invoked when a player message passes the filters.
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Original">
-            <summary>
-            Each quality tier has different rarities.
-            Legendary: 5% Epic: 20% Rare: 75%
-            </summary>
-        </member>
-        <member name="F:SDG.Unturned.EBoxProbabilityModel.Equalized">
-            <summary>
-            Each item has an equal chance regardless of quality.
             </summary>
         </member>
         <member name="T:SDG.Unturned.EServerListCurationAction">
@@ -11393,9 +11427,9 @@
             Allows foreach loop to iterate Vector2Int within RegionBoundsInt.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.SteamPlayer.battlEyeId">
+        <member name="F:SDG.Unturned.SteamPlayer.thirdpartyAntiCheatId">
             <summary>
-            Not an actual Steam ID or BattlEye ID, instead this is used to map player references to and from BE.
+            Not an actual external ID, instead this is used to map player references to and from thirdparty anti-cheat systems.
             </summary>
         </member>
         <member name="F:SDG.Unturned.SteamPlayer.skinItems">
@@ -13691,9 +13725,9 @@
             VAC status advertised on server list does not match during connect.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_BATTLEYE_ADVERTISEMENT_MISMATCH">
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_THIRDPARTYAC_ADVERTISEMENT_MISMATCH">
             <summary>
-            BattlEye status advertised on server list does not match during connect.
+            Third-party anti-cheat status advertised on server list does not match during connect.
             </summary>
         </member>
         <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.SERVER_MAXPLAYERS_ADVERTISEMENT_MISMATCH">
@@ -13741,6 +13775,16 @@
             <summary>
             Server limits how many clients are joining from the same IP address.
             (public issue #5001)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.MOD_NAME_MISMATCH">
+            <summary>
+            Provider.GetModInfo().Name did not match between client and server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamConnectionFailureInfo.MOD_VERSION_MISMATCH">
+            <summary>
+            Provider.GetModInfo().Version did not match between client and server.
             </summary>
         </member>
         <member name="F:SDG.Unturned.PlayerMovement.SKIN_WIDTH">
@@ -15583,6 +15627,11 @@
             Called on the client to notify the server of admin usage changes (if any).
             </summary>
         </member>
+        <member name="P:SDG.Unturned.Player.WantsThirdPartyAnticheatDebugMessages">
+            <summary>
+            Older versions had a console command to request enabling this. It's only kept in case plugins were setting it.
+            </summary>
+        </member>
         <member name="M:SDG.Unturned.Player.teleportToRandomSpawnPoint">
             <summary>
             Teleport to a random player spawn designated in the level.
@@ -16033,6 +16082,12 @@
         <member name="F:SDG.Unturned.VolumeManagerBase.allManagers">
             <summary>
             Auto-registering list of volume manager subclasses for level editor.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.VolumeManager`2.GetOverlapTestVolumes(UnityEngine.Vector3)">
+            <summary>
+            Note: some caller code (e.g., getWaterSurfaceElevation) assumes this returns all results
+            on the Y axis. (I.e., that regionalVolumes only sorts on the XZ plane.)
             </summary>
         </member>
         <member name="M:SDG.Unturned.VolumeManager`2.InitStaticVolumes">
@@ -18020,6 +18075,16 @@
             Used in a test scene to quickly test UI Toolkit implementation.
             </summary>
         </member>
+        <member name="T:SDG.Unturned.IconsBundle">
+            <summary>
+            See Bundles.getIconsBundle.
+            </summary>
+        </member>
+        <member name="M:SDG.Unturned.IconsBundle.load``1(System.String)">
+            <summary>
+            In practice, T is a Texture2D or a Sprite.
+            </summary>
+        </member>
         <member name="P:SDG.Unturned.Dedicator.IsDedicatedServer">
             <summary>
             Is the application running as a headless server?
@@ -19142,6 +19207,16 @@
             <summary>
             Server limits how many clients are joining from the same IP address.
             (public issue #5001)
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamRejection.MOD_NAME_MISMATCH">
+            <summary>
+            Provider.GetModInfo().Name did not match between client and server.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.ESteamRejection.MOD_VERSION_MISMATCH">
+            <summary>
+            Provider.GetModInfo().Version did not match between client and server.
             </summary>
         </member>
         <member name="T:SDG.Unturned.VehicleEventHook">
@@ -20470,9 +20545,9 @@
             Should be converted to an RPC. Leftover from prior to net messaging code.
             </summary>
         </member>
-        <member name="F:SDG.Unturned.EClientMessage.BattlEye">
+        <member name="F:SDG.Unturned.EClientMessage.ThirdpartyAntiCheat">
             <summary>
-            Server sending BattlEye payload to client.
+            Server sending thirdparty anti-cheat payload to client.
             </summary>
         </member>
         <member name="F:SDG.Unturned.EClientMessage.QueuePositionChanged">
@@ -20864,6 +20939,12 @@
         <member name="F:SDG.Unturned.WebImage.texture">
             <summary>
             If set, we are responsible for destroying texture.
+            </summary>
+        </member>
+        <member name="F:SDG.Unturned.Level.BUILD_INDEX_SETUP">
+            <summary>
+            The main/entry scene was originally called "Setup" in the same folder as other scenes
+            but has been moved to the project root and renamed "GameStartup" to be easier to find.
             </summary>
         </member>
         <member name="M:SDG.Unturned.Level.checkSafeIncludingClipVolumes(UnityEngine.Vector3)">
@@ -22143,6 +22224,11 @@
         <member name="M:SDG.Provider.TempSteamworksEconomy.initializeClient">
             <summary>
             Not called on dedicated server.
+            </summary>
+        </member>
+        <member name="M:SDG.Provider.TempSteamworksEconomy.initialize">
+            <summary>
+            Moved out of constructor so that it can access Provider.steamAppInstallDirectory.
             </summary>
         </member>
         <member name="T:SDG.Provider.SteamGetInventoryResponse">
