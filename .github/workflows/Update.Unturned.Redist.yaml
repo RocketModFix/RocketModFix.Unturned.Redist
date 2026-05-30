@@ -6,104 +6,69 @@ on:
   workflow_dispatch:
     inputs:
       variant:
-        description: 'Which variant to update'
+        description: 'A variant name from .github/variants.json, or "all"'
         required: true
         default: 'all'
-        type: choice
-        options:
-          - all
-          - client
-          - server
-          - server-preview
-          - client-preview
-          - server-preview-old
-          - client-preview-old
-          - client-publicized
-          - server-publicized
-          - client-preview-publicized
-          - server-preview-publicized
+        type: string
 
 permissions:
   contents: write
-  packages: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: unturned-redist-update-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  determine-variants:
-    name: "Determine Variants to Run"
+  # Single source of truth: the variant matrix lives in .github/variants.json.
+  # This job loads it (optionally filtered by the workflow_dispatch input) and
+  # exposes it as a matrix for update_redist. To add/remove a variant, edit
+  # .github/variants.json only.
+  load-variants:
+    name: "Load Variants"
     runs-on: ubuntu-latest
     outputs:
-      variants: ${{ steps.set_variants.outputs.variants }}
+      variants: ${{ steps.load.outputs.variants }}
     steps:
-      - name: Set variants
-        id: set_variants
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            if [ "$INPUT_VARIANT" = "all" ]; then
-              all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old" "client-publicized" "server-publicized" "client-preview-publicized" "server-preview-publicized")
-              variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
-              echo "variants=$variants_json" >> $GITHUB_OUTPUT
-            else
-              echo "variants=[\"${INPUT_VARIANT}\"]" >> $GITHUB_OUTPUT
-            fi
-          else
-            all_variants=("client" "server" "server-preview" "client-preview" "server-preview-old" "client-preview-old" "client-publicized" "server-publicized" "client-preview-publicized" "server-preview-publicized")
-            variants_json=$(printf '%s\n' "${all_variants[@]}" | jq -R . | jq -s -c .)
-            echo "variants=$variants_json" >> $GITHUB_OUTPUT
-          fi
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Load variant matrix
+        id: load
         env:
           INPUT_VARIANT: ${{ github.event.inputs.variant }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_VARIANT:-}" ] && [ "$INPUT_VARIANT" != "all" ]; then
+            if ! jq -e --arg v "$INPUT_VARIANT" 'any(.[]; .variant == $v)' .github/variants.json >/dev/null; then
+              echo "::error::Unknown variant '$INPUT_VARIANT'. Valid variants:"
+              jq -r '.[].variant' .github/variants.json
+              exit 1
+            fi
+            variants=$(jq -c --arg v "$INPUT_VARIANT" '[.[] | select(.variant == $v)]' .github/variants.json)
+          else
+            variants=$(jq -c '.' .github/variants.json)
+          fi
+          echo "variants=$variants" >> "$GITHUB_OUTPUT"
 
   update_redist:
-    name: "Update Redist"
+    name: "Update ${{ matrix.variant }}"
     runs-on: ubuntu-latest
-    needs: determine-variants
-    continue-on-error: true
+    needs: load-variants
+    # fail-fast:false keeps the other variants running if one fails; we no
+    # longer swallow failures with continue-on-error so a broken variant turns
+    # the run red (and notify-failure files an issue).
     strategy:
-      matrix:
-        variant: ${{ fromJson(needs.determine-variants.outputs.variants) }}
       fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.load-variants.outputs.variants) }}
 
     steps:
-      - name: Determine APP_ID, APP_BRANCH_NAME, APP_DEPOT_ID, and REDIST_DIR
-        id: vars
-        continue-on-error: true
-        run: |
-          if [[ "${{ matrix.variant }}" == client || "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == client-preview-old ]]; then
-            echo "APP_ID=304930" >> $GITHUB_ENV
-            echo "APP_DEPOT_ID=304931" >> $GITHUB_ENV
-          else
-            echo "APP_ID=1110390" >> $GITHUB_ENV
-            echo "APP_DEPOT_ID=1110391" >> $GITHUB_ENV
-          fi
+      - name: Generate branch name
+        run: echo "BRANCH_NAME=redist-update/${{ matrix.variant }}" >> "$GITHUB_ENV"
 
-          if [[ "${{ matrix.variant }}" == client-preview || "${{ matrix.variant }}" == server-preview || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == server-preview-publicized || "${{ matrix.variant }}" == client-preview-old || "${{ matrix.variant }}" == server-preview-old ]]; then
-            echo "APP_BRANCH_NAME=preview" >> $GITHUB_ENV
-          fi
-
-          case "${{ matrix.variant }}" in
-            client-preview) echo "REDIST_DIR=redist/redist-client-preview" >> $GITHUB_ENV ;;
-            server-preview) echo "REDIST_DIR=redist/redist-server-preview" >> $GITHUB_ENV ;;
-            client-preview-old) echo "REDIST_DIR=redist/redist-client-preview-old" >> $GITHUB_ENV ;;
-            server-preview-old) echo "REDIST_DIR=redist/redist-server-preview-old" >> $GITHUB_ENV ;;
-            client) echo "REDIST_DIR=redist/redist-client" >> $GITHUB_ENV ;;
-            server) echo "REDIST_DIR=redist/redist-server" >> $GITHUB_ENV ;;
-            client-publicized) echo "REDIST_DIR=redist/redist-client-publicized" >> $GITHUB_ENV ;;
-            server-publicized) echo "REDIST_DIR=redist/redist-server-publicized" >> $GITHUB_ENV ;;
-            client-preview-publicized) echo "REDIST_DIR=redist/redist-client-preview-publicized" >> $GITHUB_ENV ;;
-            server-preview-publicized) echo "REDIST_DIR=redist/redist-server-preview-publicized" >> $GITHUB_ENV ;;
-            *) echo "REDIST_DIR=redist/redist-unknown" >> $GITHUB_ENV ;;
-          esac
-
-          # Generate unique branch name
-          timestamp=$(date +%Y%m%d-%H%M%S)
-          echo "BRANCH_NAME=redist-update/${{ matrix.variant }}-${timestamp}" >> $GITHUB_ENV
-      
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -117,61 +82,77 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
           DOTNET_CLI_TELEMETRY_OPTOUT: true
         with:
-          dotnet-version: |
-            9.x
-            6.0.x
+          # UnturnedRedistUpdateTool targets net9; DepotDownloader needs net8
+          # (its self-contained release runs on 9.x). .NET 6 ran neither.
+          dotnet-version: 9.x
 
       - name: Download depot downloader
-        uses: robinraju/release-downloader@v1
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
         with:
           repository: SteamRE/DepotDownloader
           latest: true
           fileName: DepotDownloader-linux-x64.zip
           out-file-path: depot_downloader
-          tag: "DepotDownloader_3.4.0" # Pin it's version to avoid breaking changes.
+          tag: "DepotDownloader_3.4.0" # Pin its version to avoid breaking changes.
           extract: true
 
       - name: Compare current vs saved manifest
         id: compare_manifest
-        continue-on-error: true
+        env:
+          STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+          STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          APP_ID: ${{ matrix.appId }}
+          APP_DEPOT_ID: ${{ matrix.depotId }}
+          APP_BRANCH_NAME: ${{ matrix.branch }}
+          VARIANT: ${{ matrix.variant }}
         run: |
-          MANIFEST_FILE="redist/redist-manifests/.manifest.redist-${{ matrix.variant }}.txt"
-          
+          set -euo pipefail
+          MANIFEST_FILE="redist/redist-manifests/.manifest.redist-${VARIANT}.txt"
           mkdir -p redist/temp_depots
-
           chmod +x depot_downloader/DepotDownloader
-          manifest_output=$(depot_downloader/DepotDownloader \
-            -app $APP_ID \
-            -depot $APP_DEPOT_ID \
-            -username ${{ secrets.STEAM_USERNAME }} \
-            -password ${{ secrets.STEAM_PASSWORD }} \
-            -manifest-only \
-            -beta $APP_BRANCH_NAME \
-            -dir redist/temp_depots)
-              
-          current_manifest=$(echo "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1)
-          echo "Current manifest: $current_manifest"
-              
-          if [ -f "$MANIFEST_FILE" ]; then
-            previous_manifest=$(cat "$MANIFEST_FILE")
-          else
-            previous_manifest=""
+
+          beta_args=()
+          if [ -n "$APP_BRANCH_NAME" ]; then
+            beta_args=(-beta "$APP_BRANCH_NAME")
           fi
-              
-          echo "Previous manifest: $previous_manifest"
-              
+
+          manifest_output=$(depot_downloader/DepotDownloader \
+            -app "$APP_ID" \
+            -depot "$APP_DEPOT_ID" \
+            -username "$STEAM_USERNAME" \
+            -password "$STEAM_PASSWORD" \
+            -manifest-only \
+            "${beta_args[@]}" \
+            -dir redist/temp_depots)
+
+          current_manifest=$(printf '%s\n' "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1 || true)
+
+          # Fail loudly instead of silently treating an extraction failure as
+          # "no change" (which would leave the variant stale-but-green forever).
+          if ! [[ "$current_manifest" =~ ^[0-9]{19}$ ]]; then
+            echo "::error::Could not extract a 19-digit manifest id for ${VARIANT} (Steam auth/network issue or output-format change?)."
+            echo "----- DepotDownloader output (first 50 lines) -----"
+            printf '%s\n' "$manifest_output" | head -n 50
+            exit 1
+          fi
+          echo "Current manifest:  $current_manifest"
+
+          previous_manifest=""
+          [ -f "$MANIFEST_FILE" ] && previous_manifest=$(cat "$MANIFEST_FILE")
+          echo "Previous manifest: ${previous_manifest:-<none>}"
+
           if [ "$current_manifest" != "$previous_manifest" ]; then
             echo "Manifest changed"
             echo "$current_manifest" > "$MANIFEST_FILE"
-            echo "manifest_changed=true" >> $GITHUB_OUTPUT
+            echo "manifest_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "Manifest unchanged"
-            echo "manifest_changed=false" >> $GITHUB_OUTPUT
+            echo "manifest_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Download update tool
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
-        uses: robinraju/release-downloader@v1
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
         with:
           repository: RocketModFix/UnturnedRedistUpdateTool
           latest: true
@@ -181,123 +162,121 @@ jobs:
 
       - name: Setup SteamCMD
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
-        uses: CyberAndrii/setup-steamcmd@v1
+        uses: CyberAndrii/setup-steamcmd@afc45f145b95c175c3a3862d3ca84756537d48e8 # v1
 
       - name: Update game files
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        env:
+          STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+          STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          APP_ID: ${{ matrix.appId }}
+          APP_BRANCH_NAME: ${{ matrix.branch }}
         run: |
-          if [[ "$APP_BRANCH_NAME" == "" ]]; then
-            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -validate +quit
+          set -euo pipefail
+          if [ -z "$APP_BRANCH_NAME" ]; then
+            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -validate +quit
           else
-            steamcmd +force_install_dir $GITHUB_WORKSPACE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update $APP_ID -beta $APP_BRANCH_NAME -validate +quit
+            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -beta "$APP_BRANCH_NAME" -validate +quit
           fi
 
       - name: Run redist updater
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
-        continue-on-error: true
+        env:
+          IS_PREVIEW: ${{ matrix.preview }}
+          DO_PUBLICIZE: ${{ matrix.publicize }}
+          APP_ID: ${{ matrix.appId }}
+          REDIST_DIR: ${{ matrix.dir }}
+          EVENT_NAME: ${{ github.event_name }}
+          VARIANT: ${{ matrix.variant }}
         run: |
+          set -euo pipefail
           flags=""
-              
-          # Add --force flag for manual dispatch
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          # Manual dispatch forces a rebuild even if the tool thinks nothing changed.
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             flags="$flags --force"
           fi
-              
-          # Add --preview flag for preview variants
-          case "${{ matrix.variant }}" in
-            client-preview|server-preview)
-              flags="$flags --preview"
-              ;;
-          esac
-
-          # Add -update-files with all DLL files
+          # Only client-preview / server-preview emit the -preview<build> prerelease.
+          if [ "$IS_PREVIEW" = "true" ]; then
+            flags="$flags --preview"
+          fi
           flags="$flags -update-files Assembly-CSharp.dll,Assembly-CSharp.xml,SDG.NetPak.Runtime.xml,UnturnedDat.dll,UnityEx.dll,SystemEx.dll,SDG.NetTransport.dll,SDG.NetPak.Runtime.dll,SDG.HostBans.Runtime.dll,SDG.Glazier.Runtime.dll,com.rlabrecque.steamworks.net.dll"
-
-          if [[ "${{ matrix.variant }}" == client-publicized || "${{ matrix.variant }}" == server-publicized || "${{ matrix.variant }}" == client-preview-publicized || "${{ matrix.variant }}" == server-preview-publicized ]]; then
+          if [ "$DO_PUBLICIZE" = "true" ]; then
             flags="$flags -publicize Assembly-CSharp.dll"
           fi
-              
-          echo "Event name: ${{ github.event_name }}"
-          echo "Matrix variant: ${{ matrix.variant }}"
-          echo "Final flags: '$flags'"
-              
-          dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags
+          echo "Variant: $VARIANT | Event: $EVENT_NAME | Flags: '$flags'"
+          # Capture output so a failure (or a success that doesn't write .commit)
+          # leaves diagnostics in the log, mirroring the manifest step.
+          if ! tool_output=$(dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags 2>&1); then
+            echo "::error::Redist updater failed for ${VARIANT}."
+            echo "----- Tool output (first 80 lines) -----"
+            printf '%s\n' "$tool_output" | head -n 80
+            exit 1
+          fi
+          printf '%s\n' "$tool_output"
 
-      - name: Generate Commit Message
+      - name: Generate commit message
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
-        run: |
-          msg=$( cat .commit )
-          echo "message=$msg" >> "$GITHUB_OUTPUT"
         id: generate_commit_message
+        run: |
+          set -euo pipefail
+          if [ ! -s .commit ]; then
+            echo "::error::Redist updater did not produce a non-empty .commit file for ${{ matrix.variant }}."
+            exit 1
+          fi
+          {
+            echo "message<<COMMIT_EOF"
+            cat .commit
+            echo "COMMIT_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check for git changes
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
         id: check_git_changes
         run: |
           if git diff --quiet; then
-            echo "No changes detected after all processing for ${{ matrix.variant }}."
-            echo "has_git_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected after processing for ${{ matrix.variant }}."
+            echo "has_git_changes=false" >> "$GITHUB_OUTPUT"
           else
-            echo "Changes detected after all processing for ${{ matrix.variant }}"
-            echo "has_git_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected after processing for ${{ matrix.variant }}."
+            echo "has_git_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check for existing PRs
-        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
-        id: check_existing_prs
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Check for existing open PRs for this variant created by rocketmodfixadmin
-          existing_prs=$(gh pr list --state open --search "Auto-update ${{ matrix.variant }} redist files" --json number,title,url,author)
-          
-          # Filter to only include PRs created by rocketmodfixadmin
-          filtered_prs=$(echo "$existing_prs" | jq '[.[] | select(.author.login == "rocketmodfixadmin")]')
-          
-          if [ "$(echo "$filtered_prs" | jq length)" -gt 0 ]; then
-            echo "Found existing PRs for ${{ matrix.variant }} created by rocketmodfixadmin:"
-            echo "$filtered_prs" | jq -r '.[] | "- #\(.number): \(.title) by \(.author.login) (\(.url))"'
-            echo "has_existing_pr=true" >> $GITHUB_OUTPUT
-            echo "existing_pr_count=$(echo "$filtered_prs" | jq length)" >> $GITHUB_OUTPUT
-          else
-            echo "No existing PRs found for ${{ matrix.variant }} created by rocketmodfixadmin"
-            echo "has_existing_pr=false" >> $GITHUB_OUTPUT
-            echo "existing_pr_count=0" >> $GITHUB_OUTPUT
-          fi
-
+      # peter-evans/create-pull-request commits to a fixed-name branch and keeps
+      # the open PR continually updated until it is merged/closed; delete-branch
+      # cleans it up afterwards. No timestamped branches or existing-PR lookups.
       - name: Create Pull Request
-        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true' && steps.check_existing_prs.outputs.has_existing_pr == 'false'
+        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
         id: create_pr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           add-paths: |
             redist/*
           token: ${{ secrets.PAT }}
           branch: ${{ env.BRANCH_NAME }}
+          delete-branch: true
           base: master
-          commit-message: "${{ steps.generate_commit_message.outputs.message }}"
+          commit-message: ${{ steps.generate_commit_message.outputs.message }}
           title: "🤖 Auto-update ${{ matrix.variant }} redist files"
           committer: rocketmodfixadmin <rocketmodfixadmin@users.noreply.github.com>
           author: rocketmodfixadmin <rocketmodfixadmin@users.noreply.github.com>
           body: |
             ## Automated Redist Update - ${{ matrix.variant }}
-            
+
             This PR contains automatically updated redist files for the **${{ matrix.variant }}** variant.
-            
+
             ### Changes
             ${{ steps.generate_commit_message.outputs.message }}
-            
+
             ### Validation
-            🔄 Validation will run automatically when this PR is created.
-            
+            🔄 Validation (file presence, SHA-256 hashes, version monotonicity) runs automatically on this PR.
+
             ---
-            
+
             **Triggered by**: ${{ github.event_name == 'workflow_dispatch' && 'Manual dispatch' || 'Scheduled run' }}
             **Variant**: ${{ matrix.variant }}
             **Branch**: `${{ env.BRANCH_NAME }}`
-            
-            > This PR was automatically created by the Unturned Redist update workflow.
-            > Validation checks will run automatically. Review the changes carefully before merging.
+
+            > Automatically created by the Unturned Redist update workflow.
           draft: false
           labels: |
             automated
@@ -305,25 +284,49 @@ jobs:
             ${{ matrix.variant }}
 
       - name: Summary
+        if: always()
         run: |
-          echo "## Update Summary for ${{ matrix.variant }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Manifest Changed**: ${{ steps.compare_manifest.outputs.manifest_changed }}" >> $GITHUB_STEP_SUMMARY
-          if [[ "${{ steps.compare_manifest.outputs.manifest_changed }}" == "true" ]]; then
-            echo "- **Git Changes**: ${{ steps.check_git_changes.outputs.has_git_changes }}" >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ steps.check_git_changes.outputs.has_git_changes }}" == "true" ]]; then
-              echo "- **Existing PRs**: ${{ steps.check_existing_prs.outputs.existing_pr_count }}" >> $GITHUB_STEP_SUMMARY
-              if [[ "${{ steps.check_existing_prs.outputs.has_existing_pr }}" == "true" ]]; then
-                echo "- **Status**: Skipped (existing PR already pending)" >> $GITHUB_STEP_SUMMARY
-              else
-                echo "- **PR Created**: #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
-                echo "- **PR URL**: ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Update Summary for ${{ matrix.variant }}"
+            echo "- **Branch**: \`${{ env.BRANCH_NAME }}\`"
+            echo "- **Manifest Changed**: ${{ steps.compare_manifest.outputs.manifest_changed }}"
+            if [ "${{ steps.compare_manifest.outputs.manifest_changed }}" = "true" ]; then
+              echo "- **Git Changes**: ${{ steps.check_git_changes.outputs.has_git_changes }}"
+              if [ -n "${{ steps.create_pr.outputs.pull-request-number }}" ]; then
+                echo "- **PR**: #${{ steps.create_pr.outputs.pull-request-number }} (${{ steps.create_pr.outputs.pull-request-url }})"
               fi
             else
-              echo "- **Status**: No git changes detected after processing" >> $GITHUB_STEP_SUMMARY
+              echo "- **Status**: Skipped (no manifest changes)"
             fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Make silent breakage visible: if any scheduled update fails, open (or
+  # comment on) a tracking issue instead of relying on someone watching the
+  # Actions tab.
+  notify-failure:
+    name: "Notify on failure"
+    needs: [load-variants, update_redist]
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Open or update tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          marker="Redist auto-update workflow failed"
+          body=$(printf '⚠️ The scheduled redist update workflow failed.\n\nRun: %s\n\nA matrix variant errored (Steam auth/network, DepotDownloader, the redist tool, or PR creation). Check the run for the failing variant.' "$RUN_URL")
+          gh label create update-failure --color B60205 --description "Automated redist update failure" --force >/dev/null 2>&1 || true
+          existing=$(gh issue list --repo "$REPO" --state open --search "in:title \"$marker\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$REPO" --body "$body"
           else
-            echo "- **Status**: Skipped (no manifest changes)" >> $GITHUB_STEP_SUMMARY
+            gh issue create --repo "$REPO" --title "⚠️ $marker" --body "$body" --label update-failure
           fi
 
   workflow-keepalive:
@@ -332,4 +335,4 @@ jobs:
     permissions:
       actions: write
     steps:
-      - uses: liskin/gh-workflow-keepalive@v1
+      - uses: liskin/gh-workflow-keepalive@f72ff1a1336129f29bf0166c0fd0ca6cf1bcb38c # v1

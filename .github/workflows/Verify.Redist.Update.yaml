@@ -1,5 +1,10 @@
 name: "Verify.Redist.Update"
 
+# Uses `pull_request` (NOT `pull_request_target`): the validation steps below run
+# only PR-supplied data (file checks), never untrusted PR code, so they have no
+# access to repo secrets from a fork — which is what we want. The auto-merge /
+# auto-approve steps are additionally gated on the PR author being the trusted
+# bot (`rocketmodfixadmin`), a value GitHub sets and a fork cannot spoof.
 on:
   pull_request:
     branches:
@@ -25,45 +30,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Validate redist update
+      - name: Resolve variant and redist directory
         run: |
-          echo "🔍 Verifying redist update..."
-
-          VARIANT=$(echo "${GITHUB_HEAD_REF}" | cut -d'/' -f2 | sed -E 's/-[0-9]{8}-[0-9]{6}$//')
-          echo "Detected variant: $VARIANT"
-
-          case "$VARIANT" in
-            client-preview) REDIST_DIR="redist/redist-client-preview" ;;
-            server-preview) REDIST_DIR="redist/redist-server-preview" ;;
-            client-preview-old) REDIST_DIR="redist/redist-client-preview-old" ;;
-            server-preview-old) REDIST_DIR="redist/redist-server-preview-old" ;;
-            client) REDIST_DIR="redist/redist-client" ;;
-            server) REDIST_DIR="redist/redist-server" ;;
-            client-publicized) REDIST_DIR="redist/redist-client-publicized" ;;
-            server-publicized) REDIST_DIR="redist/redist-server-publicized" ;;
-            client-preview-publicized) REDIST_DIR="redist/redist-client-preview-publicized" ;;
-            server-preview-publicized) REDIST_DIR="redist/redist-server-preview-publicized" ;;
-            *) 
-              echo "Unknown variant: $VARIANT"
-              exit 1
-              ;;
-          esac
-
-          echo "📁 Validating redist directory: $REDIST_DIR"
-          
-          if [ ! -d "$REDIST_DIR" ]; then
-            echo "❌ Redist directory does not exist: $REDIST_DIR"
+          set -euo pipefail
+          # Automated redist PRs use the branch name redist-update/<variant>.
+          if [[ "${GITHUB_HEAD_REF}" != redist-update/* ]]; then
+            echo "::error::This validator only handles automated 'redist-update/<variant>' branches (got '${GITHUB_HEAD_REF}')."
             exit 1
           fi
+          VARIANT="${GITHUB_HEAD_REF##*/}"
+          echo "Detected variant: $VARIANT"
 
-          echo "✅ Redist directory exists: $REDIST_DIR"
+          # Single source of truth: map variant -> dir via .github/variants.json.
+          REDIST_DIR=$(jq -r --arg v "$VARIANT" '.[] | select(.variant == $v) | .dir' .github/variants.json)
+          IS_PREVIEW=$(jq -r --arg v "$VARIANT" '.[] | select(.variant == $v) | .preview' .github/variants.json)
+          if [ -z "$REDIST_DIR" ] || [ "$REDIST_DIR" = "null" ]; then
+            echo "::error::Unknown variant '$VARIANT' (not found in .github/variants.json)."
+            exit 1
+          fi
+          if [ ! -d "$REDIST_DIR" ]; then
+            echo "::error::Redist directory does not exist: $REDIST_DIR"
+            exit 1
+          fi
+          echo "✅ Variant=$VARIANT  Dir=$REDIST_DIR  Preview=$IS_PREVIEW"
 
-          echo "REDIST_DIR=$REDIST_DIR" >> $GITHUB_ENV
+          echo "VARIANT=$VARIANT" >> "$GITHUB_ENV"
+          echo "REDIST_DIR=$REDIST_DIR" >> "$GITHUB_ENV"
+          # Preview variants track version.preview.json; everyone else version.json.
+          if [ "$IS_PREVIEW" = "true" ]; then
+            echo "VERSION_FILE=$REDIST_DIR/version.preview.json" >> "$GITHUB_ENV"
+          else
+            echo "VERSION_FILE=$REDIST_DIR/version.json" >> "$GITHUB_ENV"
+          fi
 
-      - name: Validate DLL and XML files
+      - name: Validate required DLL and XML files
         run: |
-          echo "📋 Validating DLL and XML documentation files..."
-          
+          set -euo pipefail
+          echo "📋 Validating required DLL and XML documentation files in $REDIST_DIR..."
+
           REQUIRED_DLLS=(
             "Assembly-CSharp.dll"
             "SDG.NetPak.Runtime.dll"
@@ -75,73 +79,106 @@ jobs:
             "UnityEx.dll"
             "UnturnedDat.dll"
           )
-          
-          declare -A DLL_XML_MAPPING=(
-            ["Assembly-CSharp.dll"]="Assembly-CSharp.xml"
-            ["SDG.NetPak.Runtime.dll"]="SDG.NetPak.Runtime.xml"
-          )
-          
-          MISSING_DLLS=()
-          MISSING_XML_FILES=()
-          
-          echo "🔍 Checking required DLL files..."
-          for dll_file in "${REQUIRED_DLLS[@]}"; do
-            if [ -f "$REDIST_DIR/$dll_file" ]; then
-              echo "✅ Found $dll_file"
-            else
-              echo "❌ Missing $dll_file"
-              MISSING_DLLS+=("$dll_file")
-            fi
+          # DLLs that must ship with a matching XML doc.
+          XML_FOR=("Assembly-CSharp.dll" "SDG.NetPak.Runtime.dll")
+
+          missing=()
+          for dll in "${REQUIRED_DLLS[@]}"; do
+            if [ -f "$REDIST_DIR/$dll" ]; then echo "✅ $dll"; else echo "❌ $dll"; missing+=("$dll"); fi
           done
-          
-          echo "🔍 Checking XML documentation files..."
-          for dll_file in "${!DLL_XML_MAPPING[@]}"; do
-            xml_file="${DLL_XML_MAPPING[$dll_file]}"
-            
-            if [ -f "$REDIST_DIR/$dll_file" ]; then
-              if [ -f "$REDIST_DIR/$xml_file" ]; then
-                echo "✅ Found $xml_file (for $dll_file)"
-              else
-                echo "❌ Missing $xml_file (for $dll_file)"
-                MISSING_XML_FILES+=("$xml_file")
-              fi
-            fi
+          for dll in "${XML_FOR[@]}"; do
+            xml="${dll%.dll}.xml"
+            if [ -f "$REDIST_DIR/$xml" ]; then echo "✅ $xml"; else echo "❌ $xml"; missing+=("$xml"); fi
           done
-          
-          if [ ${#MISSING_DLLS[@]} -eq 0 ] && [ ${#MISSING_XML_FILES[@]} -eq 0 ]; then
-            echo "✅ All required DLL and XML documentation files are present"
-          else
-            if [ ${#MISSING_DLLS[@]} -gt 0 ]; then
-              echo ""
-              echo "❌ Missing required DLL files:"
-              for dll_file in "${MISSING_DLLS[@]}"; do
-                echo "  - $dll_file"
-              done
-            fi
-            if [ ${#MISSING_XML_FILES[@]} -gt 0 ]; then
-              echo ""
-              echo "❌ Missing XML documentation files:"
-              for xml_file in "${MISSING_XML_FILES[@]}"; do
-                echo "  - $xml_file"
-              done
-            fi
-            echo ""
-            echo "All required files must be present for the redistributable."
+
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Missing required files: ${missing[*]}"
             exit 1
           fi
+          echo "✅ All required files present."
+
+      - name: Validate file hashes against manifest.sha256.json
+        run: |
+          set -euo pipefail
+          HASH_FILE="$REDIST_DIR/manifest.sha256.json"
+          if [ ! -f "$HASH_FILE" ]; then
+            echo "::error::Missing $HASH_FILE — cannot verify file integrity."
+            exit 1
+          fi
+          echo "🔒 Verifying SHA-256 of each tracked file against manifest.sha256.json..."
+          # manifest.sha256.json: { "<filename>": "<sha256>" }. sha256sum -c wants
+          # "<hash>  <path>"; run it from inside the redist dir so names resolve.
+          (
+            cd "$REDIST_DIR"
+            jq -r 'to_entries[] | "\(.value)  \(.key)"' manifest.sha256.json | sha256sum -c -
+          )
+          echo "✅ All file hashes match the manifest."
+
+      - name: Validate this is a newer upstream build
+        run: |
+          set -euo pipefail
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "::error::Missing $VERSION_FILE."
+            exit 1
+          fi
+          NEW_VER=$(jq -r '.NuGetVersion' "$VERSION_FILE")
+          NEW_BUILD=$(jq -r '.BuildId' "$VERSION_FILE")
+          echo "PR:   version=$NEW_VER  buildId=$NEW_BUILD  ($VERSION_FILE)"
+
+          # Compare against the same file on the base branch (self-contained; no
+          # network dependency on nuget.org).
+          git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.ref }}" >/dev/null 2>&1 || true
+          BASE_JSON=$(git show "origin/${{ github.event.pull_request.base.ref }}:$VERSION_FILE" 2>/dev/null || echo "")
+          if [ -z "$BASE_JSON" ]; then
+            echo "No baseline on '${{ github.event.pull_request.base.ref }}' (new file) — skipping the check."
+            exit 0
+          fi
+          OLD_VER=$(printf '%s' "$BASE_JSON" | jq -r '.NuGetVersion')
+          OLD_BUILD=$(printf '%s' "$BASE_JSON" | jq -r '.BuildId')
+          echo "Base: version=$OLD_VER  buildId=$OLD_BUILD"
+
+          # Authoritative gate: the Steam build id. Build ids are monotonic per
+          # app+branch and increase even when a release reverts game content (a
+          # rollback is a NEW, higher build). A LOWER build id therefore means we
+          # processed an OLDER upstream build — a real regression — so fail.
+          # The game VERSION itself can legitimately dip on a preview rollback
+          # while the build id still rises, so we do NOT hard-fail on version.
+          # See ARCHITECTURE.md ("Why the build id, not the version").
+          if [[ "$NEW_BUILD" =~ ^[0-9]+$ ]] && [[ "$OLD_BUILD" =~ ^[0-9]+$ ]]; then
+            if [ "$NEW_BUILD" -lt "$OLD_BUILD" ]; then
+              echo "::error::Build id went backwards ($OLD_BUILD -> $NEW_BUILD): this is an older upstream build than what is already published."
+              exit 1
+            fi
+          else
+            echo "::warning::Non-numeric build id ('$OLD_BUILD' -> '$NEW_BUILD'); skipping build-id gate."
+          fi
+
+          # Informational only: surface a NuGet-version dip (e.g. an upstream
+          # rollback) without blocking — the build id already confirmed it is the
+          # newer build.
+          result=$(python3 .github/scripts/compare_nuget_version.py "$NEW_VER" "$OLD_VER" 2>/dev/null || echo "unknown")
+          case "$result" in
+            lt) echo "::warning::NuGet version decreased ($OLD_VER -> $NEW_VER) but the build id advanced — likely an upstream rollback. Allowing (newer build)." ;;
+            eq) echo "::warning::NuGet version unchanged ($NEW_VER); the publish step will fail on a duplicate version by design." ;;
+            gt) echo "✅ Newer build and higher version: $OLD_VER ($OLD_BUILD) -> $NEW_VER ($NEW_BUILD)." ;;
+            *)  echo "Build id advanced; version comparison skipped." ;;
+          esac
+
+      # --- Auto-merge: only for the trusted bot's PRs, when opted in via the
+      # repo variable. GITHUB_TOKEN approves (so the review shows as the bot
+      # reviewing); the PAT enables auto-merge (it can merge to a protected base).
+      - name: Auto-approve PR
+        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
+        uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363 # v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          review-message: "All checks passed (files, hashes, version). Auto-approved automated PR."
 
       - name: Enable PR automerge
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
-        uses: peter-evans/enable-pull-request-automerge@v3
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
         with:
           token: ${{ secrets.PAT }}
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: squash
-
-      - name: Auto-approve PR
-        if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
-        uses: hmarr/auto-approve-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ github.event.pull_request.number }}
-          review-message: "All checks passed. Auto approved automated PR."

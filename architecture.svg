@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="840" viewBox="0 0 1060 840" font-family="'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/>
+    </marker>
+    <style>
+      .title{font-size:21px;font-weight:700;fill:#1f2328}
+      .sub{font-size:12.5px;fill:#57606a}
+      .wfhdr{font-size:14px;font-weight:700;fill:#0969da}
+      .step{font-size:12.5px;fill:#1f2328}
+      .stepb{font-size:12.5px;font-weight:600;fill:#1f2328}
+      .white{font-size:13px;fill:#ffffff;font-weight:600}
+      .lbl{font-size:11.5px;fill:#57606a;font-style:italic}
+      .legend{font-size:11.5px;fill:#57606a}
+      .edge{stroke:#57606a;stroke-width:2;fill:none}
+      .edgeg{stroke:#1a7f37;stroke-width:2;fill:none}
+      .dash{stroke:#1a7f37;stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+    </style>
+  </defs>
+
+  <text x="40" y="40" class="title">RocketModFix.Unturned.Redist — automated update pipeline</text>
+  <text x="40" y="60" class="sub">Everything runs on GitHub Actions. No external servers. To add a variant, edit one file: .github/variants.json</text>
+
+  <!-- ============ Single source of truth (left sidebar) ============ -->
+  <rect x="40" y="300" width="210" height="150" rx="10" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+  <text x="145" y="328" text-anchor="middle" class="stepb" fill="#1a7f37">.github/variants.json</text>
+  <text x="145" y="352" text-anchor="middle" class="step">Single source of truth</text>
+  <text x="145" y="374" text-anchor="middle" class="step">10 variants → 6 packages</text>
+  <text x="145" y="398" text-anchor="middle" class="sub">appId · depotId · branch</text>
+  <text x="145" y="416" text-anchor="middle" class="sub">dir · preview · publicize</text>
+  <text x="145" y="438" text-anchor="middle" class="sub">consumed via jq + fromJson</text>
+  <!-- dashed feeds to the three matrix workflows -->
+  <path class="dash" d="M250,330 C300,270 300,220 326,212" marker-end="url(#arrowGreen)"/>
+  <path class="dash" d="M250,400 C300,430 300,455 326,468" marker-end="url(#arrowGreen)"/>
+  <path class="dash" d="M250,430 C295,560 300,635 326,648" marker-end="url(#arrowGreen)"/>
+  <text x="262" y="250" class="lbl">matrix</text>
+
+  <!-- ============ STEAM ============ -->
+  <rect x="330" y="80" width="470" height="62" rx="10" fill="#171a21" stroke="#66c0f4" stroke-width="2"/>
+  <text x="565" y="106" text-anchor="middle" class="white" fill="#66c0f4">STEAM · Valve</text>
+  <text x="565" y="127" text-anchor="middle" class="white" font-weight="400">Unturned (304930) · Dedicated Server (1110390) — default + preview branches</text>
+
+  <path class="edge" d="M565,142 L565,182" marker-end="url(#arrow)"/>
+  <text x="575" y="166" class="lbl">poll manifest every 15 min</text>
+
+  <!-- ============ (1) UPDATE WORKFLOW ============ -->
+  <rect x="330" y="182" width="470" height="232" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
+  <text x="346" y="205" class="wfhdr">① Update.Unturned.Redist.yaml · schedule */15 + dispatch</text>
+
+  <rect x="348" y="216" width="434" height="32" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="565" y="236" text-anchor="middle" class="step">Probe Steam manifest with DepotDownloader (per variant)</text>
+
+  <rect x="408" y="256" width="314" height="30" rx="15" fill="#fff8c5" stroke="#d4a72c"/>
+  <text x="565" y="275" text-anchor="middle" class="stepb">manifest changed?</text>
+
+  <rect x="348" y="296" width="434" height="46" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="565" y="314" text-anchor="middle" class="step">SteamCMD downloads game → UnturnedRedistUpdateTool</text>
+  <text x="565" y="332" text-anchor="middle" class="sub">copies/publicizes DLLs · writes version + manifest + .commit</text>
+
+  <rect x="348" y="350" width="434" height="46" rx="6" fill="#dafbe1" stroke="#1a7f37"/>
+  <text x="565" y="368" text-anchor="middle" class="stepb">create-pull-request → fixed branch</text>
+  <text x="565" y="386" text-anchor="middle" class="step">redist-update/&lt;variant&gt;  (one rolling PR per variant)</text>
+
+  <!-- no-change exit -->
+  <path class="edge" d="M722,271 L838,271" marker-end="url(#arrow)"/>
+  <rect x="838" y="254" width="150" height="34" rx="8" fill="#f6f8fa" stroke="#6e7781"/>
+  <text x="913" y="275" text-anchor="middle" class="sub">no change → exit</text>
+
+  <path class="edge" d="M565,414 L565,440" marker-end="url(#arrow)"/>
+  <text x="575" y="431" class="lbl">PR opened / updated</text>
+
+  <!-- ============ (2) VERIFY WORKFLOW ============ -->
+  <rect x="330" y="440" width="470" height="108" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
+  <text x="346" y="463" class="wfhdr">② Verify.Redist.Update.yaml · on pull_request</text>
+  <rect x="348" y="472" width="434" height="30" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="565" y="491" text-anchor="middle" class="step">Validate: files ✓ · SHA-256 hashes ✓ · version not a downgrade ✓</text>
+  <rect x="348" y="508" width="434" height="32" rx="6" fill="#dafbe1" stroke="#1a7f37"/>
+  <text x="565" y="528" text-anchor="middle" class="stepb">Auto-approve + squash auto-merge  (bot PRs, when enabled)</text>
+
+  <path class="edgeg" d="M565,548 L565,572" marker-end="url(#arrowGreen)"/>
+
+  <!-- master -->
+  <rect x="445" y="572" width="240" height="34" rx="17" fill="#1a7f37"/>
+  <text x="565" y="594" text-anchor="middle" class="white">merge → master</text>
+
+  <path class="edge" d="M565,606 L565,630" marker-end="url(#arrow)"/>
+
+  <!-- ============ (3) MATRIX WORKFLOW ============ -->
+  <rect x="330" y="630" width="470" height="92" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
+  <text x="346" y="653" class="wfhdr">③ Matrix.yaml (pack &amp; push) · on push to master</text>
+  <rect x="348" y="662" width="434" height="46" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="565" y="680" text-anchor="middle" class="step">Detect changed variant (native git diff)</text>
+  <text x="565" y="698" text-anchor="middle" class="stepb">nuget pack + push  (only the changed package)</text>
+
+  <path class="edge" d="M565,722 L565,748" marker-end="url(#arrow)"/>
+
+  <!-- ============ NUGET ============ -->
+  <rect x="375" y="748" width="380" height="58" rx="10" fill="#cfe2ff" stroke="#004880" stroke-width="2"/>
+  <text x="565" y="772" text-anchor="middle" class="stepb" fill="#004880">nuget.org</text>
+  <text x="565" y="792" text-anchor="middle" class="step">6 packages · Client / Server × stable · prerelease · publicized</text>
+
+  <!-- ============ (4) CLEANUP ============ -->
+  <rect x="838" y="560" width="182" height="92" rx="10" fill="#f6f8fa" stroke="#6e7781" stroke-width="2"/>
+  <text x="929" y="584" text-anchor="middle" class="stepb">④ Cleanup.RedistBranch</text>
+  <text x="929" y="606" text-anchor="middle" class="sub">on PR closed:</text>
+  <text x="929" y="624" text-anchor="middle" class="sub">lock PR conversation</text>
+  <text x="929" y="642" text-anchor="middle" class="sub">delete merged branch</text>
+  <path class="dash" d="M685,589 L834,600" stroke="#6e7781" marker-end="url(#arrow)"/>
+  <text x="700" y="582" class="lbl">on close</text>
+
+  <!-- ============ Failure path ============ -->
+  <rect x="838" y="182" width="182" height="60" rx="10" fill="#ffebe9" stroke="#cf222e" stroke-width="2"/>
+  <text x="929" y="206" text-anchor="middle" class="stepb" fill="#cf222e">on failure</text>
+  <text x="929" y="226" text-anchor="middle" class="sub">open / update tracking issue</text>
+  <path class="dash" d="M800,250 C820,235 820,225 834,218" stroke="#cf222e" marker-end="url(#arrow)"/>
+
+  <!-- legend -->
+  <text x="40" y="828" class="legend">Blue = GitHub Actions workflow   ·   Green = success / source of truth   ·   Amber = decision   ·   Red = failure   ·   Dashed = feeds / side-effect</text>
+</svg>

@@ -1,0 +1,102 @@
+[
+  {
+    "variant": "client",
+    "appId": "304930",
+    "depotId": "304931",
+    "branch": "",
+    "dir": "redist/redist-client",
+    "nuspec": "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec",
+    "preview": false,
+    "publicize": false
+  },
+  {
+    "variant": "server",
+    "appId": "1110390",
+    "depotId": "1110391",
+    "branch": "",
+    "dir": "redist/redist-server",
+    "nuspec": "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec",
+    "preview": false,
+    "publicize": false
+  },
+  {
+    "variant": "client-preview",
+    "appId": "304930",
+    "depotId": "304931",
+    "branch": "preview",
+    "dir": "redist/redist-client-preview",
+    "nuspec": "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec",
+    "preview": true,
+    "publicize": false
+  },
+  {
+    "variant": "server-preview",
+    "appId": "1110390",
+    "depotId": "1110391",
+    "branch": "preview",
+    "dir": "redist/redist-server-preview",
+    "nuspec": "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec",
+    "preview": true,
+    "publicize": false
+  },
+  {
+    "variant": "client-preview-old",
+    "appId": "304930",
+    "depotId": "304931",
+    "branch": "preview",
+    "dir": "redist/redist-client-preview-old",
+    "nuspec": "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec",
+    "preview": false,
+    "publicize": false
+  },
+  {
+    "variant": "server-preview-old",
+    "appId": "1110390",
+    "depotId": "1110391",
+    "branch": "preview",
+    "dir": "redist/redist-server-preview-old",
+    "nuspec": "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec",
+    "preview": false,
+    "publicize": false
+  },
+  {
+    "variant": "client-publicized",
+    "appId": "304930",
+    "depotId": "304931",
+    "branch": "",
+    "dir": "redist/redist-client-publicized",
+    "nuspec": "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
+    "preview": false,
+    "publicize": true
+  },
+  {
+    "variant": "server-publicized",
+    "appId": "1110390",
+    "depotId": "1110391",
+    "branch": "",
+    "dir": "redist/redist-server-publicized",
+    "nuspec": "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
+    "preview": false,
+    "publicize": true
+  },
+  {
+    "variant": "client-preview-publicized",
+    "appId": "304930",
+    "depotId": "304931",
+    "branch": "preview",
+    "dir": "redist/redist-client-preview-publicized",
+    "nuspec": "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
+    "preview": false,
+    "publicize": true
+  },
+  {
+    "variant": "server-preview-publicized",
+    "appId": "1110390",
+    "depotId": "1110391",
+    "branch": "preview",
+    "dir": "redist/redist-server-preview-publicized",
+    "nuspec": "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
+    "preview": false,
+    "publicize": true
+  }
+]
