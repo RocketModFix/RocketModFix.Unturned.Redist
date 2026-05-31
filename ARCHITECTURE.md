@@ -50,13 +50,24 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
   "dir": "redist/redist-client-preview",
   "nuspec": "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec",
   "preview": true,
-  "publicize": false
+  "publicize": false,
+  "anonymous": true,
+  "loginId": 10003
 }
 ```
 
 - `branch`: `""` = Steam default branch, `"preview"` = Steam `preview` beta branch.
 - `preview`: `true` only for the two variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
 - `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`).
+- `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **client** app downloads anonymously; the **server** build requires the account.
+- `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the manifest probes can run concurrently on one account (see below).
+
+### Steam login concurrency
+
+Steam allows only one session per account per *LoginID*, so concurrent logins with the same account would otherwise fail with `AlreadyLoggedInElsewhere`. Two mechanisms keep the matrix parallel:
+
+1. **Manifest probe (DepotDownloader)** — each variant uses its unique `loginId`, so all probes run in parallel; anonymous variants don't even use the account.
+2. **Download (`steamcmd`)** — `steamcmd` can't take a LoginID, so the `update_redist` job sets a `concurrency` group: anonymous variants get a unique group (fully parallel), while authenticated variants are grouped by `app+branch` (same Steam source → serialized; different sources → still parallel). In practice the client variants run fully parallel and the server variants serialize only within their shared source.
 
 ## The 4 sources → 10 directories → 6 packages
 
@@ -97,7 +108,7 @@ This lets the redist faithfully follow upstream rollbacks instead of getting stu
 ## How to add a new variant
 
 1. Create the redist directory and its `.nuspec` under `redist/` (matching the existing layout).
-2. Add **one object** to `.github/variants.json` with all fields (`variant`, `appId`, `depotId`, `branch`, `dir`, `nuspec`, `preview`, `publicize`).
+2. Add **one object** to `.github/variants.json` with all fields (`variant`, `appId`, `depotId`, `branch`, `dir`, `nuspec`, `preview`, `publicize`, `anonymous`, `loginId`). Give it a `loginId` not used by any other variant.
 
 That's it — `Update`, `Matrix`, and `Verify` all derive their matrices from that file. (The `workflow_dispatch` `variant` input is a free-form string validated against `variants.json`, so no dropdown to update.)
 

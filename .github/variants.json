@@ -7,7 +7,9 @@
     "dir": "redist/redist-client",
     "nuspec": "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
-    "publicize": false
+    "publicize": false,
+    "anonymous": true,
+    "loginId": 10001
   },
   {
     "variant": "server",
@@ -17,7 +19,9 @@
     "dir": "redist/redist-server",
     "nuspec": "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
-    "publicize": false
+    "publicize": false,
+    "anonymous": false,
+    "loginId": 10002
   },
   {
     "variant": "client-preview",
@@ -27,7 +31,9 @@
     "dir": "redist/redist-client-preview",
     "nuspec": "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": true,
-    "publicize": false
+    "publicize": false,
+    "anonymous": true,
+    "loginId": 10003
   },
   {
     "variant": "server-preview",
@@ -37,7 +43,9 @@
     "dir": "redist/redist-server-preview",
     "nuspec": "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": true,
-    "publicize": false
+    "publicize": false,
+    "anonymous": false,
+    "loginId": 10004
   },
   {
     "variant": "client-preview-old",
@@ -47,7 +55,9 @@
     "dir": "redist/redist-client-preview-old",
     "nuspec": "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
-    "publicize": false
+    "publicize": false,
+    "anonymous": true,
+    "loginId": 10005
   },
   {
     "variant": "server-preview-old",
@@ -57,7 +67,9 @@
     "dir": "redist/redist-server-preview-old",
     "nuspec": "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
-    "publicize": false
+    "publicize": false,
+    "anonymous": false,
+    "loginId": 10006
   },
   {
     "variant": "client-publicized",
@@ -67,7 +79,9 @@
     "dir": "redist/redist-client-publicized",
     "nuspec": "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
-    "publicize": true
+    "publicize": true,
+    "anonymous": true,
+    "loginId": 10007
   },
   {
     "variant": "server-publicized",
@@ -77,7 +91,9 @@
     "dir": "redist/redist-server-publicized",
     "nuspec": "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
-    "publicize": true
+    "publicize": true,
+    "anonymous": false,
+    "loginId": 10008
   },
   {
     "variant": "client-preview-publicized",
@@ -87,7 +103,9 @@
     "dir": "redist/redist-client-preview-publicized",
     "nuspec": "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
-    "publicize": true
+    "publicize": true,
+    "anonymous": true,
+    "loginId": 10009
   },
   {
     "variant": "server-preview-publicized",
@@ -97,6 +115,8 @@
     "dir": "redist/redist-server-preview-publicized",
     "nuspec": "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
-    "publicize": true
+    "publicize": true,
+    "anonymous": false,
+    "loginId": 10010
   }
 ]

@@ -64,6 +64,18 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.load-variants.outputs.variants) }}
+    # Steam allows only one session per account per LoginID. The DepotDownloader
+    # probe handles that with a unique -loginid per variant (see below), so
+    # probes run fully parallel. But steamcmd (the download step) has no LoginID,
+    # so two authenticated variants of the SAME Steam source downloading at once
+    # would still collide. This concurrency group serializes only those: each
+    # anonymous variant gets its own group (fully parallel), while authenticated
+    # variants are grouped by app+branch (same upstream source → serialized;
+    # different sources → still parallel). Anonymous client variants and distinct
+    # server sources all run concurrently.
+    concurrency:
+      group: redist-steam-${{ matrix.anonymous && matrix.variant || format('{0}-{1}', matrix.appId, matrix.branch) }}
+      cancel-in-progress: false
 
     steps:
       - name: Generate branch name
@@ -105,6 +117,8 @@ jobs:
           APP_DEPOT_ID: ${{ matrix.depotId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
           VARIANT: ${{ matrix.variant }}
+          ANONYMOUS: ${{ matrix.anonymous }}
+          LOGIN_ID: ${{ matrix.loginId }}
         run: |
           set -euo pipefail
           MANIFEST_FILE="redist/redist-manifests/.manifest.redist-${VARIANT}.txt"
@@ -116,6 +130,15 @@ jobs:
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
 
+          # -loginid makes each variant a distinct Steam session so probes can
+          # run concurrently without "AlreadyLoggedInElsewhere". Authenticated
+          # variants pass credentials; anonymous variants omit them (DepotDownloader
+          # defaults to the anonymous account, which works for the client app).
+          auth_args=(-loginid "$LOGIN_ID")
+          if [ "$ANONYMOUS" != "true" ]; then
+            auth_args+=(-username "$STEAM_USERNAME" -password "$STEAM_PASSWORD")
+          fi
+
           # '|| true': DepotDownloader can exit non-zero even on a successful
           # manifest fetch. We don't trust its exit code — the 19-digit
           # validation below is the real gate (a genuine auth/network failure
@@ -123,9 +146,8 @@ jobs:
           manifest_output=$(depot_downloader/DepotDownloader \
             -app "$APP_ID" \
             -depot "$APP_DEPOT_ID" \
-            -username "$STEAM_USERNAME" \
-            -password "$STEAM_PASSWORD" \
             -manifest-only \
+            "${auth_args[@]}" \
             "${beta_args[@]}" \
             -dir redist/temp_depots || true)
 
@@ -175,19 +197,29 @@ jobs:
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
           APP_ID: ${{ matrix.appId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
+          ANONYMOUS: ${{ matrix.anonymous }}
         run: |
           set -uo pipefail
+          # Anonymous variants (e.g. the client app) log in anonymously; the rest
+          # use the account credentials. steamcmd has no LoginID, so concurrent
+          # authenticated downloads of the same source are serialized by this
+          # job's concurrency group (see the job definition above).
+          if [ "$ANONYMOUS" = "true" ]; then
+            login_args=(+login anonymous)
+          else
+            login_args=(+login "$STEAM_USERNAME" "$STEAM_PASSWORD")
+          fi
+          beta_args=()
+          if [ -n "$APP_BRANCH_NAME" ]; then
+            beta_args=(-beta "$APP_BRANCH_NAME")
+          fi
           # SteamCMD frequently exits non-zero even on a successful download, so
           # its exit code is not a reliable failure signal. We log it but do not
           # fail here — the redist tool below is the real gate (it errors if the
           # game's Managed files aren't present), so a genuinely failed download
           # still turns the run red.
           rc=0
-          if [ -z "$APP_BRANCH_NAME" ]; then
-            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -validate +quit || rc=$?
-          else
-            steamcmd +force_install_dir "$GITHUB_WORKSPACE" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +app_update "$APP_ID" -beta "$APP_BRANCH_NAME" -validate +quit || rc=$?
-          fi
+          steamcmd +force_install_dir "$GITHUB_WORKSPACE" "${login_args[@]}" +app_update "$APP_ID" "${beta_args[@]}" -validate +quit || rc=$?
           if [ "$rc" -ne 0 ]; then
             echo "::warning::steamcmd exited with code $rc (often non-fatal); the redist tool will fail if the game files are actually missing."
           fi
