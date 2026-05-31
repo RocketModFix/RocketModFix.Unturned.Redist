@@ -15,14 +15,14 @@ A scheduled job polls Steam for new Unturned builds. When a build changes, it do
 
 ```mermaid
 flowchart TD
-    cron["schedule: every 15 min<br/>Update.Unturned.Redist.yaml"] --> probe{"DepotDownloader<br/>manifest changed?"}
+    cron["schedule: every 15 min<br/>redist-update.yaml"] --> probe{"DepotDownloader<br/>manifest changed?"}
     probe -- no --> done([exit quietly])
     probe -- yes --> dl["SteamCMD downloads game<br/>UnturnedRedistUpdateTool copies/publicizes DLLs<br/>writes version.json + manifest.sha256.json + .commit"]
     dl --> pr["create-pull-request<br/>branch: redist-update/&lt;variant&gt;"]
-    pr --> verify["Verify.Redist.Update.yaml<br/>files + SHA-256 + version monotonicity"]
+    pr --> verify["redist-verify.yaml<br/>files + SHA-256 + version monotonicity"]
     verify -- pass + opted in + bot author --> merge["auto-approve + squash auto-merge"]
-    merge --> push["push to master →<br/>RocketModFix.Unturned.Redist.Matrix.yaml<br/>nuget pack + push (changed variant only)"]
-    merge --> cleanup["Cleanup.RedistBranch.yaml<br/>lock PR + delete merged branch"]
+    merge --> push["push to master →<br/>redist-publish.yaml<br/>nuget pack + push (changed variant only)"]
+    merge --> cleanup["redist-cleanup.yaml<br/>lock PR + delete merged branch"]
 ```
 
 </details>
@@ -31,10 +31,10 @@ flowchart TD
 
 | Workflow | Trigger | Responsibility |
 | --- | --- | --- |
-| `Update.Unturned.Redist.yaml` | `schedule` (*/15) + `workflow_dispatch` | Poll Steam manifest per variant; on change, download + run the redist tool; open/update one PR per variant. Files an issue if a scheduled run fails. |
-| `Verify.Redist.Update.yaml` | `pull_request` to `master` touching `redist/**` | Validate the PR: required files present, SHA-256 hashes match `manifest.sha256.json`, version is not a downgrade. Auto-approve + enable squash auto-merge for the bot's PRs when `ALLOW_AUTO_MERGE_REDIST_PR` is `true`. |
-| `RocketModFix.Unturned.Redist.Matrix.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. |
-| `Cleanup.RedistBranch.yaml` | `pull_request: closed` | Lock the PR conversation; delete the branch **only if merged**. |
+| `redist-update.yaml` | `schedule` (*/15) + `workflow_dispatch` | Poll Steam manifest per variant; on change, download + run the redist tool; open/update one PR per variant. Files an issue if a scheduled run fails. |
+| `redist-verify.yaml` | `pull_request` to `master` touching `redist/**` | Validate the PR: required files present, SHA-256 hashes match `manifest.sha256.json`, version is not a downgrade. Auto-approve + enable squash auto-merge for the bot's PRs when `ALLOW_AUTO_MERGE_REDIST_PR` is `true`. |
+| `redist-publish.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. |
+| `redist-cleanup.yaml` | `pull_request: closed` | Lock the PR conversation; delete the branch **only if merged**. |
 
 External tool: [`RocketModFix/UnturnedRedistUpdateTool`](https://github.com/RocketModFix/UnturnedRedistUpdateTool) (net9). CLI: `dotnet UnturnedRedistUpdateTool.dll <unturned_path> <redist_dir> <app_id> [--force] [--preview] [-publicize <csv>] -update-files <csv>`. It copies (and optionally publicizes) the requested DLLs into `<redist_dir>`, and writes `version.json` (or `version.preview.json` with `--preview`), `manifest.sha256.json`, the `.nuspec` `<version>`, and a one-line `.commit` message.
 

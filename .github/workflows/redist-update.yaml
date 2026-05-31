@@ -1,4 +1,4 @@
-name: "Update.Unturned.Redist"
+name: "Redist Update"
 
 on:
   schedule:

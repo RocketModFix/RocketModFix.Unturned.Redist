@@ -48,7 +48,7 @@
 
   <!-- ============ (1) UPDATE WORKFLOW ============ -->
   <rect x="330" y="182" width="470" height="232" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
-  <text x="346" y="205" class="wfhdr">① Update.Unturned.Redist.yaml · schedule */15 + dispatch</text>
+  <text x="346" y="205" class="wfhdr">① redist-update.yaml · schedule */15 + dispatch</text>
 
   <rect x="348" y="216" width="434" height="32" rx="6" fill="#ffffff" stroke="#d0d7de"/>
   <text x="565" y="236" text-anchor="middle" class="step">Probe Steam manifest with DepotDownloader (per variant)</text>
@@ -74,7 +74,7 @@
 
   <!-- ============ (2) VERIFY WORKFLOW ============ -->
   <rect x="330" y="440" width="470" height="108" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
-  <text x="346" y="463" class="wfhdr">② Verify.Redist.Update.yaml · on pull_request</text>
+  <text x="346" y="463" class="wfhdr">② redist-verify.yaml · on pull_request</text>
   <rect x="348" y="472" width="434" height="30" rx="6" fill="#ffffff" stroke="#d0d7de"/>
   <text x="565" y="491" text-anchor="middle" class="step">Validate: files ✓ · SHA-256 hashes ✓ · version not a downgrade ✓</text>
   <rect x="348" y="508" width="434" height="32" rx="6" fill="#dafbe1" stroke="#1a7f37"/>
@@ -90,7 +90,7 @@
 
   <!-- ============ (3) MATRIX WORKFLOW ============ -->
   <rect x="330" y="630" width="470" height="92" rx="10" fill="#ddf4ff" stroke="#2088ff" stroke-width="2"/>
-  <text x="346" y="653" class="wfhdr">③ Matrix.yaml (pack &amp; push) · on push to master</text>
+  <text x="346" y="653" class="wfhdr">③ redist-publish.yaml · on push to master</text>
   <rect x="348" y="662" width="434" height="46" rx="6" fill="#ffffff" stroke="#d0d7de"/>
   <text x="565" y="680" text-anchor="middle" class="step">Detect changed variant (native git diff)</text>
   <text x="565" y="698" text-anchor="middle" class="stepb">nuget pack + push  (only the changed package)</text>
@@ -104,7 +104,7 @@
 
   <!-- ============ (4) CLEANUP ============ -->
   <rect x="838" y="560" width="182" height="92" rx="10" fill="#f6f8fa" stroke="#6e7781" stroke-width="2"/>
-  <text x="929" y="584" text-anchor="middle" class="stepb">④ Cleanup.RedistBranch</text>
+  <text x="929" y="584" text-anchor="middle" class="stepb">④ redist-cleanup.yaml</text>
   <text x="929" y="606" text-anchor="middle" class="sub">on PR closed:</text>
   <text x="929" y="624" text-anchor="middle" class="sub">lock PR conversation</text>
   <text x="929" y="642" text-anchor="middle" class="sub">delete merged branch</text>

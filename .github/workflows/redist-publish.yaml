@@ -1,4 +1,4 @@
-name: RocketModFix.Unturned.Redist.Matrix
+name: "Redist Publish"
 
 on:
   push:

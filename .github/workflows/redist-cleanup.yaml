@@ -1,4 +1,4 @@
-name: "Cleanup.RedistBranch"
+name: "Redist Cleanup"
 
 on:
   pull_request:

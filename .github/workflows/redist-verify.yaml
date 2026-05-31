@@ -1,4 +1,4 @@
-name: "Verify.Redist.Update"
+name: "Redist Verify"
 
 # Uses `pull_request` (NOT `pull_request_target`): the validation steps below run
 # only PR-supplied data (file checks), never untrusted PR code, so they have no
