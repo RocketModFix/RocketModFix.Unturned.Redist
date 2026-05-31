@@ -8,7 +8,7 @@
     "nuspec": "redist/redist-client/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
     "publicize": false,
-    "anonymous": true,
+    "anonymous": false,
     "loginId": 10001
   },
   {
@@ -20,7 +20,7 @@
     "nuspec": "redist/redist-server/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
     "publicize": false,
-    "anonymous": false,
+    "anonymous": true,
     "loginId": 10002
   },
   {
@@ -32,7 +32,7 @@
     "nuspec": "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": true,
     "publicize": false,
-    "anonymous": true,
+    "anonymous": false,
     "loginId": 10003
   },
   {
@@ -44,7 +44,7 @@
     "nuspec": "redist/redist-server-preview/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": true,
     "publicize": false,
-    "anonymous": false,
+    "anonymous": true,
     "loginId": 10004
   },
   {
@@ -56,7 +56,7 @@
     "nuspec": "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
     "publicize": false,
-    "anonymous": true,
+    "anonymous": false,
     "loginId": 10005
   },
   {
@@ -68,7 +68,7 @@
     "nuspec": "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
     "publicize": false,
-    "anonymous": false,
+    "anonymous": true,
     "loginId": 10006
   },
   {
@@ -80,7 +80,7 @@
     "nuspec": "redist/redist-client-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
     "publicize": true,
-    "anonymous": true,
+    "anonymous": false,
     "loginId": 10007
   },
   {
@@ -92,7 +92,7 @@
     "nuspec": "redist/redist-server-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
     "publicize": true,
-    "anonymous": false,
+    "anonymous": true,
     "loginId": 10008
   },
   {
@@ -104,7 +104,7 @@
     "nuspec": "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
     "preview": false,
     "publicize": true,
-    "anonymous": true,
+    "anonymous": false,
     "loginId": 10009
   },
   {
@@ -116,7 +116,7 @@
     "nuspec": "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
     "preview": false,
     "publicize": true,
-    "anonymous": false,
+    "anonymous": true,
     "loginId": 10010
   }
 ]

@@ -51,7 +51,7 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
   "nuspec": "redist/redist-client-preview/RocketModFix.Unturned.Redist.Client.nuspec",
   "preview": true,
   "publicize": false,
-  "anonymous": true,
+  "anonymous": false,
   "loginId": 10003
 }
 ```
@@ -59,7 +59,7 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 - `branch`: `""` = Steam default branch, `"preview"` = Steam `preview` beta branch.
 - `preview`: `true` only for the two variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
 - `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`).
-- `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **client** app downloads anonymously; the **server** build requires the account.
+- `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **server** build downloads anonymously (the anonymous account has the dedicated-server subscription); the **client** app's depot is *not* available anonymously, so client variants require the account.
 - `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the manifest probes can run concurrently on one account (see below).
 
 ### Steam login concurrency
@@ -67,7 +67,7 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 Steam allows only one session per account per *LoginID*, so concurrent logins with the same account would otherwise fail with `AlreadyLoggedInElsewhere`. Two mechanisms keep the matrix parallel:
 
 1. **Manifest probe (DepotDownloader)** — each variant uses its unique `loginId`, so all probes run in parallel; anonymous variants don't even use the account.
-2. **Download (`steamcmd`)** — `steamcmd` can't take a LoginID, so the `update_redist` job sets a `concurrency` group: anonymous variants get a unique group (fully parallel), while authenticated variants are grouped by `app+branch` (same Steam source → serialized; different sources → still parallel). In practice the client variants run fully parallel and the server variants serialize only within their shared source.
+2. **Download (`steamcmd`)** — `steamcmd` can't take a LoginID, so the `update_redist` job sets a `concurrency` group: anonymous variants get a unique group (fully parallel), while authenticated variants are grouped by `app+branch` (same Steam source → serialized; different sources → still parallel). In practice the **server** variants run fully parallel (anonymous) and the **client** variants serialize only within their shared source.
 
 ## The 4 sources → 10 directories → 6 packages
 
