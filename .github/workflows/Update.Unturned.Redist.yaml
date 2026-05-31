@@ -213,15 +213,32 @@ jobs:
           if [ -n "$APP_BRANCH_NAME" ]; then
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
-          # SteamCMD frequently exits non-zero even on a successful download, so
-          # its exit code is not a reliable failure signal. We log it but do not
-          # fail here — the redist tool below is the real gate (it errors if the
-          # game's Managed files aren't present), so a genuinely failed download
-          # still turns the run red.
-          rc=0
-          steamcmd +force_install_dir "$GITHUB_WORKSPACE" "${login_args[@]}" +app_update "$APP_ID" "${beta_args[@]}" -validate +quit || rc=$?
-          if [ "$rc" -ne 0 ]; then
-            echo "::warning::steamcmd exited with code $rc (often non-fatal); the redist tool will fail if the game files are actually missing."
+          # steamcmd is flaky: it can exit non-zero on success, and it can fail
+          # to finish a download transiently (Steam CDN hiccups, anonymous "No
+          # subscription" blips, or a self-update on first run). Its exit code is
+          # not a reliable signal, so we RETRY and gate on the real artifact:
+          # steamcmd only writes appmanifest_<appid>.acf once the install/update
+          # completes (this is the same "no appmanifest -> force update" remedy
+          # LinuxGSM uses). The redist tool needs that file, so checking it here
+          # turns a flaky download into a clear, retried failure instead of a
+          # cryptic FileNotFoundException downstream.
+          manifest_present() {
+            find "$GITHUB_WORKSPACE" -name "appmanifest_${APP_ID}.acf" -print -quit 2>/dev/null | grep -q .
+          }
+          attempts=4
+          for i in $(seq 1 "$attempts"); do
+            rc=0
+            steamcmd +force_install_dir "$GITHUB_WORKSPACE" "${login_args[@]}" +app_update "$APP_ID" "${beta_args[@]}" -validate +quit || rc=$?
+            if manifest_present; then
+              echo "Download complete on attempt $i/$attempts (steamcmd rc=$rc)."
+              break
+            fi
+            echo "::warning::steamcmd attempt $i/$attempts did not produce appmanifest_${APP_ID}.acf (rc=$rc); retrying after backoff..."
+            [ "$i" -lt "$attempts" ] && sleep $((i * 15))
+          done
+          if ! manifest_present; then
+            echo "::error::steamcmd failed to download app $APP_ID after $attempts attempts (no appmanifest_${APP_ID}.acf). Likely a transient Steam/anonymous outage — re-run the workflow."
+            exit 1
           fi
 
       - name: Run redist updater
