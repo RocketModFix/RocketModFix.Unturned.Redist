@@ -60,22 +60,18 @@ jobs:
     # fail-fast:false keeps the other variants running if one fails; we no
     # longer swallow failures with continue-on-error so a broken variant turns
     # the run red (and notify-failure files an issue).
+    # max-parallel:1 serializes the matrix. The authenticated (client) variants
+    # share one Steam account, and steamcmd's download step has no LoginID, so
+    # concurrent logins collide ("AlreadyLoggedInElsewhere"). A job-level
+    # concurrency group can't serialize them: GitHub keeps only one running + one
+    # pending job per group and CANCELS any further queued jobs (which silently
+    # dropped a variant when 3 shared a source). Serial is the reliable option;
+    # the no-change probe path is fast, so it stays well under the 15-min cron.
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include: ${{ fromJson(needs.load-variants.outputs.variants) }}
-    # Steam allows only one session per account per LoginID. The DepotDownloader
-    # probe handles that with a unique -loginid per variant (see below), so
-    # probes run fully parallel. But steamcmd (the download step) has no LoginID,
-    # so two authenticated variants of the SAME Steam source downloading at once
-    # would still collide. This concurrency group serializes only those: each
-    # anonymous variant gets its own group (fully parallel), while authenticated
-    # variants are grouped by app+branch (same upstream source → serialized;
-    # different sources → still parallel). Anonymous client variants and distinct
-    # server sources all run concurrently.
-    concurrency:
-      group: redist-steam-${{ matrix.anonymous && matrix.variant || format('{0}-{1}', matrix.appId, matrix.branch) }}
-      cancel-in-progress: false
 
     steps:
       - name: Generate branch name
