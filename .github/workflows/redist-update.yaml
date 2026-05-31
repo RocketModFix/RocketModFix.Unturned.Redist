@@ -281,25 +281,33 @@ jobs:
           fi
           printf '%s\n' "$tool_output"
 
-      - name: Generate commit message
+      - name: Resolve commit message and discard unpublishable changes
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
         id: generate_commit_message
+        env:
+          REDIST_DIR: ${{ matrix.dir }}
         run: |
           set -euo pipefail
           if [ -s .commit ]; then
+            # The tool bumped the NuGet version -> a real, publishable update.
+            # Keep all the regenerated files (DLLs, version.json, manifest.sha256.json).
             {
               echo "message<<COMMIT_EOF"
               cat .commit
               echo "COMMIT_EOF"
             } >> "$GITHUB_OUTPUT"
           else
-            # The redist tool ran successfully but wrote no .commit: the Steam depot
-            # manifest changed while our tracked DLLs/version did not (a manifest-only
-            # sync). Use a fallback message so the new manifest is still recorded and
-            # we stop re-processing it every run. (A tool failure would have already
-            # failed the 'Run redist updater' step, so a missing .commit here is a
-            # legitimate no-op, not a silent error.)
-            echo "message=Sync ${{ matrix.variant }} redist manifest (no tracked file changes)" >> "$GITHUB_OUTPUT"
+            # No .commit means the tool did NOT bump the version: the Steam build /
+            # depot manifest changed, but the game version (X.Y.Z.N) did not. We
+            # cannot republish the same NuGet version, so publishing the regenerated
+            # DLLs is impossible (and would 409). Discard the regenerated files in the
+            # variant dir and keep ONLY the corrected Steam manifest id (in
+            # redist/redist-manifests) so this build is recorded and not re-processed
+            # every run. The real DLLs will publish on the next game-version bump.
+            # (A tool failure would have already failed the 'Run redist updater' step,
+            # so a missing .commit here is a legitimate no-op, not a silent error.)
+            git checkout -- "$REDIST_DIR" 2>/dev/null || true
+            echo "message=Record ${{ matrix.variant }} Steam manifest (game version unchanged; no package update)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check for git changes
