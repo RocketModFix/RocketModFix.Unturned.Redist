@@ -152,12 +152,16 @@ jobs:
             "${beta_args[@]}" \
             -dir redist/temp_depots || true)
 
-          current_manifest=$(printf '%s\n' "$manifest_output" | grep -oE '[0-9]{19}' | head -n 1 || true)
+          # DepotDownloader prints the manifest as e.g. "Manifest 763708736677468005 (date)".
+          # Manifest ids are 64-bit values, so their length varies (~17-20 digits) — do
+          # NOT assume a fixed 19-digit width. Grab the number after the "Manifest" keyword
+          # (avoids the separate "result:" request code on the same log line).
+          current_manifest=$(printf '%s\n' "$manifest_output" | grep -oiE 'manifest[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -n 1 || true)
 
           # Fail loudly instead of silently treating an extraction failure as
           # "no change" (which would leave the variant stale-but-green forever).
-          if ! [[ "$current_manifest" =~ ^[0-9]{19}$ ]]; then
-            echo "::error::Could not extract a 19-digit manifest id for ${VARIANT} (Steam auth/network issue or output-format change?)."
+          if ! [[ "$current_manifest" =~ ^[0-9]{10,20}$ ]]; then
+            echo "::error::Could not extract a manifest id for ${VARIANT} (Steam auth/network issue or output-format change?)."
             echo "----- DepotDownloader output (first 50 lines) -----"
             printf '%s\n' "$manifest_output" | head -n 50
             exit 1
