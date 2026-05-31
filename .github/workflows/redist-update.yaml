@@ -286,15 +286,21 @@ jobs:
         id: generate_commit_message
         run: |
           set -euo pipefail
-          if [ ! -s .commit ]; then
-            echo "::error::Redist updater did not produce a non-empty .commit file for ${{ matrix.variant }}."
-            exit 1
+          if [ -s .commit ]; then
+            {
+              echo "message<<COMMIT_EOF"
+              cat .commit
+              echo "COMMIT_EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            # The redist tool ran successfully but wrote no .commit: the Steam depot
+            # manifest changed while our tracked DLLs/version did not (a manifest-only
+            # sync). Use a fallback message so the new manifest is still recorded and
+            # we stop re-processing it every run. (A tool failure would have already
+            # failed the 'Run redist updater' step, so a missing .commit here is a
+            # legitimate no-op, not a silent error.)
+            echo "message=Sync ${{ matrix.variant }} redist manifest (no tracked file changes)" >> "$GITHUB_OUTPUT"
           fi
-          {
-            echo "message<<COMMIT_EOF"
-            cat .commit
-            echo "COMMIT_EOF"
-          } >> "$GITHUB_OUTPUT"
 
       - name: Check for git changes
         if: steps.compare_manifest.outputs.manifest_changed == 'true'
