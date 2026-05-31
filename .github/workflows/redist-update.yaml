@@ -22,19 +22,23 @@ concurrency:
 
 jobs:
   # Single source of truth: the variant matrix lives in .github/variants.json.
-  # This job loads it (optionally filtered by the workflow_dispatch input) and
-  # exposes it as a matrix for update_redist. To add/remove a variant, edit
-  # .github/variants.json only.
-  load-variants:
-    name: "Load Variants"
+  # This job emits TWO matrices from it:
+  #   - sources:  one entry per distinct Steam (appId, branch) "source". The
+  #               game is downloaded ONCE per source (see download_sources).
+  #   - variants: the flat per-variant list (see update_variant), each of which
+  #               reuses its source's single download.
+  # To add/remove a variant, edit .github/variants.json only.
+  load:
+    name: "Load matrices"
     runs-on: ubuntu-latest
     outputs:
       variants: ${{ steps.load.outputs.variants }}
+      sources: ${{ steps.load.outputs.sources }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Load variant matrix
+      - name: Load variant + source matrices
         id: load
         env:
           INPUT_VARIANT: ${{ github.event.inputs.variant }}
@@ -47,53 +51,57 @@ jobs:
               jq -r '.[].variant' .github/variants.json
               exit 1
             fi
-            variants=$(jq -c --arg v "$INPUT_VARIANT" '[.[] | select(.variant == $v)]' .github/variants.json)
+            base=$(jq -c --arg v "$INPUT_VARIANT" '[.[] | select(.variant == $v)]' .github/variants.json)
           else
-            variants=$(jq -c '.' .github/variants.json)
+            base=$(jq -c '.' .github/variants.json)
           fi
-          echo "variants=$variants" >> "$GITHUB_OUTPUT"
 
-  update_redist:
-    name: "Update ${{ matrix.variant }}"
+          # Group the (possibly filtered) variants by their Steam source. The
+          # source label "<appId>-<branch|default>" is reused as the artifact
+          # name that ties download_sources -> update_variant together.
+          sources=$(printf '%s' "$base" | jq -c '
+            group_by(.appId + "|" + .branch)
+            | map({
+                source: (.[0].appId + "-" + (if .[0].branch == "" then "default" else .[0].branch end)),
+                appId: .[0].appId,
+                depotId: .[0].depotId,
+                branch: .[0].branch,
+                anonymous: .[0].anonymous,
+                loginId: .[0].loginId,
+                variants: (map(.variant) | join(","))
+              })')
+
+          echo "variants=$base" >> "$GITHUB_OUTPUT"
+          echo "sources=$sources" >> "$GITHUB_OUTPUT"
+          echo "Sources to probe:"
+          printf '%s' "$sources" | jq -r '.[] | "  \(.source)  (variants: \(.variants))"'
+
+  # One job per distinct Steam (appId, branch) source. Probe the manifest once;
+  # if it changed, download the game ONCE and publish just the bits the redist
+  # tool needs (Managed DLLs + appmanifest + Status.json) as an artifact that
+  # every variant of this source reuses. This is where the only Steam logins
+  # happen, so it's the only place that needs serializing.
+  download_sources:
+    name: "Download ${{ matrix.source }}"
     runs-on: ubuntu-latest
-    needs: load-variants
-    # fail-fast:false keeps the other variants running if one fails; we no
-    # longer swallow failures with continue-on-error so a broken variant turns
-    # the run red (and notify-failure files an issue).
-    # max-parallel:1 serializes the matrix. The authenticated (client) variants
-    # share one Steam account, and steamcmd's download step has no LoginID, so
-    # concurrent logins collide ("AlreadyLoggedInElsewhere"). A job-level
-    # concurrency group can't serialize them: GitHub keeps only one running + one
-    # pending job per group and CANCELS any further queued jobs (which silently
-    # dropped a variant when 3 shared a source). Serial is the reliable option;
-    # the no-change probe path is fast, so it stays well under the 15-min cron.
+    needs: load
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
-        include: ${{ fromJson(needs.load-variants.outputs.variants) }}
-
+        include: ${{ fromJson(needs.load.outputs.sources) }}
+    # Anonymous sources (the dedicated-server app) get a unique group → they run
+    # in parallel. The authenticated (client) sources share ONE Steam account and
+    # steamcmd's download has no LoginID, so concurrent logins collide; they share
+    # the "authenticated" group → serialized. There are only ever 2 client sources
+    # (default + preview), and a concurrency group keeps 1 running + 1 pending, so
+    # nothing is cancelled (the 3+ case that broke the old per-variant grouping
+    # cannot occur with only 2 members).
+    concurrency:
+      group: redist-dl-${{ matrix.anonymous && matrix.source || 'authenticated' }}
+      cancel-in-progress: false
     steps:
-      - name: Generate branch name
-        run: echo "BRANCH_NAME=redist-update/${{ matrix.variant }}" >> "$GITHUB_ENV"
-
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          ref: master
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        env:
-          DOTNET_NOLOGO: true
-          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-          DOTNET_CLI_TELEMETRY_OPTOUT: true
-        with:
-          # UnturnedRedistUpdateTool targets net10 (run via 'dotnet <tool>.dll').
-          # DepotDownloader's linux-x64 release is self-contained, so only the
-          # redist tool's runtime needs to be installed here.
-          dotnet-version: 10.x
 
       - name: Download depot downloader
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
@@ -105,20 +113,20 @@ jobs:
           tag: "DepotDownloader_3.4.0" # Pin its version to avoid breaking changes.
           extract: true
 
-      - name: Compare current vs saved manifest
-        id: compare_manifest
+      - name: Probe source manifest
+        id: probe
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
           APP_ID: ${{ matrix.appId }}
           APP_DEPOT_ID: ${{ matrix.depotId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
-          VARIANT: ${{ matrix.variant }}
+          SOURCE: ${{ matrix.source }}
           ANONYMOUS: ${{ matrix.anonymous }}
           LOGIN_ID: ${{ matrix.loginId }}
+          VARIANTS: ${{ matrix.variants }}
         run: |
           set -euo pipefail
-          MANIFEST_FILE="redist/redist-manifests/.manifest.redist-${VARIANT}.txt"
           mkdir -p redist/temp_depots
           chmod +x depot_downloader/DepotDownloader
 
@@ -127,19 +135,17 @@ jobs:
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
 
-          # -loginid makes each variant a distinct Steam session so probes can
-          # run concurrently without "AlreadyLoggedInElsewhere". Authenticated
-          # variants pass credentials; anonymous variants omit them (DepotDownloader
-          # defaults to the anonymous account, which works for the client app).
+          # -loginid makes each source a distinct Steam session so the anonymous
+          # probes can run concurrently. Authenticated sources pass credentials;
+          # anonymous sources omit them (DepotDownloader defaults to anonymous).
           auth_args=(-loginid "$LOGIN_ID")
           if [ "$ANONYMOUS" != "true" ]; then
             auth_args+=(-username "$STEAM_USERNAME" -password "$STEAM_PASSWORD")
           fi
 
           # '|| true': DepotDownloader can exit non-zero even on a successful
-          # manifest fetch. We don't trust its exit code — the 19-digit
-          # validation below is the real gate (a genuine auth/network failure
-          # yields no manifest id and still fails the step loudly).
+          # manifest fetch. The id-validation below is the real gate (a genuine
+          # auth/network failure yields no manifest id and still fails loudly).
           manifest_output=$(depot_downloader/DepotDownloader \
             -app "$APP_ID" \
             -depot "$APP_DEPOT_ID" \
@@ -148,51 +154,40 @@ jobs:
             "${beta_args[@]}" \
             -dir redist/temp_depots || true)
 
-          # DepotDownloader prints the manifest as e.g. "Manifest 763708736677468005 (date)".
-          # Manifest ids are 64-bit values, so their length varies (~17-20 digits) — do
-          # NOT assume a fixed 19-digit width. Grab the number after the "Manifest" keyword
-          # (avoids the separate "result:" request code on the same log line).
+          # Prints e.g. "Manifest 763708736677468005 (date)". Manifest ids are
+          # 64-bit, so their length varies (~17-20 digits) — grab the number
+          # after the "Manifest" keyword rather than assuming a fixed width.
           current_manifest=$(printf '%s\n' "$manifest_output" | grep -oiE 'manifest[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -n 1 || true)
-
-          # Fail loudly instead of silently treating an extraction failure as
-          # "no change" (which would leave the variant stale-but-green forever).
           if ! [[ "$current_manifest" =~ ^[0-9]{10,20}$ ]]; then
-            echo "::error::Could not extract a manifest id for ${VARIANT} (Steam auth/network issue or output-format change?)."
+            echo "::error::Could not extract a manifest id for source ${SOURCE} (Steam auth/network issue or output-format change?)."
             echo "----- DepotDownloader output (first 50 lines) -----"
             printf '%s\n' "$manifest_output" | head -n 50
             exit 1
           fi
-          echo "Current manifest:  $current_manifest"
+          echo "Current manifest: $current_manifest"
+          echo "current_manifest=$current_manifest" >> "$GITHUB_OUTPUT"
 
-          previous_manifest=""
-          [ -f "$MANIFEST_FILE" ] && previous_manifest=$(cat "$MANIFEST_FILE")
-          echo "Previous manifest: ${previous_manifest:-<none>}"
-
-          if [ "$current_manifest" != "$previous_manifest" ]; then
-            echo "Manifest changed"
-            echo "$current_manifest" > "$MANIFEST_FILE"
-            echo "manifest_changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Manifest unchanged"
-            echo "manifest_changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Download update tool
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
-        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
-        with:
-          repository: RocketModFix/UnturnedRedistUpdateTool
-          latest: true
-          fileName: UnturnedRedistUpdateTool.zip
-          out-file-path: redist_tool
-          extract: true
+          # This source needs a download if ANY of its variants' recorded
+          # manifest ids differs from the live one (or is missing). They normally
+          # all match; "any differs" lets a lagging variant catch up.
+          changed=false
+          IFS=',' read -ra source_variants <<< "$VARIANTS"
+          for v in "${source_variants[@]}"; do
+            f="redist/redist-manifests/.manifest.redist-${v}.txt"
+            prev=""
+            [ -f "$f" ] && prev=$(cat "$f")
+            echo "  ${v}: recorded=${prev:-<none>}"
+            [ "$prev" != "$current_manifest" ] && changed=true
+          done
+          echo "Source changed: $changed"
+          echo "source_changed=$changed" >> "$GITHUB_OUTPUT"
 
       - name: Setup SteamCMD
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        if: steps.probe.outputs.source_changed == 'true'
         uses: CyberAndrii/setup-steamcmd@afc45f145b95c175c3a3862d3ca84756537d48e8 # v1
 
-      - name: Update game files
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+      - name: Download game files
+        if: steps.probe.outputs.source_changed == 'true'
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
@@ -201,10 +196,6 @@ jobs:
           ANONYMOUS: ${{ matrix.anonymous }}
         run: |
           set -uo pipefail
-          # Anonymous variants (e.g. the client app) log in anonymously; the rest
-          # use the account credentials. steamcmd has no LoginID, so concurrent
-          # authenticated downloads of the same source are serialized by this
-          # job's concurrency group (see the job definition above).
           if [ "$ANONYMOUS" = "true" ]; then
             login_args=(+login anonymous)
           else
@@ -214,15 +205,11 @@ jobs:
           if [ -n "$APP_BRANCH_NAME" ]; then
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
-          # steamcmd is flaky: it can exit non-zero on success, and it can fail
-          # to finish a download transiently (Steam CDN hiccups, anonymous "No
-          # subscription" blips, or a self-update on first run). Its exit code is
-          # not a reliable signal, so we RETRY and gate on the real artifact:
-          # steamcmd only writes appmanifest_<appid>.acf once the install/update
-          # completes (this is the same "no appmanifest -> force update" remedy
-          # LinuxGSM uses). The redist tool needs that file, so checking it here
-          # turns a flaky download into a clear, retried failure instead of a
-          # cryptic FileNotFoundException downstream.
+          # steamcmd is flaky: it can exit non-zero on success and fail downloads
+          # transiently. Its exit code isn't reliable, so we RETRY and gate on the
+          # real artifact — steamcmd only writes appmanifest_<appid>.acf once the
+          # update completes (the same "no appmanifest -> force update" remedy
+          # LinuxGSM uses). The redist tool needs that file downstream.
           manifest_present() {
             find "$GITHUB_WORKSPACE" -name "appmanifest_${APP_ID}.acf" -print -quit 2>/dev/null | grep -q .
           }
@@ -242,8 +229,123 @@ jobs:
             exit 1
           fi
 
+      - name: Stash manifest id for consumers
+        if: steps.probe.outputs.source_changed == 'true'
+        run: echo "${{ steps.probe.outputs.current_manifest }}" > source-manifest.txt
+
+      # Publish only the small bits the redist tool reads — NOT the multi-GB game.
+      # The artifact's presence is also the "this source changed" signal that
+      # update_variant keys off (a missing artifact => unchanged => skip).
+      - name: Upload source files
+        if: steps.probe.outputs.source_changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-${{ matrix.source }}
+          path: |
+            source-manifest.txt
+            Status.json
+            steamapps/appmanifest_${{ matrix.appId }}.acf
+            Unturned_Data/Managed/**
+            Unturned_Headless_Data/Managed/**
+          if-no-files-found: warn
+          retention-days: 1
+
+  # One job per variant, FULLY PARALLEL: these never touch Steam — each pulls its
+  # source's artifact (the single download above), runs the redist tool, and opens
+  # its rolling PR. No Steam login here means no account contention, so there is
+  # nothing to serialize.
+  update_variant:
+    name: "Update ${{ matrix.variant }}"
+    runs-on: ubuntu-latest
+    needs: [load, download_sources]
+    # Job-level permissions REPLACE the workflow defaults, so this must list
+    # everything GITHUB_TOKEN needs here: contents (checkout), and actions:read
+    # for the "list this run's artifacts" gate. (The PR itself is created with
+    # secrets.PAT, independent of these.)
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    # Run even if some source download failed (those variants just find no
+    # artifact and skip); notify-failure still flags the failed source. Skip only
+    # if the load job itself failed (then there's no matrix to run).
+    if: ${{ !cancelled() && needs.load.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.load.outputs.variants) }}
+    steps:
+      - name: Compute identifiers
+        id: ids
+        env:
+          APP_ID: ${{ matrix.appId }}
+          BRANCH: ${{ matrix.branch }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BRANCH}" ]; then
+            key="${APP_ID}-default"
+          else
+            key="${APP_ID}-${BRANCH}"
+          fi
+          echo "source_key=$key" >> "$GITHUB_OUTPUT"
+          echo "BRANCH_NAME=redist-update/${{ matrix.variant }}" >> "$GITHUB_ENV"
+
+      # The source artifact exists only if download_sources saw a manifest change
+      # for this variant's source. No artifact => nothing to do this run.
+      - name: Check whether this source changed
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SOURCE_KEY: ${{ steps.ids.outputs.source_key }}
+        run: |
+          set -euo pipefail
+          names=$(gh api --paginate "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[].name' || true)
+          if printf '%s\n' "$names" | grep -qx "source-${SOURCE_KEY}"; then
+            echo "Source ${SOURCE_KEY} changed (artifact present); processing ${{ matrix.variant }}."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Source ${SOURCE_KEY} unchanged (no artifact); skipping ${{ matrix.variant }}."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.gate.outputs.changed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup .NET
+        if: steps.gate.outputs.changed == 'true'
+        uses: actions/setup-dotnet@v5
+        env:
+          DOTNET_NOLOGO: true
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+          DOTNET_CLI_TELEMETRY_OPTOUT: true
+        with:
+          dotnet-version: 10.x
+
+      - name: Download update tool
+        if: steps.gate.outputs.changed == 'true'
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
+        with:
+          repository: RocketModFix/UnturnedRedistUpdateTool
+          latest: true
+          fileName: UnturnedRedistUpdateTool.zip
+          out-file-path: redist_tool
+          extract: true
+
+      - name: Download source game files
+        if: steps.gate.outputs.changed == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: source-${{ steps.ids.outputs.source_key }}
+          path: ${{ github.workspace }}
+
       - name: Run redist updater
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        if: steps.gate.outputs.changed == 'true'
         env:
           IS_PREVIEW: ${{ matrix.preview }}
           DO_PUBLICIZE: ${{ matrix.publicize }}
@@ -268,7 +370,7 @@ jobs:
           fi
           echo "Variant: $VARIANT | Event: $EVENT_NAME | Flags: '$flags'"
           # Capture output so a failure (or a success that doesn't write .commit)
-          # leaves diagnostics in the log, mirroring the manifest step.
+          # leaves diagnostics in the log.
           if ! tool_output=$(dotnet redist_tool/UnturnedRedistUpdateTool.dll "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$REDIST_DIR" "$APP_ID" $flags 2>&1); then
             echo "::error::Redist updater failed for ${VARIANT}."
             echo "----- Tool output (first 80 lines) -----"
@@ -277,8 +379,21 @@ jobs:
           fi
           printf '%s\n' "$tool_output"
 
+      # Record the manifest id this build was produced from so the next probe
+      # sees "no change". Lives outside REDIST_DIR so the discard step below never
+      # reverts it, even when no package is published.
+      - name: Record source manifest id
+        if: steps.gate.outputs.changed == 'true'
+        env:
+          VARIANT: ${{ matrix.variant }}
+        run: |
+          set -euo pipefail
+          manifest_id=$(cat source-manifest.txt)
+          mkdir -p redist/redist-manifests
+          echo "$manifest_id" > "redist/redist-manifests/.manifest.redist-${VARIANT}.txt"
+
       - name: Resolve commit message and discard unpublishable changes
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        if: steps.gate.outputs.changed == 'true'
         id: generate_commit_message
         env:
           REDIST_DIR: ${{ matrix.dir }}
@@ -295,19 +410,18 @@ jobs:
           else
             # No .commit means the tool did NOT bump the version: the Steam build /
             # depot manifest changed, but the game version (X.Y.Z.N) did not. We
-            # cannot republish the same NuGet version, so publishing the regenerated
-            # DLLs is impossible (and would 409). Discard the regenerated files in the
-            # variant dir and keep ONLY the corrected Steam manifest id (in
-            # redist/redist-manifests) so this build is recorded and not re-processed
-            # every run. The real DLLs will publish on the next game-version bump.
-            # (A tool failure would have already failed the 'Run redist updater' step,
+            # cannot republish the same NuGet version, so the regenerated DLLs are
+            # unpublishable (would 409). Discard them in the variant dir and keep
+            # ONLY the corrected Steam manifest id (recorded above) so this build is
+            # logged and not re-processed every run. The real DLLs publish on the
+            # next game-version bump. (A tool failure already failed the step above,
             # so a missing .commit here is a legitimate no-op, not a silent error.)
             git checkout -- "$REDIST_DIR" 2>/dev/null || true
             echo "message=Record ${{ matrix.variant }} Steam manifest (game version unchanged; no package update)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check for git changes
-        if: steps.compare_manifest.outputs.manifest_changed == 'true'
+        if: steps.gate.outputs.changed == 'true'
         id: check_git_changes
         run: |
           if git diff --quiet; then
@@ -322,7 +436,7 @@ jobs:
       # the open PR continually updated until it is merged/closed; delete-branch
       # cleans it up afterwards. No timestamped branches or existing-PR lookups.
       - name: Create Pull Request
-        if: steps.compare_manifest.outputs.manifest_changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
+        if: steps.gate.outputs.changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
         id: create_pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
@@ -366,23 +480,23 @@ jobs:
           {
             echo "## Update Summary for ${{ matrix.variant }}"
             echo "- **Branch**: \`${{ env.BRANCH_NAME }}\`"
-            echo "- **Manifest Changed**: ${{ steps.compare_manifest.outputs.manifest_changed }}"
-            if [ "${{ steps.compare_manifest.outputs.manifest_changed }}" = "true" ]; then
+            echo "- **Source Changed**: ${{ steps.gate.outputs.changed }}"
+            if [ "${{ steps.gate.outputs.changed }}" = "true" ]; then
               echo "- **Git Changes**: ${{ steps.check_git_changes.outputs.has_git_changes }}"
               if [ -n "${{ steps.create_pr.outputs.pull-request-number }}" ]; then
                 echo "- **PR**: #${{ steps.create_pr.outputs.pull-request-number }} (${{ steps.create_pr.outputs.pull-request-url }})"
               fi
             else
-              echo "- **Status**: Skipped (no manifest changes)"
+              echo "- **Status**: Skipped (source unchanged)"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # Make silent breakage visible: if any scheduled update fails, open (or
-  # comment on) a tracking issue instead of relying on someone watching the
-  # Actions tab.
+  # Make silent breakage visible: if any scheduled source download or variant
+  # update fails, open (or comment on) a tracking issue instead of relying on
+  # someone watching the Actions tab.
   notify-failure:
     name: "Notify on failure"
-    needs: [load-variants, update_redist]
+    needs: [load, download_sources, update_variant]
     if: failure() && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     permissions:
@@ -397,7 +511,7 @@ jobs:
         run: |
           set -euo pipefail
           marker="Redist auto-update workflow failed"
-          body=$(printf '⚠️ The scheduled redist update workflow failed.\n\nRun: %s\n\nA matrix variant errored (Steam auth/network, DepotDownloader, the redist tool, or PR creation). Check the run for the failing variant.' "$RUN_URL")
+          body=$(printf '⚠️ The scheduled redist update workflow failed.\n\nRun: %s\n\nA source download (Steam auth/network, DepotDownloader, steamcmd) or a variant update (the redist tool or PR creation) errored. Check the run for the failing job.' "$RUN_URL")
           gh label create update-failure --color B60205 --description "Automated redist update failure" --force >/dev/null 2>&1 || true
           existing=$(gh issue list --repo "$REPO" --state open --search "in:title \"$marker\"" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
