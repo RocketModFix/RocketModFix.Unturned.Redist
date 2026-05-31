@@ -15,10 +15,11 @@ A scheduled job polls Steam for new Unturned builds. When a build changes, it do
 
 ```mermaid
 flowchart TD
-    cron["schedule: every 15 min<br/>redist-update.yaml"] --> probe{"DepotDownloader<br/>manifest changed?"}
+    cron["schedule: every 15 min<br/>redist-update.yaml"] --> probe{"download_sources<br/>DepotDownloader: manifest changed?<br/>(once per Steam source)"}
     probe -- no --> done([exit quietly])
-    probe -- yes --> dl["SteamCMD downloads game<br/>UnturnedRedistUpdateTool copies/publicizes DLLs<br/>writes version.json + manifest.sha256.json + .commit"]
-    dl --> pr["create-pull-request<br/>branch: redist-update/&lt;variant&gt;"]
+    probe -- yes --> dl["download_sources<br/>SteamCMD downloads the game ONCE per source<br/>uploads Managed DLLs + appmanifest + Status.json<br/>as a per-source artifact"]
+    dl --> upd["update_variant (parallel, no Steam login)<br/>each variant pulls its source artifact,<br/>UnturnedRedistUpdateTool copies/publicizes DLLs,<br/>writes version.json + manifest.sha256.json + .commit"]
+    upd --> pr["create-pull-request<br/>branch: redist-update/&lt;variant&gt;"]
     pr --> verify["redist-verify.yaml<br/>files + SHA-256 + version monotonicity"]
     verify -- pass + opted in + bot author --> merge["auto-approve + squash auto-merge"]
     merge --> push["push to master →<br/>redist-publish.yaml<br/>nuget pack + push (changed variant only)"]
@@ -31,12 +32,12 @@ flowchart TD
 
 | Workflow | Trigger | Responsibility |
 | --- | --- | --- |
-| `redist-update.yaml` | `schedule` (*/15) + `workflow_dispatch` | Poll Steam manifest per variant; on change, download + run the redist tool; open/update one PR per variant. Files an issue if a scheduled run fails. |
+| `redist-update.yaml` | `schedule` (*/15) + `workflow_dispatch` | Probe each Steam **source** once (`download_sources`); on change, download the game once per source, then fan out to one PR per variant (`update_variant`, parallel, no extra Steam logins). Files an issue if a scheduled run fails. |
 | `redist-verify.yaml` | `pull_request` to `master` touching `redist/**` | Validate the PR: required files present, SHA-256 hashes match `manifest.sha256.json`, version is not a downgrade. Auto-approve + enable squash auto-merge for the bot's PRs when `ALLOW_AUTO_MERGE_REDIST_PR` is `true`. |
 | `redist-publish.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. |
 | `redist-cleanup.yaml` | `pull_request: closed` | Lock the PR conversation; delete the branch **only if merged**. |
 
-External tool: [`RocketModFix/UnturnedRedistUpdateTool`](https://github.com/RocketModFix/UnturnedRedistUpdateTool) (net9). CLI: `dotnet UnturnedRedistUpdateTool.dll <unturned_path> <redist_dir> <app_id> [--force] [--preview] [-publicize <csv>] -update-files <csv>`. It copies (and optionally publicizes) the requested DLLs into `<redist_dir>`, and writes `version.json` (or `version.preview.json` with `--preview`), `manifest.sha256.json`, the `.nuspec` `<version>`, and a one-line `.commit` message.
+External tool: [`RocketModFix/UnturnedRedistUpdateTool`](https://github.com/RocketModFix/UnturnedRedistUpdateTool) (net10). CLI: `dotnet UnturnedRedistUpdateTool.dll <unturned_path> <redist_dir> <app_id> [--force] [--preview] [-publicize <csv>] -update-files <csv>`. It copies (and optionally publicizes) the requested DLLs into `<redist_dir>`, and writes `version.json` (or `version.preview.json` with `--preview`), `manifest.sha256.json`, the `.nuspec` `<version>`, and a one-line `.commit` message.
 
 ## Single source of truth: `.github/variants.json`
 
@@ -60,14 +61,16 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 - `preview`: `true` only for the two variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
 - `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`).
 - `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **server** build downloads anonymously (the anonymous account has the dedicated-server subscription); the **client** app's depot is *not* available anonymously, so client variants require the account.
-- `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the manifest probes can run concurrently on one account (see below).
+- `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the per-source manifest probes can run concurrently on one account (see below).
 
-### Steam login concurrency
+### Steam logins: download once per source
 
-Steam allows only one session per account per *LoginID*, so concurrent logins with the same account would otherwise fail with `AlreadyLoggedInElsewhere`. Two mechanisms keep the matrix parallel:
+The 10 variants share only **4 distinct Steam sources** (2 apps × 2 branches), and Steam allows just one session per account per *LoginID* (concurrent same-account logins fail with `AlreadyLoggedInElsewhere`). So `redist-update.yaml` is split into two jobs and **all Steam logins are confined to the first**:
 
-1. **Manifest probe (DepotDownloader)** — each variant uses its unique `loginId`, so all probes run in parallel; anonymous variants don't even use the account.
-2. **Download (`steamcmd`)** — `steamcmd` can't take a LoginID, so the `update_redist` job sets a `concurrency` group: anonymous variants get a unique group (fully parallel), while authenticated variants are grouped by `app+branch` (same Steam source → serialized; different sources → still parallel). In practice the **server** variants run fully parallel (anonymous) and the **client** variants serialize only within their shared source.
+1. **`download_sources`** (one job per source) does the only Steam work. It probes the manifest once and, on change, downloads the game once via `steamcmd` and uploads just the bits the tool needs (Managed DLLs + `appmanifest_<appid>.acf` + `Status.json`) as a `source-<appId>-<branch>` artifact. Anonymous **server** sources each get a unique `concurrency` group → fully parallel. The two authenticated **client** sources share one group → serialized; with only two members, a concurrency group keeps one running + one pending and **never cancels** (the 3+ case GitHub *does* cancel cannot occur). DepotDownloader probes still use a unique `loginId` per source.
+2. **`update_variant`** (one job per variant, **fully parallel**) never logs into Steam: each variant downloads its source's artifact, runs the tool, records the manifest id, and opens its rolling PR. The artifact's presence is the "source changed" signal (listed via the run-artifacts API, hence the job's `actions: read`). No account, no contention, nothing to serialize.
+
+This replaced an earlier per-variant matrix that forced `max-parallel: 1` and had every variant re-download the whole game — 10 serial downloads instead of today's 4 (mostly parallel).
 
 ## The 4 sources → 10 directories → 6 packages
 
@@ -110,7 +113,7 @@ This lets the redist faithfully follow upstream rollbacks instead of getting stu
 1. Create the redist directory and its `.nuspec` under `redist/` (matching the existing layout).
 2. Add **one object** to `.github/variants.json` with all fields (`variant`, `appId`, `depotId`, `branch`, `dir`, `nuspec`, `preview`, `publicize`, `anonymous`, `loginId`). Give it a `loginId` not used by any other variant.
 
-That's it — `Update`, `Matrix`, and `Verify` all derive their matrices from that file. (The `workflow_dispatch` `variant` input is a free-form string validated against `variants.json`, so no dropdown to update.)
+That's it — `redist-update`, `redist-publish`, and `redist-verify` all derive their matrices from that file. (The `workflow_dispatch` `variant` input is a free-form string validated against `variants.json`, so no dropdown to update.)
 
 ## Conventions
 
