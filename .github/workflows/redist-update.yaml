@@ -301,7 +301,26 @@ jobs:
           SOURCE_KEY: ${{ steps.ids.outputs.source_key }}
         run: |
           set -euo pipefail
-          names=$(gh api --paginate "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[].name' || true)
+          # Fail LOUD on an API error. The ONLY thing that may mean "this source
+          # is unchanged" is a SUCCESSFUL artifacts listing that doesn't contain
+          # our artifact. If the gh call itself fails (transient 5xx / network /
+          # rate-limit), we must NOT treat that as "unchanged" — that would
+          # silently skip a genuinely-changed source under a green run, and
+          # notify-failure (failure()-only) would never fire. Retry, then fail.
+          ok=false
+          names=""
+          for attempt in 1 2 3; do
+            if names=$(gh api --paginate "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[].name'); then
+              ok=true
+              break
+            fi
+            echo "::warning::Listing run artifacts failed (attempt ${attempt}/3); retrying after backoff..."
+            sleep $((attempt * 5))
+          done
+          if [ "$ok" != "true" ]; then
+            echo "::error::Could not list this run's artifacts after 3 attempts — cannot determine whether source ${SOURCE_KEY} changed. Failing loudly instead of skipping."
+            exit 1
+          fi
           if printf '%s\n' "$names" | grep -qx "source-${SOURCE_KEY}"; then
             echo "Source ${SOURCE_KEY} changed (artifact present); processing ${{ matrix.variant }}."
             echo "changed=true" >> "$GITHUB_OUTPUT"
