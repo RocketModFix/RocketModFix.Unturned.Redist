@@ -94,9 +94,10 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
           DOTNET_CLI_TELEMETRY_OPTOUT: true
         with:
-          # UnturnedRedistUpdateTool targets net9; DepotDownloader needs net8
-          # (its self-contained release runs on 9.x). .NET 6 ran neither.
-          dotnet-version: 9.x
+          # UnturnedRedistUpdateTool targets net10 (run via 'dotnet <tool>.dll').
+          # DepotDownloader's linux-x64 release is self-contained, so only the
+          # redist tool's runtime needs to be installed here.
+          dotnet-version: 10.x
 
       - name: Download depot downloader
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
