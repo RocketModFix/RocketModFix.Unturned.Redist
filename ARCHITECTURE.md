@@ -59,7 +59,7 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 
 - `branch`: `""` = Steam default branch, `"preview"` = Steam `preview` beta branch.
 - `preview`: `true` only for the two variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
-- `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`).
+- `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`). The tool rewrites non-public members to public, but deliberately leaves `virtual`/`abstract` members (and compiler-generated members) at their original accessibility so plugin `protected override`s still compile (see [#56](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/56)). Consumers of a `.Publicized` package must set `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>` — see the README.
 - `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **server** build downloads anonymously (the anonymous account has the dedicated-server subscription); the **client** app's depot is *not* available anonymously, so client variants require the account.
 - `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the per-source manifest probes can run concurrently on one account (see below).
 

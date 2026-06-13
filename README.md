@@ -27,6 +27,24 @@ Choose by **side** (client or server). Use a **`.Publicized`** variant when your
 | [![Client.Publicized](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Client.Publicized?label=Client.Publicized)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client.Publicized) | Client mods that need non-public members |
 | [![Server.Publicized](https://img.shields.io/nuget/v/RocketModFix.Unturned.Redist.Server.Publicized?label=Server.Publicized)](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server.Publicized) | Server plugins that need non-public members |
 
+### Using a `.Publicized` package
+
+Add `AllowUnsafeBlocks` to your plugin's `.csproj`:
+
+```xml
+<PropertyGroup>
+  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+</PropertyGroup>
+```
+
+The publicized DLL is a **compile-time reference only**. At runtime your plugin loads inside Unturned, which has its own original `Assembly-CSharp.dll` where those members are still private. Unturned runs on Mono, and `AllowUnsafeBlocks` is what lets the Mono runtime skip the access check for them. Without it you'll hit runtime errors like:
+
+```
+Field `SDG.Unturned.Provider:isDedicatedUGCInstalled' is inaccessible from method ...
+```
+
+`virtual`/`abstract` members are intentionally **not** publicized — they keep their original accessibility, so you can still override them normally (e.g. `protected override void execute(...)` on a `Command`). Publicizing them would force the override to be `public`, which the compiler rejects with *"cannot change access rights"*.
+
 ### Stable vs. preview builds
 
 `Client` and `Server` carry two streams under the **same package id**:
