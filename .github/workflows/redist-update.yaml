@@ -423,7 +423,7 @@ jobs:
             # Keep all the regenerated files (DLLs, version.json, manifest.sha256.json).
             {
               echo "message<<COMMIT_EOF"
-              cat .commit
+              printf '%s\n' "$(cat .commit)"
               echo "COMMIT_EOF"
             } >> "$GITHUB_OUTPUT"
           else
@@ -531,7 +531,10 @@ jobs:
           set -euo pipefail
           marker="Redist auto-update workflow failed"
           body=$(printf '⚠️ The scheduled redist update workflow failed.\n\nRun: %s\n\nA source download (Steam auth/network, DepotDownloader, steamcmd) or a variant update (the redist tool or PR creation) errored. Check the run for the failing job.' "$RUN_URL")
-          gh label create update-failure --color B60205 --description "Automated redist update failure" --force >/dev/null 2>&1 || true
+          # --repo is required: this job has no checkout, so gh can't infer the
+          # repo from a git remote (and gh does NOT read GITHUB_REPOSITORY). Without
+          # it the label is never created and the gh issue create --label below fails.
+          gh label create update-failure --repo "$REPO" --color B60205 --description "Automated redist update failure" --force >/dev/null 2>&1 || true
           existing=$(gh issue list --repo "$REPO" --state open --search "in:title \"$marker\"" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --repo "$REPO" --body "$body"
@@ -542,6 +545,12 @@ jobs:
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    # The 401s this job occasionally hits are transient GitHub-side auth blips on
+    # the default token (the action already injects github.token and our usage
+    # matches its docs). Keepalive is non-critical and self-healing — the other
+    # scheduled runs re-enable the workflow — so a single miss must not redden an
+    # otherwise-green run.
+    continue-on-error: true
     permissions:
       actions: write
     steps:
