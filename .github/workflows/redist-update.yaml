@@ -43,6 +43,10 @@ jobs:
         env:
           INPUT_VARIANT: ${{ github.event.inputs.variant }}
           EVENT_NAME: ${{ github.event_name }}
+          # Opt-in: set this repo variable to 'true' once a SECOND Steam account
+          # (STEAM_USERNAME_2 / STEAM_PASSWORD_2) exists. Until then the two client
+          # sources stay on one account, serialized — exactly as before.
+          STEAM_SECOND_ACCOUNT_ENABLED: ${{ vars.STEAM_SECOND_ACCOUNT_ENABLED }}
         run: |
           set -euo pipefail
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_VARIANT:-}" ] && [ "$INPUT_VARIANT" != "all" ]; then
@@ -59,7 +63,21 @@ jobs:
           # Group the (possibly filtered) variants by their Steam source. The
           # source label "<appId>-<branch|default>" is reused as the artifact
           # name that ties download_sources -> update_variant together.
-          sources=$(printf '%s' "$base" | jq -c '
+          #
+          # Per source we also derive (here, where vars + jq are easy, so
+          # download_sources stays dumb):
+          #   steamAccount  credential set to log in with: 0=anonymous, 1=primary
+          #                 (STEAM_USERNAME). The authenticated PREVIEW client source
+          #                 becomes 2 (STEAM_USERNAME_2) ONLY when a second account is
+          #                 enabled, so it logs into a DIFFERENT account than the
+          #                 default client source and the two can run concurrently.
+          #   dlgroup       download concurrency group. Anonymous sources — and, when
+          #                 the 2nd account is on, every source — get a unique group
+          #                 (parallel). Otherwise the two client sources share
+          #                 "authenticated" (serialized): concurrent logins to ONE
+          #                 account fail with AlreadyLoggedInElsewhere.
+          second="${STEAM_SECOND_ACCOUNT_ENABLED:-false}"
+          sources=$(printf '%s' "$base" | jq -c --arg second "$second" '
             group_by(.appId + "|" + .branch)
             | map({
                 source: (.[0].appId + "-" + (if .[0].branch == "" then "default" else .[0].branch end)),
@@ -68,7 +86,14 @@ jobs:
                 branch: .[0].branch,
                 anonymous: .[0].anonymous,
                 loginId: .[0].loginId,
-                variants: (map(.variant) | join(","))
+                variants: (map(.variant) | join(",")),
+                steamAccount: (if .[0].anonymous then 0
+                               elif .[0].branch == "" then 1
+                               elif ($second == "true") then 2
+                               else 1 end),
+                dlgroup: (if ((.[0].anonymous) or ($second == "true"))
+                          then (.[0].appId + "-" + (if .[0].branch == "" then "default" else .[0].branch end))
+                          else "authenticated" end)
               })')
 
           echo "variants=$base" >> "$GITHUB_OUTPUT"
@@ -89,15 +114,17 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.load.outputs.sources) }}
-    # Anonymous sources (the dedicated-server app) get a unique group → they run
-    # in parallel. The authenticated (client) sources share ONE Steam account and
-    # steamcmd's download has no LoginID, so concurrent logins collide; they share
-    # the "authenticated" group → serialized. There are only ever 2 client sources
-    # (default + preview), and a concurrency group keeps 1 running + 1 pending, so
-    # nothing is cancelled (the 3+ case that broke the old per-variant grouping
-    # cannot occur with only 2 members).
+    # The download concurrency group is precomputed per source by the load job
+    # (matrix.dlgroup). Anonymous (server) sources always get a unique group → run
+    # in parallel. By default the two authenticated (client) sources share ONE Steam
+    # account, so they share the "authenticated" group → serialized (concurrent
+    # logins to one account fail with AlreadyLoggedInElsewhere). With only two
+    # members a concurrency group keeps 1 running + 1 pending and never cancels (the
+    # 3+ case GitHub does cancel cannot occur). When a 2nd Steam account is enabled
+    # (vars.STEAM_SECOND_ACCOUNT_ENABLED == 'true') the preview client source logs
+    # into account 2 and gets its own group → the two client downloads run parallel.
     concurrency:
-      group: redist-dl-${{ matrix.anonymous && matrix.source || 'authenticated' }}
+      group: redist-dl-${{ matrix.dlgroup }}
       cancel-in-progress: false
     steps:
       - name: Checkout repository
@@ -118,6 +145,9 @@ jobs:
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          STEAM_USERNAME_2: ${{ secrets.STEAM_USERNAME_2 }}
+          STEAM_PASSWORD_2: ${{ secrets.STEAM_PASSWORD_2 }}
+          STEAM_ACCOUNT: ${{ matrix.steamAccount }}
           APP_ID: ${{ matrix.appId }}
           APP_DEPOT_ID: ${{ matrix.depotId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
@@ -133,6 +163,18 @@ jobs:
           beta_args=()
           if [ -n "$APP_BRANCH_NAME" ]; then
             beta_args=(-beta "$APP_BRANCH_NAME")
+          fi
+
+          # steamAccount picks the credential set: 2 = the optional second account
+          # (STEAM_USERNAME_2), used by the preview client source so it logs into a
+          # DIFFERENT account than the default client source; otherwise the primary.
+          if [ "$STEAM_ACCOUNT" = "2" ]; then
+            STEAM_USERNAME="$STEAM_USERNAME_2"
+            STEAM_PASSWORD="$STEAM_PASSWORD_2"
+            if [ -z "$STEAM_USERNAME" ] || [ -z "$STEAM_PASSWORD" ]; then
+              echo "::error::Source ${SOURCE} is assigned Steam account 2 but STEAM_USERNAME_2 / STEAM_PASSWORD_2 are not set."
+              exit 1
+            fi
           fi
 
           # -loginid makes each source a distinct Steam session so the anonymous
@@ -206,11 +248,25 @@ jobs:
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          STEAM_USERNAME_2: ${{ secrets.STEAM_USERNAME_2 }}
+          STEAM_PASSWORD_2: ${{ secrets.STEAM_PASSWORD_2 }}
+          STEAM_ACCOUNT: ${{ matrix.steamAccount }}
           APP_ID: ${{ matrix.appId }}
           APP_BRANCH_NAME: ${{ matrix.branch }}
           ANONYMOUS: ${{ matrix.anonymous }}
         run: |
           set -uo pipefail
+          # Pick the credential set for this source (see "Probe source manifest"):
+          # account 2 is the optional second account for the preview client source
+          # so it logs into a DIFFERENT account than the default client source.
+          if [ "$STEAM_ACCOUNT" = "2" ]; then
+            STEAM_USERNAME="$STEAM_USERNAME_2"
+            STEAM_PASSWORD="$STEAM_PASSWORD_2"
+            if [ -z "$STEAM_USERNAME" ] || [ -z "$STEAM_PASSWORD" ]; then
+              echo "::error::This source is assigned Steam account 2 but STEAM_USERNAME_2 / STEAM_PASSWORD_2 are not set."
+              exit 1
+            fi
+          fi
           if [ "$ANONYMOUS" = "true" ]; then
             login_args=(+login anonymous)
           else

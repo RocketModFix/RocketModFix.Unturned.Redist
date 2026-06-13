@@ -67,10 +67,31 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 
 The 10 variants share only **4 distinct Steam sources** (2 apps × 2 branches), and Steam allows just one session per account per *LoginID* (concurrent same-account logins fail with `AlreadyLoggedInElsewhere`). So `redist-update.yaml` is split into two jobs and **all Steam logins are confined to the first**:
 
-1. **`download_sources`** (one job per source) does the only Steam work. It probes the manifest once and, on change, downloads the game once via `steamcmd` and uploads just the bits the tool needs (Managed DLLs + `appmanifest_<appid>.acf` + `Status.json`) as a `source-<appId>-<branch>` artifact. Anonymous **server** sources each get a unique `concurrency` group → fully parallel. The two authenticated **client** sources share one group → serialized; with only two members, a concurrency group keeps one running + one pending and **never cancels** (the 3+ case GitHub *does* cancel cannot occur). DepotDownloader probes still use a unique `loginId` per source.
+1. **`download_sources`** (one job per source) does the only Steam work. It probes the manifest once and, on change, downloads the game once via `steamcmd` and uploads just the bits the tool needs (Managed DLLs + `appmanifest_<appid>.acf` + `Status.json`) as a `source-<appId>-<branch>` artifact. Anonymous **server** sources each get a unique `concurrency` group → fully parallel. The two authenticated **client** sources share one group → serialized; with only two members, a concurrency group keeps one running + one pending and **never cancels** (the 3+ case GitHub *does* cancel cannot occur). DepotDownloader probes still use a unique `loginId` per source. **Optionally**, a second Steam account lets the two client sources download in parallel too — see *Optional: a second Steam account* below.
 2. **`update_variant`** (one job per variant, **fully parallel**) never logs into Steam: each variant downloads its source's artifact, runs the tool, records the manifest id, and opens its rolling PR. The artifact's presence is the "source changed" signal (listed via the run-artifacts API, hence the job's `actions: read`). No account, no contention, nothing to serialize.
 
 This replaced an earlier per-variant matrix that forced `max-parallel: 1` and had every variant re-download the whole game — 10 serial downloads instead of today's 4 (mostly parallel).
+
+### Optional: a second Steam account (parallel client downloads)
+
+The two client sources (`304930` default + preview) are the only serialized Steam step, because they share one account and concurrent logins to one account fail with `AlreadyLoggedInElsewhere`. To run them in parallel:
+
+1. Create a second Steam account, add the (free) Unturned license to it, and make sure it can log into `steamcmd` **non-interactively** (Steam Guard configured/disabled, same as the primary account).
+2. Add repo **secrets** `STEAM_USERNAME_2` / `STEAM_PASSWORD_2`.
+3. Set repo **variable** `STEAM_SECOND_ACCOUNT_ENABLED` to `true`.
+
+The `load` job then tags the preview client source `steamAccount: 2` and gives it its own download `concurrency` group, so it logs into account 2 and downloads in parallel with the default client source (account 1). With the variable unset/`false` the behaviour is exactly as before — both client sources on account 1, serialized — so the wiring is safe to merge before the second account exists. This only speeds up runs where a build actually changed (the every-15-min probe-only runs are already fast), and it does **not** change each download's size (see *Why steamcmd downloads, not DepotDownloader* below).
+
+> Assumes exactly two client sources (one default branch + one preview branch). Adding a *third* authenticated source would need a third account and a tweak to the `load` job's `steamAccount` / `dlgroup` logic — otherwise it would land on account 2 and collide with the preview source.
+
+### Why steamcmd downloads, not DepotDownloader
+
+The probe uses **DepotDownloader** (only to read the current manifest id), but the actual game download — the bytes that become the redistributed DLLs — uses Valve's first-party **steamcmd**, on purpose:
+
+- **Supply-chain trust.** The libraries we republish to NuGet are assembled by Valve's own tool, not a third-party binary. DepotDownloader is open-source, pinned by commit SHA, and pulls from the *same* official Steam CDN (verifying every chunk against Steam's signed manifest), so the bytes are identical — but keeping the first-party tool for *redistributed* artifacts keeps the trusted-tool surface minimal and the provenance obvious to consumers. (Our own `redist-verify` SHA-256 check is self-consistency — it hashes what was downloaded — so it would not, by itself, catch a compromised downloader.)
+- **The build id.** The redist tool reads the rollback-safety key `BuildId` (see *Why the build id, not the version*) from steamcmd's `appmanifest_<appid>.acf`. DepotDownloader neither writes that file nor exposes a build id, so a `steamcmd` `app_update` is what produces both the files **and** the `.acf` in one step.
+
+This is also why we don't switch the download to DepotDownloader's `-filelist` — which *could* fetch only the managed DLLs and shrink a multi-GB download to a few MB, and would let one account download every source concurrently. The trust posture and the `BuildId` dependency outweigh the size win; to parallelize the client downloads we use a second account (above) instead.
 
 ## The 4 sources → 10 directories → 6 packages
 
@@ -118,6 +139,6 @@ That's it — `redist-update`, `redist-publish`, and `redist-verify` all derive 
 ## Conventions
 
 - **Third-party actions are pinned to full commit SHAs** (with a `# vX` comment) to prevent tag-retargeting supply-chain attacks; Dependabot keeps them current. First-party `actions/*` may use major tags.
-- **Secrets** (`STEAM_USERNAME`, `STEAM_PASSWORD`, `NUGET_DEPLOY_KEY`) are passed via step `env:`, never as inline command-line arguments.
+- **Secrets** (`STEAM_USERNAME`, `STEAM_PASSWORD`, optional `STEAM_USERNAME_2` / `STEAM_PASSWORD_2`, `NUGET_DEPLOY_KEY`) are passed via step `env:`, never as inline command-line arguments. The optional second Steam account is gated by the repo **variable** `STEAM_SECOND_ACCOUNT_ENABLED` (see *Optional: a second Steam account*).
 - **Failures are not swallowed.** A failed variant turns the run red; scheduled failures open/update a GitHub issue labelled `update-failure`.
 - Publishing **fails on a duplicate version by design** (no `--skip-duplicate`) — a repeated version signals an upstream problem.
