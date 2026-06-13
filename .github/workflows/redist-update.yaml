@@ -21,13 +21,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single source of truth: the variant matrix lives in .github/variants.json.
-  # This job emits TWO matrices from it:
-  #   - sources:  one entry per distinct Steam (appId, branch) "source". The
-  #               game is downloaded ONCE per source (see download_sources).
-  #   - variants: the flat per-variant list (see update_variant), each of which
-  #               reuses its source's single download.
-  # To add/remove a variant, edit .github/variants.json only.
+  # Emits two matrices from .github/variants.json (the single source of truth):
+  # `sources` (one per Steam appId+branch, downloaded once) and `variants` (flat
+  # per-variant list). Add/remove variants by editing variants.json.
   load:
     name: "Load matrices"
     runs-on: ubuntu-latest
@@ -43,9 +39,7 @@ jobs:
         env:
           INPUT_VARIANT: ${{ github.event.inputs.variant }}
           EVENT_NAME: ${{ github.event_name }}
-          # Opt-in: set this repo variable to 'true' once a SECOND Steam account
-          # (STEAM_USERNAME_2 / STEAM_PASSWORD_2) exists. Until then the two client
-          # sources stay on one account, serialized — exactly as before.
+          # Opt-in 2nd Steam account (see ARCHITECTURE.md); empty/false = unchanged.
           STEAM_SECOND_ACCOUNT_ENABLED: ${{ vars.STEAM_SECOND_ACCOUNT_ENABLED }}
         run: |
           set -euo pipefail
@@ -60,22 +54,10 @@ jobs:
             base=$(jq -c '.' .github/variants.json)
           fi
 
-          # Group the (possibly filtered) variants by their Steam source. The
-          # source label "<appId>-<branch|default>" is reused as the artifact
-          # name that ties download_sources -> update_variant together.
-          #
-          # Per source we also derive (here, where vars + jq are easy, so
-          # download_sources stays dumb):
-          #   steamAccount  credential set to log in with: 0=anonymous, 1=primary
-          #                 (STEAM_USERNAME). The authenticated PREVIEW client source
-          #                 becomes 2 (STEAM_USERNAME_2) ONLY when a second account is
-          #                 enabled, so it logs into a DIFFERENT account than the
-          #                 default client source and the two can run concurrently.
-          #   dlgroup       download concurrency group. Anonymous sources — and, when
-          #                 the 2nd account is on, every source — get a unique group
-          #                 (parallel). Otherwise the two client sources share
-          #                 "authenticated" (serialized): concurrent logins to ONE
-          #                 account fail with AlreadyLoggedInElsewhere.
+          # Group variants by Steam source (appId+branch); the source label doubles as
+          # the artifact name linking download_sources -> update_variant. Also derive per
+          # source: steamAccount (0=anon, 1=primary, 2=2nd account for the preview client)
+          # and dlgroup (download concurrency group). See ARCHITECTURE.md.
           second="${STEAM_SECOND_ACCOUNT_ENABLED:-false}"
           sources=$(printf '%s' "$base" | jq -c --arg second "$second" '
             group_by(.appId + "|" + .branch)
@@ -101,11 +83,9 @@ jobs:
           echo "Sources to probe:"
           printf '%s' "$sources" | jq -r '.[] | "  \(.source)  (variants: \(.variants))"'
 
-  # One job per distinct Steam (appId, branch) source. Probe the manifest once;
-  # if it changed, download the game ONCE and publish just the bits the redist
-  # tool needs (Managed DLLs + appmanifest + Status.json) as an artifact that
-  # every variant of this source reuses. This is where the only Steam logins
-  # happen, so it's the only place that needs serializing.
+  # One job per Steam source: probe the manifest once; if changed, download the game
+  # once and upload the bits the tool needs (Managed DLLs + appmanifest + Status.json)
+  # as an artifact every variant of this source reuses. The only Steam logins happen here.
   download_sources:
     name: "Download ${{ matrix.source }}"
     runs-on: ubuntu-latest
@@ -114,15 +94,9 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.load.outputs.sources) }}
-    # The download concurrency group is precomputed per source by the load job
-    # (matrix.dlgroup). Anonymous (server) sources always get a unique group → run
-    # in parallel. By default the two authenticated (client) sources share ONE Steam
-    # account, so they share the "authenticated" group → serialized (concurrent
-    # logins to one account fail with AlreadyLoggedInElsewhere). With only two
-    # members a concurrency group keeps 1 running + 1 pending and never cancels (the
-    # 3+ case GitHub does cancel cannot occur). When a 2nd Steam account is enabled
-    # (vars.STEAM_SECOND_ACCOUNT_ENABLED == 'true') the preview client source logs
-    # into account 2 and gets its own group → the two client downloads run parallel.
+    # Per-source download group (matrix.dlgroup): server sources run parallel; the two
+    # client sources share one account so they're serialized, unless a 2nd account is
+    # enabled (then each gets its own group). See ARCHITECTURE.md.
     concurrency:
       group: redist-dl-${{ matrix.dlgroup }}
       cancel-in-progress: false
@@ -165,9 +139,7 @@ jobs:
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
 
-          # steamAccount picks the credential set: 2 = the optional second account
-          # (STEAM_USERNAME_2), used by the preview client source so it logs into a
-          # DIFFERENT account than the default client source; otherwise the primary.
+          # account 2 = optional 2nd Steam account (preview client); see ARCHITECTURE.md.
           if [ "$STEAM_ACCOUNT" = "2" ]; then
             STEAM_USERNAME="$STEAM_USERNAME_2"
             STEAM_PASSWORD="$STEAM_PASSWORD_2"
@@ -185,12 +157,9 @@ jobs:
             auth_args+=(-username "$STEAM_USERNAME" -password "$STEAM_PASSWORD")
           fi
 
-          # DepotDownloader can drop its Steam connection mid-probe ("Lost
-          # connection to Steam" / "A task was canceled") and exit WITHOUT a
-          # "Manifest <id>" line — a known transient (SteamRE/DepotDownloader
-          # #223, #691, incl. the pinned 3.4.0), not a real auth/format failure.
-          # Mirror the steamcmd retry in "Download game files": retry the fetch and
-          # gate on a valid id; only fail loudly once all attempts are exhausted.
+          # DepotDownloader can drop its connection mid-probe and emit no "Manifest <id>"
+          # line — a known transient (SteamRE/DepotDownloader #223, #691). Retry, gate on
+          # a valid id, fail loud only when exhausted.
           current_manifest=""
           manifest_output=""
           attempts=4
@@ -205,9 +174,7 @@ jobs:
               "${beta_args[@]}" \
               -dir redist/temp_depots || true)
 
-            # Prints e.g. "Manifest 763708736677468005 (date)". Manifest ids are
-            # 64-bit, so their length varies (~17-20 digits) — grab the number
-            # after the "Manifest" keyword rather than assuming a fixed width.
+            # Grab the number after "Manifest" (64-bit id, ~17-20 digits, variable width).
             current_manifest=$(printf '%s\n' "$manifest_output" | grep -oiE 'manifest[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -n 1 || true)
             if [[ "$current_manifest" =~ ^[0-9]{10,20}$ ]]; then
               break
@@ -224,9 +191,7 @@ jobs:
           echo "Current manifest: $current_manifest"
           echo "current_manifest=$current_manifest" >> "$GITHUB_OUTPUT"
 
-          # This source needs a download if ANY of its variants' recorded
-          # manifest ids differs from the live one (or is missing). They normally
-          # all match; "any differs" lets a lagging variant catch up.
+          # Download if ANY variant's recorded manifest id differs from the live one.
           changed=false
           IFS=',' read -ra source_variants <<< "$VARIANTS"
           for v in "${source_variants[@]}"; do
@@ -276,11 +241,8 @@ jobs:
           if [ -n "$APP_BRANCH_NAME" ]; then
             beta_args=(-beta "$APP_BRANCH_NAME")
           fi
-          # steamcmd is flaky: it can exit non-zero on success and fail downloads
-          # transiently. Its exit code isn't reliable, so we RETRY and gate on the
-          # real artifact — steamcmd only writes appmanifest_<appid>.acf once the
-          # update completes (the same "no appmanifest -> force update" remedy
-          # LinuxGSM uses). The redist tool needs that file downstream.
+          # steamcmd's exit code is unreliable, so retry and gate on the real artifact:
+          # appmanifest_<appid>.acf, written only on a completed update and needed by the tool.
           manifest_present() {
             find "$GITHUB_WORKSPACE" -name "appmanifest_${APP_ID}.acf" -print -quit 2>/dev/null | grep -q .
           }
@@ -304,9 +266,8 @@ jobs:
         if: steps.probe.outputs.source_changed == 'true'
         run: echo "${{ steps.probe.outputs.current_manifest }}" > source-manifest.txt
 
-      # Publish only the small bits the redist tool reads — NOT the multi-GB game.
-      # The artifact's presence is also the "this source changed" signal that
-      # update_variant keys off (a missing artifact => unchanged => skip).
+      # Upload only the small bits the tool reads (not the multi-GB game). The
+      # artifact's presence is also the "source changed" signal update_variant keys off.
       - name: Upload source files
         if: steps.probe.outputs.source_changed == 'true'
         uses: actions/upload-artifact@v7
@@ -321,25 +282,20 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
-  # One job per variant, FULLY PARALLEL: these never touch Steam — each pulls its
-  # source's artifact (the single download above), runs the redist tool, and opens
-  # its rolling PR. No Steam login here means no account contention, so there is
-  # nothing to serialize.
+  # One job per variant, fully parallel: pull the source artifact, run the tool, open
+  # the rolling PR. No Steam login here, so nothing to serialize.
   update_variant:
     name: "Update ${{ matrix.variant }}"
     runs-on: ubuntu-latest
     needs: [load, download_sources]
-    # Job-level permissions REPLACE the workflow defaults, so this must list
-    # everything GITHUB_TOKEN needs here: contents (checkout), and actions:read
-    # for the "list this run's artifacts" gate. (The PR itself is created with
-    # secrets.PAT, independent of these.)
+    # Job-level permissions REPLACE workflow defaults: contents (checkout) + actions:read
+    # (the artifacts gate). The PR is created with secrets.PAT, independent of these.
     permissions:
       contents: write
       pull-requests: write
       actions: read
-    # Run even if some source download failed (those variants just find no
-    # artifact and skip); notify-failure still flags the failed source. Skip only
-    # if the load job itself failed (then there's no matrix to run).
+    # Run even if a source download failed (those variants find no artifact and skip);
+    # only skip if load itself failed.
     if: ${{ !cancelled() && needs.load.result == 'success' }}
     strategy:
       fail-fast: false
@@ -372,12 +328,8 @@ jobs:
           SOURCE_KEY: ${{ steps.ids.outputs.source_key }}
         run: |
           set -euo pipefail
-          # Fail LOUD on an API error. The ONLY thing that may mean "this source
-          # is unchanged" is a SUCCESSFUL artifacts listing that doesn't contain
-          # our artifact. If the gh call itself fails (transient 5xx / network /
-          # rate-limit), we must NOT treat that as "unchanged" — that would
-          # silently skip a genuinely-changed source under a green run, and
-          # notify-failure (failure()-only) would never fire. Retry, then fail.
+          # Fail LOUD on API error: only a SUCCESSFUL listing without our artifact means
+          # "unchanged". A failed gh call must NOT be read as unchanged. Retry, then fail.
           ok=false
           names=""
           for attempt in 1 2 3; do
@@ -469,9 +421,8 @@ jobs:
           fi
           printf '%s\n' "$tool_output"
 
-      # Record the manifest id this build was produced from so the next probe
-      # sees "no change". Lives outside REDIST_DIR so the discard step below never
-      # reverts it, even when no package is published.
+      # Record the manifest id so the next probe sees "no change". Outside REDIST_DIR so
+      # the discard step never reverts it.
       - name: Record source manifest id
         if: steps.gate.outputs.changed == 'true'
         env:
@@ -498,14 +449,9 @@ jobs:
               echo "COMMIT_EOF"
             } >> "$GITHUB_OUTPUT"
           else
-            # No .commit means the tool did NOT bump the version: the Steam build /
-            # depot manifest changed, but the game version (X.Y.Z.N) did not. We
-            # cannot republish the same NuGet version, so the regenerated DLLs are
-            # unpublishable (would 409). Discard them in the variant dir and keep
-            # ONLY the corrected Steam manifest id (recorded above) so this build is
-            # logged and not re-processed every run. The real DLLs publish on the
-            # next game-version bump. (A tool failure already failed the step above,
-            # so a missing .commit here is a legitimate no-op, not a silent error.)
+            # No .commit => version unchanged (Steam build moved but game version didn't).
+            # Can't republish the same NuGet version, so discard the regenerated DLLs and
+            # keep only the recorded manifest id; the DLLs publish on the next version bump.
             git checkout -- "$REDIST_DIR" 2>/dev/null || true
             echo "message=Record ${{ matrix.variant }} Steam manifest (game version unchanged; no package update)" >> "$GITHUB_OUTPUT"
           fi
@@ -522,9 +468,8 @@ jobs:
             echo "has_git_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # peter-evans/create-pull-request commits to a fixed-name branch and keeps
-      # the open PR continually updated until it is merged/closed; delete-branch
-      # cleans it up afterwards. No timestamped branches or existing-PR lookups.
+      # Commits to a fixed-name branch and keeps the rolling PR updated until merged;
+      # delete-branch cleans up afterwards.
       - name: Create Pull Request
         if: steps.gate.outputs.changed == 'true' && steps.check_git_changes.outputs.has_git_changes == 'true'
         id: create_pr
@@ -581,9 +526,8 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # Make silent breakage visible: if any scheduled source download or variant
-  # update fails, open (or comment on) a tracking issue instead of relying on
-  # someone watching the Actions tab.
+  # On any scheduled-run failure, open (or comment on) a tracking issue so breakage
+  # isn't silent.
   notify-failure:
     name: "Notify on failure"
     needs: [load, download_sources, update_variant]
@@ -602,9 +546,7 @@ jobs:
           set -euo pipefail
           marker="Redist auto-update workflow failed"
           body=$(printf '⚠️ The scheduled redist update workflow failed.\n\nRun: %s\n\nA source download (Steam auth/network, DepotDownloader, steamcmd) or a variant update (the redist tool or PR creation) errored. Check the run for the failing job.' "$RUN_URL")
-          # --repo is required: this job has no checkout, so gh can't infer the
-          # repo from a git remote (and gh does NOT read GITHUB_REPOSITORY). Without
-          # it the label is never created and the gh issue create --label below fails.
+          # --repo is required here: no checkout, and gh doesn't read GITHUB_REPOSITORY.
           gh label create update-failure --repo "$REPO" --color B60205 --description "Automated redist update failure" --force >/dev/null 2>&1 || true
           existing=$(gh issue list --repo "$REPO" --state open --search "in:title \"$marker\"" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
@@ -616,14 +558,10 @@ jobs:
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
-    # GitHub disables scheduled workflows after 60 days of repo inactivity; this job
-    # re-enables this workflow on each scheduled run to prevent that. Inlined (was
-    # liskin/gh-workflow-keepalive) so we don't depend on an external, unmaintained
-    # action for a one-line gh-api call that runs with actions:write — same approach
-    # the action used (PUT .../enable), no dummy commits. The default token
-    # occasionally returns a transient 401 here; keepalive is non-critical and
-    # self-healing (the next scheduled run re-enables), so continue-on-error keeps a
-    # blip from reddening an otherwise-green run.
+    # Re-enable this scheduled workflow (GitHub disables them after 60 days idle).
+    # Inlined gh-api call, no external dependency. continue-on-error: the default token
+    # occasionally 401s here; keepalive is non-critical and self-healing, so a blip
+    # must not redden the run.
     continue-on-error: true
     permissions:
       actions: write

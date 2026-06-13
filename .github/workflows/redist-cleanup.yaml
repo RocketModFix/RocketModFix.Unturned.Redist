@@ -23,10 +23,7 @@ jobs:
           echo "Locking PR #${{ github.event.pull_request.number }}"
           gh pr lock "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --reason resolved || true
 
-      # Only delete after a successful merge. Never delete the branch of a PR
-      # that was closed without merging (it may contain work to investigate).
-      # PRs closed-as-unnecessary by create-pull-request are already cleaned up
-      # by its delete-branch:true, so this is the merge case.
+      # Only delete the branch after a successful merge (never for a closed-unmerged PR).
       - name: Delete merged PR branch
         if: github.event.pull_request.merged == true
         env:

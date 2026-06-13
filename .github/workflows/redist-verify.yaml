@@ -1,10 +1,8 @@
 name: "Redist Verify"
 
-# Uses `pull_request` (NOT `pull_request_target`): the validation steps below run
-# only PR-supplied data (file checks), never untrusted PR code, so they have no
-# access to repo secrets from a fork — which is what we want. The auto-merge /
-# auto-approve steps are additionally gated on the PR author being the trusted
-# bot (`rocketmodfixadmin`), a value GitHub sets and a fork cannot spoof.
+# Uses `pull_request` (NOT `pull_request_target`): validation runs only PR-supplied
+# data (no repo secrets on fork PRs). Auto-merge/approve are gated on the trusted bot
+# author (`rocketmodfixadmin`), which a fork cannot spoof.
 on:
   pull_request:
     branches:
@@ -137,12 +135,9 @@ jobs:
           OLD_BUILD=$(printf '%s' "$BASE_JSON" | jq -r '.BuildId')
           echo "Base: version=$OLD_VER  buildId=$OLD_BUILD"
 
-          # Authoritative gate: the Steam build id. Build ids are monotonic per
-          # app+branch and increase even when a release reverts game content (a
-          # rollback is a NEW, higher build). A LOWER build id therefore means we
-          # processed an OLDER upstream build — a real regression — so fail.
-          # The game VERSION itself can legitimately dip on a preview rollback
-          # while the build id still rises, so we do NOT hard-fail on version.
+          # Gate on the Steam build id (monotonic per app+branch, rises even on a
+          # rollback); a LOWER id means an older build = regression. The version can dip
+          # on a preview rollback, so we don't hard-fail on version.
           # See ARCHITECTURE.md ("Why the build id, not the version").
           if [[ "$NEW_BUILD" =~ ^[0-9]+$ ]] && [[ "$OLD_BUILD" =~ ^[0-9]+$ ]]; then
             if [ "$NEW_BUILD" -lt "$OLD_BUILD" ]; then
@@ -153,9 +148,7 @@ jobs:
             echo "::warning::Non-numeric build id ('$OLD_BUILD' -> '$NEW_BUILD'); skipping build-id gate."
           fi
 
-          # Informational only: surface a NuGet-version dip (e.g. an upstream
-          # rollback) without blocking — the build id already confirmed it is the
-          # newer build.
+          # Informational only: surface a version dip without blocking (build id already gated).
           result=$(python3 .github/scripts/compare_nuget_version.py "$NEW_VER" "$OLD_VER" 2>/dev/null || echo "unknown")
           case "$result" in
             lt) echo "::warning::NuGet version decreased ($OLD_VER -> $NEW_VER) but the build id advanced — likely an upstream rollback. Allowing (newer build)." ;;
@@ -164,9 +157,8 @@ jobs:
             *)  echo "Build id advanced; version comparison skipped." ;;
           esac
 
-      # --- Auto-merge: only for the trusted bot's PRs, when opted in via the
-      # repo variable. GITHUB_TOKEN approves (so the review shows as the bot
-      # reviewing); the PAT enables auto-merge (it can merge to a protected base).
+      # Auto-merge for the trusted bot's PRs when opted in: GITHUB_TOKEN approves,
+      # PAT enables the merge (it can merge to a protected base).
       - name: Auto-approve PR
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
         uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363 # v4
@@ -175,16 +167,10 @@ jobs:
           pull-request-number: ${{ github.event.pull_request.number }}
           review-message: "All checks passed (files, hashes, version). Auto-approved automated PR."
 
-      # peter-evans/enable-pull-request-automerge runs `gh pr merge --auto`, which
-      # merges IMMEDIATELY when the PR is already mergeable (per its README) rather
-      # than queueing. A multi-variant bump opens ~9 sibling redist PRs whose
-      # immediate squash-merges race on master, so all but the first fail with
-      # "Base branch was modified (mergePullRequest)". The action has no retry, and
-      # a concurrency group would cancel the pending PRs (see redist-update.yaml),
-      # so run the same command inline and retry ONLY that benign race — re-evaluated
-      # against the moved master each attempt — failing loud on anything else or once
-      # attempts are exhausted. (Enabling repo "Allow auto-merge" + a required check
-      # on master would let GitHub queue these instead of racing immediate merges.)
+      # Inline `gh pr merge --auto` (was peter-evans/enable-pull-request-automerge):
+      # when a PR is already mergeable it merges immediately, so sibling redist PRs
+      # race on master ("Base branch was modified"). Retry that benign race; fail
+      # loud otherwise. See ARCHITECTURE.md.
       - name: Enable PR automerge
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
         env:

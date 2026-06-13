@@ -75,9 +75,8 @@ jobs:
           # load-variants already filtered the matrix to the requested variant(s).
           should_run=true
         else
-          # Native git diff replaces tj-actions/changed-files (one less third-party
-          # action). The Update pipeline squash-merges one variant per commit, so
-          # github.event.before is the prior master tip; fall back to HEAD~1.
+          # Native git diff (no tj-actions/changed-files). github.event.before is the
+          # prior master tip; fall back to HEAD~1.
           before="$BEFORE_SHA"
           if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
             before="HEAD~1"
