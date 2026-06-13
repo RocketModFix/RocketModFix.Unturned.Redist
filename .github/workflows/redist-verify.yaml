@@ -175,10 +175,39 @@ jobs:
           pull-request-number: ${{ github.event.pull_request.number }}
           review-message: "All checks passed (files, hashes, version). Auto-approved automated PR."
 
+      # peter-evans/enable-pull-request-automerge runs `gh pr merge --auto`, which
+      # merges IMMEDIATELY when the PR is already mergeable (per its README) rather
+      # than queueing. A multi-variant bump opens ~9 sibling redist PRs whose
+      # immediate squash-merges race on master, so all but the first fail with
+      # "Base branch was modified (mergePullRequest)". The action has no retry, and
+      # a concurrency group would cancel the pending PRs (see redist-update.yaml),
+      # so run the same command inline and retry ONLY that benign race — re-evaluated
+      # against the moved master each attempt — failing loud on anything else or once
+      # attempts are exhausted. (Enabling repo "Allow auto-merge" + a required check
+      # on master would let GitHub queue these instead of racing immediate merges.)
       - name: Enable PR automerge
         if: success() && env.ALLOW_AUTO_MERGE_REDIST_PR == 'true' && github.event.pull_request.user.login == 'rocketmodfixadmin'
-        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
-        with:
-          token: ${{ secrets.PAT }}
-          pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          attempts=6
+          for i in $(seq 1 "$attempts"); do
+            if out=$(gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --auto 2>&1); then
+              printf '%s\n' "$out"
+              echo "Auto-merge enabled / PR #${PR_NUMBER} merged (attempt ${i}/${attempts})."
+              exit 0
+            fi
+            printf '%s\n' "$out"
+            if printf '%s' "$out" | grep -qi 'Base branch was modified'; then
+              echo "::warning::PR #${PR_NUMBER} merge raced a sibling variant merge (attempt ${i}/${attempts}); retrying after backoff..."
+              [ "$i" -lt "$attempts" ] && sleep $((i * 10))
+              continue
+            fi
+            echo "::error::Enabling auto-merge for PR #${PR_NUMBER} failed (non-transient)."
+            exit 1
+          done
+          echo "::error::PR #${PR_NUMBER} could not be merged after ${attempts} attempts (base branch kept moving)."
+          exit 1

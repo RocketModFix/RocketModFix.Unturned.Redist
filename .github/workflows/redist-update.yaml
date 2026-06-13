@@ -143,23 +143,38 @@ jobs:
             auth_args+=(-username "$STEAM_USERNAME" -password "$STEAM_PASSWORD")
           fi
 
-          # '|| true': DepotDownloader can exit non-zero even on a successful
-          # manifest fetch. The id-validation below is the real gate (a genuine
-          # auth/network failure yields no manifest id and still fails loudly).
-          manifest_output=$(depot_downloader/DepotDownloader \
-            -app "$APP_ID" \
-            -depot "$APP_DEPOT_ID" \
-            -manifest-only \
-            "${auth_args[@]}" \
-            "${beta_args[@]}" \
-            -dir redist/temp_depots || true)
+          # DepotDownloader can drop its Steam connection mid-probe ("Lost
+          # connection to Steam" / "A task was canceled") and exit WITHOUT a
+          # "Manifest <id>" line — a known transient (SteamRE/DepotDownloader
+          # #223, #691, incl. the pinned 3.4.0), not a real auth/format failure.
+          # Mirror the steamcmd retry in "Download game files": retry the fetch and
+          # gate on a valid id; only fail loudly once all attempts are exhausted.
+          current_manifest=""
+          manifest_output=""
+          attempts=4
+          for i in $(seq 1 "$attempts"); do
+            # '|| true': DepotDownloader can exit non-zero even on a successful
+            # manifest fetch. The id-validation below is the real gate.
+            manifest_output=$(depot_downloader/DepotDownloader \
+              -app "$APP_ID" \
+              -depot "$APP_DEPOT_ID" \
+              -manifest-only \
+              "${auth_args[@]}" \
+              "${beta_args[@]}" \
+              -dir redist/temp_depots || true)
 
-          # Prints e.g. "Manifest 763708736677468005 (date)". Manifest ids are
-          # 64-bit, so their length varies (~17-20 digits) — grab the number
-          # after the "Manifest" keyword rather than assuming a fixed width.
-          current_manifest=$(printf '%s\n' "$manifest_output" | grep -oiE 'manifest[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -n 1 || true)
+            # Prints e.g. "Manifest 763708736677468005 (date)". Manifest ids are
+            # 64-bit, so their length varies (~17-20 digits) — grab the number
+            # after the "Manifest" keyword rather than assuming a fixed width.
+            current_manifest=$(printf '%s\n' "$manifest_output" | grep -oiE 'manifest[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -n 1 || true)
+            if [[ "$current_manifest" =~ ^[0-9]{10,20}$ ]]; then
+              break
+            fi
+            echo "::warning::Probe attempt ${i}/${attempts} for source ${SOURCE} produced no manifest id (likely a transient Steam connection drop); retrying after backoff..."
+            [ "$i" -lt "$attempts" ] && sleep $((i * 15))
+          done
           if ! [[ "$current_manifest" =~ ^[0-9]{10,20}$ ]]; then
-            echo "::error::Could not extract a manifest id for source ${SOURCE} (Steam auth/network issue or output-format change?)."
+            echo "::error::Could not extract a manifest id for source ${SOURCE} after ${attempts} attempts (Steam auth/network issue or output-format change?)."
             echo "----- DepotDownloader output (first 50 lines) -----"
             printf '%s\n' "$manifest_output" | head -n 50
             exit 1
