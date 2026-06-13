@@ -616,13 +616,29 @@ jobs:
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
-    # The 401s this job occasionally hits are transient GitHub-side auth blips on
-    # the default token (the action already injects github.token and our usage
-    # matches its docs). Keepalive is non-critical and self-healing — the other
-    # scheduled runs re-enable the workflow — so a single miss must not redden an
-    # otherwise-green run.
+    # GitHub disables scheduled workflows after 60 days of repo inactivity; this job
+    # re-enables this workflow on each scheduled run to prevent that. Inlined (was
+    # liskin/gh-workflow-keepalive) so we don't depend on an external, unmaintained
+    # action for a one-line gh-api call that runs with actions:write — same approach
+    # the action used (PUT .../enable), no dummy commits. The default token
+    # occasionally returns a transient 401 here; keepalive is non-critical and
+    # self-healing (the next scheduled run re-enables), so continue-on-error keeps a
+    # blip from reddening an otherwise-green run.
     continue-on-error: true
     permissions:
       actions: write
     steps:
-      - uses: liskin/gh-workflow-keepalive@f72ff1a1336129f29bf0166c0fd0ca6cf1bcb38c # v1
+      - name: Re-enable this scheduled workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # GITHUB_WORKFLOW_REF is "<owner>/<repo>/.github/workflows/<file>@<ref>".
+          # Validate the shape, derive the workflow file path, and re-enable it.
+          case "${GITHUB_WORKFLOW_REF:?}" in
+            "${GITHUB_REPOSITORY:?}"/.github/workflows/*.y*ml@*) ;;
+            *) echo "::error::Unexpected GITHUB_WORKFLOW_REF: ${GITHUB_WORKFLOW_REF}"; exit 1 ;;
+          esac
+          workflow="${GITHUB_WORKFLOW_REF%%@*}"
+          workflow="${workflow#"${GITHUB_REPOSITORY}"/.github/workflows/}"
+          gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/enable"
