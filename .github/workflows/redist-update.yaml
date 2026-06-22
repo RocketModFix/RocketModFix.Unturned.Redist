@@ -32,7 +32,7 @@ jobs:
       sources: ${{ steps.load.outputs.sources }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Load variant + source matrices
         id: load
@@ -102,7 +102,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download depot downloader
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
@@ -354,7 +354,7 @@ jobs:
 
       - name: Checkout repository
         if: steps.gate.outputs.changed == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
