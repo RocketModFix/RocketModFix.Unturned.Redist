@@ -54,6 +54,10 @@ Field `SDG.Unturned.Provider:isDedicatedUGCInstalled' is inaccessible from metho
 
 The standalone [`…Client-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview) and [`…Server-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview) packages are **legacy**. They still update for projects that already reference them, but new code should use the prerelease stream above.
 
+## Example plugin
+
+[**RocketModFix.Unturned.Redist.Example**](https://github.com/RocketModFix/RocketModFix.Unturned.Redist.Example) is a small, runnable RocketMod plugin showing how to consume these packages in practice — including a side-by-side comparison of reading a non-public member via **reflection** (the plain redist) vs. a **`.Publicized`** package (a plain, compile-checked field access), plus how to drop the built DLL on a server and confirm it loads.
+
 ## How it works
 
 Everything runs on GitHub Actions, with no external servers. A scheduled job watches Steam for new Unturned builds; when one lands it downloads the build, repackages the managed DLLs, and opens a pull request. The PR is validated (files present, hashes match, version not a downgrade) and auto-merged, which publishes the affected package to NuGet.
