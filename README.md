@@ -1,6 +1,6 @@
 # RocketModFix.Unturned.Redist
 
-Unturned's managed assemblies (`Assembly-CSharp.dll`, `com.rlabrecque.steamworks.net.dll`, `UnturnedDat.dll`, the SDG/Unity dependencies, and the API XML docs), packaged for NuGet and refreshed automatically each time Unturned ships a new build. Reference a package instead of hand-copying DLLs out of the game's `Managed` folder after every patch.
+Unturned's managed assemblies (`Assembly-CSharp.dll`, `com.rlabrecque.steamworks.net.dll`, `UnturnedDat.dll`, the SDG/Unity dependencies, and the API XML docs), packaged for NuGet and refreshed automatically each time Unturned ships a new build. Reference a package instead of hand-copying DLLs out of the game's `Managed` folder after every patch. They're plain Unturned assemblies, useful in **any** Unturned project — RocketMod or [OpenMod](https://github.com/openmod/OpenMod) plugins, standalone tools, client mods, datamining — not just RocketMod (the `RocketModFix` prefix is only the maintainer).
 
 > **Redistributed with permission.** Nelson Sexton (Smartly Dressed Games) gave explicit written approval to distribute Unturned's libraries — see [issue #8](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/8).
 
