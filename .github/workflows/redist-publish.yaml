@@ -51,6 +51,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write   # best-effort GitHub Packages mirror
     # No job-level continue-on-error: a failed pack/push must surface red.
     # fail-fast:false keeps the other (independent) variants building.
     strategy:
@@ -116,3 +117,17 @@ jobs:
         nuspec_path: ${{ matrix.nuspec }}
         nuget_key: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         nuget_push: true
+
+    # Best-effort mirror to GitHub Packages; nuget.org above is the primary. Its NuGet
+    # feed needs auth even to restore, so this is a backup, not the main source.
+    - name: Mirror to GitHub Packages
+      if: steps.check.outputs.should_run == 'true'
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OWNER: ${{ github.repository_owner }}
+      run: |
+        set -euo pipefail
+        dotnet nuget push *.nupkg \
+          --source "https://nuget.pkg.github.com/${OWNER}/index.json" \
+          --api-key "$GH_TOKEN" --skip-duplicate
