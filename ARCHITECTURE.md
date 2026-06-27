@@ -139,6 +139,7 @@ That's it — `redist-update`, `redist-publish`, and `redist-verify` all derive 
 ## Conventions
 
 - **Third-party actions are pinned to full commit SHAs** (with a `# vX` comment) to prevent tag-retargeting supply-chain attacks; Dependabot keeps them current. First-party `actions/*` may use major tags.
-- **Secrets** (`STEAM_USERNAME`, `STEAM_PASSWORD`, optional `STEAM_USERNAME_2` / `STEAM_PASSWORD_2`, `NUGET_DEPLOY_KEY`) are passed via step `env:`, never as inline command-line arguments. The optional second Steam account is gated by the repo **variable** `STEAM_SECOND_ACCOUNT_ENABLED` (see *Optional: a second Steam account*).
+- **Secrets** (`STEAM_USERNAME`, `STEAM_PASSWORD`, optional `STEAM_USERNAME_2` / `STEAM_PASSWORD_2`, `NUGET_USER`) are passed via step `env:`, never as inline command-line arguments. The optional second Steam account is gated by the repo **variable** `STEAM_SECOND_ACCOUNT_ENABLED` (see *Optional: a second Steam account*).
+- **NuGet publishing uses Trusted Publishing (OIDC)**, not a long-lived API key. `redist-publish` grants the job `id-token: write` and `NuGet/login@v1` exchanges the GitHub OIDC token for a ~1h key just before `dotnet nuget push`. The only NuGet secret is `NUGET_USER` (the nuget.org profile name). Setup: nuget.org → Trusted Publishing → one owner-scoped policy (repo `RocketModFix/RocketModFix.Unturned.Redist`, workflow file `redist-publish.yaml`) covers every package id this repo ships.
 - **Failures are not swallowed.** A failed variant turns the run red; scheduled failures open/update a GitHub issue labelled `update-failure`.
 - Publishing **fails on a duplicate version by design** (no `--skip-duplicate`) — a repeated version signals an upstream problem.

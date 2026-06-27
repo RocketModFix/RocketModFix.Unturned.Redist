@@ -9,7 +9,7 @@ inputs:
     required: false
     default: 'false'
   nuget_key:
-    description: 'NuGet deploy key'
+    description: 'NuGet API key (short-lived key from NuGet/login OIDC exchange)'
     required: false
 runs:
   using: "composite"

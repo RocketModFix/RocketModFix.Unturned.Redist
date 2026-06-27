@@ -47,6 +47,10 @@ jobs:
     name: "Build ${{ matrix.variant }}"
     runs-on: ubuntu-22.04
     needs: load-variants
+    # Trusted Publishing: id-token lets NuGet/login mint a short-lived key via OIDC.
+    permissions:
+      contents: read
+      id-token: write
     # No job-level continue-on-error: a failed pack/push must surface red.
     # fail-fast:false keeps the other (independent) variants building.
     strategy:
@@ -94,8 +98,15 @@ jobs:
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
       uses: nuget/setup-nuget@fd55a6f3b34392fa83fde1454582407d8c714123 # v4
+
+    # Exchange the GitHub OIDC token for a ~1h NuGet key. Run right before push:
+    # the key expires in an hour and pack is fast, so this ordering is safe.
+    - name: NuGet login (OIDC -> temp API key)
+      if: steps.check.outputs.should_run == 'true'
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+      id: nuget-login
       with:
-        nuget-api-key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        user: ${{ secrets.NUGET_USER }}
 
     - name: NuGet Pack & Push
       if: steps.check.outputs.should_run == 'true'
@@ -103,5 +114,5 @@ jobs:
       id: nuget-pack
       with:
         nuspec_path: ${{ matrix.nuspec }}
-        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_key: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         nuget_push: true
