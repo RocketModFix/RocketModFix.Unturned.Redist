@@ -108,7 +108,6 @@ jobs:
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
         with:
           repository: SteamRE/DepotDownloader
-          latest: true
           fileName: DepotDownloader-linux-x64.zip
           out-file-path: depot_downloader
           tag: "DepotDownloader_3.4.0" # Pin its version to avoid breaking changes.
@@ -554,6 +553,28 @@ jobs:
           else
             gh issue create --repo "$REPO" --title "⚠️ $marker" --body "$body" --label update-failure
           fi
+
+  # Close the tracking issue once a scheduled run is fully green again.
+  notify-recovery:
+    name: "Close tracking issue on recovery"
+    needs: [load, download_sources, update_variant]
+    if: success() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Close tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          marker="Redist auto-update workflow failed"
+          for n in $(gh issue list --repo "$REPO" --state open --search "in:title \"$marker\"" --json number --jq '.[].number'); do
+            gh issue close "$n" --repo "$REPO" --comment "✅ Recovered: $RUN_URL"
+          done
 
   workflow-keepalive:
     if: github.event_name == 'schedule'
