@@ -360,7 +360,7 @@ jobs:
 
       - name: Setup .NET
         if: steps.gate.outputs.changed == 'true'
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         env:
           DOTNET_NOLOGO: true
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
