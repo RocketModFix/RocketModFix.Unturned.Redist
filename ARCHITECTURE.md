@@ -34,7 +34,7 @@ flowchart TD
 | --- | --- | --- |
 | `redist-update.yaml` | `schedule` (*/15) + `workflow_dispatch` | Probe each Steam **source** once (`download_sources`); on change, download the game once per source, then fan out to one PR per variant (`update_variant`, parallel, no extra Steam logins). Files an issue if a scheduled run fails. |
 | `redist-verify.yaml` | `pull_request` to `master` touching `redist/**` | Validate the PR: required files present, SHA-256 hashes match `manifest.sha256.json`, version is not a downgrade. Auto-approve + enable squash auto-merge for the bot's PRs when `ALLOW_AUTO_MERGE_REDIST_PR` is `true`. |
-| `redist-publish.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. |
+| `redist-publish.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. Dispatch with `deprecate_legacy` marks the obsolete `…Client-Preview` / `…Server-Preview` packages as Legacy on nuget.org. |
 | `redist-cleanup.yaml` | `pull_request: closed` | Lock the PR conversation; delete the branch **only if merged**. |
 
 External tool: [`RocketModFix/UnturnedRedistUpdateTool`](https://github.com/RocketModFix/UnturnedRedistUpdateTool) (net10). CLI: `dotnet UnturnedRedistUpdateTool.dll <unturned_path> <redist_dir> <app_id> [--force] [--preview] [-publicize <csv>] -update-files <csv>`. It copies (and optionally publicizes) the requested DLLs into `<redist_dir>`, and writes `version.json` (or `version.preview.json` with `--preview`), `manifest.sha256.json`, the `.nuspec` `<version>`, and a one-line `.commit` message.
@@ -58,19 +58,19 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 ```
 
 - `branch`: `""` = Steam default branch, `"preview"` = Steam `preview` beta branch.
-- `preview`: `true` only for the two variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
+- `preview`: `true` for variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
 - `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`). The tool rewrites non-public members to public, but deliberately leaves `virtual`/`abstract` members (and compiler-generated members) at their original accessibility so plugin `protected override`s still compile (see [#56](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/56)). Consumers of a `.Publicized` package must set `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>` — see the README.
 - `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **server** build downloads anonymously (the anonymous account has the dedicated-server subscription); the **client** app's depot is *not* available anonymously, so client variants require the account.
 - `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the per-source manifest probes can run concurrently on one account (see below).
 
 ### Steam logins: download once per source
 
-The 10 variants share only **4 distinct Steam sources** (2 apps × 2 branches), and Steam allows just one session per account per *LoginID* (concurrent same-account logins fail with `AlreadyLoggedInElsewhere`). So `redist-update.yaml` is split into two jobs and **all Steam logins are confined to the first**:
+The 8 variants share only **4 distinct Steam sources** (2 apps × 2 branches), and Steam allows just one session per account per *LoginID* (concurrent same-account logins fail with `AlreadyLoggedInElsewhere`). So `redist-update.yaml` is split into two jobs and **all Steam logins are confined to the first**:
 
 1. **`download_sources`** (one job per source) does the only Steam work. It probes the manifest once and, on change, downloads the game once via `steamcmd` and uploads just the bits the tool needs (Managed DLLs + `appmanifest_<appid>.acf` + `Status.json`) as a `source-<appId>-<branch>` artifact. Anonymous **server** sources each get a unique `concurrency` group → fully parallel. The two authenticated **client** sources share one group → serialized; with only two members, a concurrency group keeps one running + one pending and **never cancels** (the 3+ case GitHub *does* cancel cannot occur). DepotDownloader probes still use a unique `loginId` per source. **Optionally**, a second Steam account lets the two client sources download in parallel too — see *Optional: a second Steam account* below.
 2. **`update_variant`** (one job per variant, **fully parallel**) never logs into Steam: each variant downloads its source's artifact, runs the tool, records the manifest id, and opens its rolling PR. The artifact's presence is the "source changed" signal (listed via the run-artifacts API, hence the job's `actions: read`). No account, no contention, nothing to serialize.
 
-This replaced an earlier per-variant matrix that forced `max-parallel: 1` and had every variant re-download the whole game — 10 serial downloads instead of today's 4 (mostly parallel).
+This replaced an earlier per-variant matrix that forced `max-parallel: 1` and had every variant re-download the whole game — one serial download per variant instead of today's 4 (mostly parallel).
 
 ### Optional: a second Steam account (parallel client downloads)
 
@@ -93,32 +93,29 @@ The probe uses **DepotDownloader** (only to read the current manifest id), but t
 
 This is also why we don't switch the download to DepotDownloader's `-filelist` — which *could* fetch only the managed DLLs and shrink a multi-GB download to a few MB, and would let one account download every source concurrently. The trust posture and the `BuildId` dependency outweigh the size win; to parallelize the client downloads we use a second account (above) instead.
 
-## The 4 sources → 10 directories → 6 packages
+## The 4 sources → 8 directories → 4 packages
 
-The 10 redist directories pull from only **4 distinct Steam sources** (2 apps × 2 branches) and publish to **6 NuGet package ids**:
+The 8 redist directories pull from only **4 distinct Steam sources** (2 apps × 2 branches) and publish to **4 NuGet package ids**:
 
 | Variant directory | Steam source (app / branch) | NuGet package id | Version style |
 | --- | --- | --- | --- |
 | `redist/redist-client` | 304930 / default | `…Redist.Client` | stable `X.Y.Z.N` |
 | `redist/redist-client-preview` | 304930 / preview | `…Redist.Client` | prerelease `X.Y.Z.N-preview<build>` |
-| `redist/redist-client-preview-old` | 304930 / preview | `…Redist.Client-Preview` *(legacy)* | stable-style `X.Y.Z.N` |
 | `redist/redist-client-publicized` | 304930 / default | `…Redist.Client.Publicized` | stable `X.Y.Z.N` |
-| `redist/redist-client-preview-publicized` | 304930 / preview | `…Redist.Client.Publicized` | stable-style `X.Y.Z.N` |
+| `redist/redist-client-preview-publicized` | 304930 / preview | `…Redist.Client.Publicized` | prerelease `X.Y.Z.N-preview<build>` |
 | `redist/redist-server` | 1110390 / default | `…Redist.Server` | stable `X.Y.Z.N` |
 | `redist/redist-server-preview` | 1110390 / preview | `…Redist.Server` | prerelease `X.Y.Z.N-preview<build>` |
-| `redist/redist-server-preview-old` | 1110390 / preview | `…Redist.Server-Preview` *(legacy)* | stable-style `X.Y.Z.N` |
 | `redist/redist-server-publicized` | 1110390 / default | `…Redist.Server.Publicized` | stable `X.Y.Z.N` |
-| `redist/redist-server-preview-publicized` | 1110390 / preview | `…Redist.Server.Publicized` | stable-style `X.Y.Z.N` |
+| `redist/redist-server-preview-publicized` | 1110390 / preview | `…Redist.Server.Publicized` | prerelease `X.Y.Z.N-preview<build>` |
 
 Notes:
-- The main **`Client` / `Server`** packages receive both a *stable* version (default branch) and a *prerelease* version (preview branch). Consumers who opt into prereleases of `…Redist.Client` get the preview build under the same package id.
-- The **`*.Publicized`** packages similarly receive both default-branch and preview-branch builds (the preview one as a higher stable-style version).
-- The **`*-Preview`** package ids are *legacy*, fed only by the `*-preview-old` variants. They are kept for **backward compatibility** with consumers that referenced the old standalone preview packages, from before preview builds were folded into the main package ids as prereleases.
+- Each of the four packages receives both a *stable* version (default branch) and a *prerelease* version (preview branch). Consumers who opt into prereleases of e.g. `…Redist.Client` get the preview build under the same package id.
+- Preview **must** use the `-preview<build>` suffix. Publishing preview bits as a stable-style version collides with the default-branch package whenever the game version strings match (nuget.org 409), which is how the old `*.Publicized` preview variants used to fail.
+- The standalone **`…Client-Preview` / `…Server-Preview`** package ids are **obsolete**. They are no longer produced; existing versions stay on nuget.org as a Legacy deprecation pointing at `…Client` / `…Server`.
 
 ### Legacy artifacts (kept on purpose)
 
 - **`version.preview.json` inside the stable `redist-client` / `redist-server` directories** is an orphaned tracker left over from an earlier "preview embedded in stable" scheme. It is no longer updated (frozen at an old version) and is intentionally retained; the active preview metadata lives in the `redist-*-preview` directories.
-- The **`*-preview-old`** variants and the legacy `*-Preview` package ids are retained for backward compatibility, not removed.
 
 ### Why the build id, not the version (rollback safety)
 

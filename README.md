@@ -47,12 +47,12 @@ Field `SDG.Unturned.Provider:isDedicatedUGCInstalled' is inaccessible from metho
 
 ### Stable vs. preview builds
 
-`Client` and `Server` carry two streams under the **same package id**:
+All four packages carry two streams under the **same package id**:
 
 - **Stable** — Unturned's default branch, versioned `x.y.z.n`.
 - **Preview** — Unturned's `preview` branch, published as a prerelease `x.y.z.n-preview<build>`. Enable "include prerelease" in your NuGet client to pull it.
 
-The standalone [`…Client-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview) and [`…Server-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview) packages are **legacy**. They still update for projects that already reference them, but new code should use the prerelease stream above.
+The standalone [`…Client-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Client-Preview) and [`…Server-Preview`](https://www.nuget.org/packages/RocketModFix.Unturned.Redist.Server-Preview) packages are **obsolete**. They are no longer published; switch to `…Client` / `…Server` and enable prerelease for preview builds.
 
 ## Example plugin
 
@@ -62,7 +62,7 @@ The standalone [`…Client-Preview`](https://www.nuget.org/packages/RocketModFix
 
 Everything runs on GitHub Actions, with no external servers. A scheduled job watches Steam for new Unturned builds; when one lands it downloads the build, repackages the managed DLLs, and opens a pull request. The PR is validated (files present, hashes match, version not a downgrade) and auto-merged, which publishes the affected package to NuGet.
 
-📖 **[ARCHITECTURE.md](ARCHITECTURE.md)** has the full picture: the workflows, the variant matrix in [`.github/variants.json`](.github/variants.json), how the 4 Steam sources map to 10 directories and 6 packages, and how to add a variant.
+📖 **[ARCHITECTURE.md](ARCHITECTURE.md)** has the full picture: the workflows, the variant matrix in [`.github/variants.json`](.github/variants.json), how the 4 Steam sources map to 8 directories and 4 packages, and how to add a variant.
 
 ![Architecture](architecture.svg)
 

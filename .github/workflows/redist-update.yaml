@@ -401,7 +401,7 @@ jobs:
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             flags="$flags --force"
           fi
-          # Only client-preview / server-preview emit the -preview<build> prerelease.
+          # preview:true variants emit the -preview<build> prerelease.
           if [ "$IS_PREVIEW" = "true" ]; then
             flags="$flags --preview"
           fi

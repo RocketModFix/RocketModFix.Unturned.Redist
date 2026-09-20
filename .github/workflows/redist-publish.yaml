@@ -12,11 +12,84 @@ on:
         required: true
         default: 'all'
         type: string
+      deprecate_legacy:
+        description: 'Mark Client-Preview and Server-Preview as Legacy on nuget.org (no pack/push)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
+  # Obsolete standalone preview package ids. Needs PackageUnlist on the OIDC key;
+  # if nuget.org returns 403, do the same in the nuget.org UI (Manage packages →
+  # Deprecation → Legacy, alternate …Client / …Server).
+  deprecate-legacy:
+    name: "Deprecate legacy Preview packages"
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deprecate_legacy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Deprecate Client-Preview and Server-Preview
+        env:
+          NUGET_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          deprecate() {
+            local id="$1"
+            local alt="$2"
+            local msg="$3"
+            local id_lower
+            id_lower=$(printf '%s' "$id" | tr '[:upper:]' '[:lower:]')
+            echo "Deprecating $id → $alt"
+            versions=$(curl -fsSL "https://api.nuget.org/v3-flatcontainer/${id_lower}/index.json" | jq -r '.versions[]')
+            if [ -z "$versions" ]; then
+              echo "::error::No versions found for $id"
+              exit 1
+            fi
+            args=()
+            while IFS= read -r v; do
+              args+=(--data-urlencode "versions=${v}")
+            done <<< "$versions"
+            http_code=$(curl -sS -o /tmp/nuget-deprecate.out -w '%{http_code}' -X PUT \
+              "https://www.nuget.org/api/v2/package/${id}/deprecations" \
+              -H "X-NuGet-ApiKey: ${NUGET_KEY}" \
+              -H "User-Agent: RocketModFix.Unturned.Redist-CI" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              --data-urlencode "isLegacy=true" \
+              --data-urlencode "alternatePackageId=${alt}" \
+              --data-urlencode "message=${msg}" \
+              "${args[@]}")
+            echo "HTTP ${http_code}"
+            cat /tmp/nuget-deprecate.out || true
+            echo
+            case "$http_code" in
+              200|204) echo "✅ $id deprecated" ;;
+              *)
+                echo "::error::Failed to deprecate $id (HTTP ${http_code}). If this is 403, the OIDC key lacks unlist — mark it Legacy in the nuget.org UI instead."
+                exit 1
+                ;;
+            esac
+          }
+          deprecate \
+            "RocketModFix.Unturned.Redist.Client-Preview" \
+            "RocketModFix.Unturned.Redist.Client" \
+            "Obsolete. Use RocketModFix.Unturned.Redist.Client and enable prerelease for preview builds."
+          deprecate \
+            "RocketModFix.Unturned.Redist.Server-Preview" \
+            "RocketModFix.Unturned.Redist.Server" \
+            "Obsolete. Use RocketModFix.Unturned.Redist.Server and enable prerelease for preview builds."
+
   # Single source of truth: variant definitions live in .github/variants.json.
   load-variants:
     name: "Load Variants"
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.deprecate_legacy != 'true'
     runs-on: ubuntu-latest
     outputs:
       variants: ${{ steps.load.outputs.variants }}

@@ -48,30 +48,6 @@
     "loginId": 10004
   },
   {
-    "variant": "client-preview-old",
-    "appId": "304930",
-    "depotId": "304931",
-    "branch": "preview",
-    "dir": "redist/redist-client-preview-old",
-    "nuspec": "redist/redist-client-preview-old/RocketModFix.Unturned.Redist.Client.nuspec",
-    "preview": false,
-    "publicize": false,
-    "anonymous": false,
-    "loginId": 10005
-  },
-  {
-    "variant": "server-preview-old",
-    "appId": "1110390",
-    "depotId": "1110391",
-    "branch": "preview",
-    "dir": "redist/redist-server-preview-old",
-    "nuspec": "redist/redist-server-preview-old/RocketModFix.Unturned.Redist.Server.nuspec",
-    "preview": false,
-    "publicize": false,
-    "anonymous": true,
-    "loginId": 10006
-  },
-  {
     "variant": "client-publicized",
     "appId": "304930",
     "depotId": "304931",
@@ -102,7 +78,7 @@
     "branch": "preview",
     "dir": "redist/redist-client-preview-publicized",
     "nuspec": "redist/redist-client-preview-publicized/RocketModFix.Unturned.Redist.Client.nuspec",
-    "preview": false,
+    "preview": true,
     "publicize": true,
     "anonymous": false,
     "loginId": 10009
@@ -114,7 +90,7 @@
     "branch": "preview",
     "dir": "redist/redist-server-preview-publicized",
     "nuspec": "redist/redist-server-preview-publicized/RocketModFix.Unturned.Redist.Server.nuspec",
-    "preview": false,
+    "preview": true,
     "publicize": true,
     "anonymous": true,
     "loginId": 10010
