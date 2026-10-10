@@ -43,6 +43,9 @@ jobs:
           STEAM_SECOND_ACCOUNT_ENABLED: ${{ vars.STEAM_SECOND_ACCOUNT_ENABLED }}
         run: |
           set -euo pipefail
+          # Refuse to run on an inconsistent config (e.g. a preview branch without
+          # "preview": true would publish preview bits into the stable stream).
+          python3 .github/scripts/validate_variants.py .github/variants.json
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_VARIANT:-}" ] && [ "$INPUT_VARIANT" != "all" ]; then
             if ! jq -e --arg v "$INPUT_VARIANT" 'any(.[]; .variant == $v)' .github/variants.json >/dev/null; then
               echo "::error::Unknown variant '$INPUT_VARIANT'. Valid variants:"

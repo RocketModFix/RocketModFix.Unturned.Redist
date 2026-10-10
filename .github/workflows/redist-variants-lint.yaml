@@ -1,0 +1,28 @@
+name: "Redist Variants Lint"
+
+# Catch an inconsistent .github/variants.json at PR time instead of at the next
+# scheduled update. The same check also gates redist-update and redist-publish.
+on:
+  pull_request:
+    paths:
+      - '.github/variants.json'
+      - '.github/scripts/validate_variants.py'
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/variants.json'
+      - '.github/scripts/validate_variants.py'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: "Validate variants.json"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate variants
+        run: python3 .github/scripts/validate_variants.py .github/variants.json

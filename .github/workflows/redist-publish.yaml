@@ -31,6 +31,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
+          python3 .github/scripts/validate_variants.py .github/variants.json
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_VARIANT:-}" ] && [ "$INPUT_VARIANT" != "all" ]; then
             if ! jq -e --arg v "$INPUT_VARIANT" 'any(.[]; .variant == $v)' .github/variants.json >/dev/null; then
               echo "::error::Unknown variant '$INPUT_VARIANT'. Valid variants:"
@@ -95,6 +96,16 @@ jobs:
         fi
         echo "Variant ${{ matrix.variant }} should_run=$should_run"
         echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
+
+    # Last line of defense before nuget.org: a preview variant must publish
+    # X.Y.Z.N-preview<build>, a stable one plain X.Y.Z.N. A preview build pushed as a
+    # stable-looking version would become the package's "latest" (see ARCHITECTURE.md).
+    - name: Check version matches the variant's stream
+      if: steps.check.outputs.should_run == 'true'
+      env:
+        NUSPEC: ${{ matrix.nuspec }}
+        PREVIEW: ${{ matrix.preview }}
+      run: python3 .github/scripts/validate_variants.py --nuspec "$NUSPEC" --preview "$PREVIEW"
 
     - name: Setup NuGet
       if: steps.check.outputs.should_run == 'true'
