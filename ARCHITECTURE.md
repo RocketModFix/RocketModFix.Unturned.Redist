@@ -36,6 +36,7 @@ flowchart TD
 | `redist-verify.yaml` | `pull_request` to `master` touching `redist/**` | Validate the PR: required files present, SHA-256 hashes match `manifest.sha256.json`, version is not a downgrade. Auto-approve + enable squash auto-merge for the bot's PRs when `ALLOW_AUTO_MERGE_REDIST_PR` is `true`. |
 | `redist-publish.yaml` | `push` to `master` touching `redist/redist-*/**` + `workflow_dispatch` | For each variant whose directory changed in the push, `nuget pack` the `.nuspec` and push to nuget.org. |
 | `redist-cleanup.yaml` | `pull_request: closed` | Lock the PR conversation; delete the branch **only if merged**. |
+| `redist-variants-lint.yaml` | `pull_request` / `push` touching `.github/variants.json` | Run `.github/scripts/validate_variants.py` (see *Single source of truth* below) so a bad variant fails at PR time. |
 
 External tool: [`RocketModFix/UnturnedRedistUpdateTool`](https://github.com/RocketModFix/UnturnedRedistUpdateTool) (net10). CLI: `dotnet UnturnedRedistUpdateTool.dll <unturned_path> <redist_dir> <app_id> [--force] [--preview] [-publicize <csv>] -update-files <csv>`. It copies (and optionally publicizes) the requested DLLs into `<redist_dir>`, and writes `version.json` (or `version.preview.json` with `--preview`), `manifest.sha256.json`, the `.nuspec` `<version>`, and a one-line `.commit` message.
 
@@ -58,8 +59,8 @@ Every variant is defined **once**, in `.github/variants.json`. All three matrix 
 ```
 
 - `branch`: `""` = Steam default branch, `"preview"` = Steam `preview` beta branch.
-- `preview`: `true` for variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`).
-- `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`). The tool rewrites non-public members to public, but deliberately leaves `virtual`/`abstract` members (and compiler-generated members) at their original accessibility so plugin `protected override`s still compile (see [#56](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/56)). Consumers of a `.Publicized` package must set `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>` — see the README.
+- `preview`: `true` for variants that publish an `-preview<build>` **prerelease** (passes `--preview` to the tool → writes `version.preview.json`). **Must be `true` exactly when `branch` is non-empty.** A preview-branch variant with `"preview": false` publishes preview bits as stable-looking versions into the same package id; preview version numbers can be ahead of stable (e.g. `3.26.4.100`), so they become the package's "latest" and stay there after the preview branch rolls back — which is how stale `3.26.3.107` / `3.26.4.100` ended up on the `.Publicized` packages. `.github/scripts/validate_variants.py` enforces this (plus unique `variant`/`dir`/`loginId`) in `redist-variants-lint`, in `redist-update`'s `load` job, and — as a last line of defense — `redist-publish` refuses to push a nuspec whose version doesn't match the variant's stream.
+- `publicize`: `true` for the publicized variants (passes `-publicize Assembly-CSharp.dll`). The tool rewrites non-public members to public, but deliberately leaves `virtual`/`abstract` members at their original accessibility so plugin `protected override`s still compile (see [#56](https://github.com/RocketModFix/RocketModFix.Unturned.Redist/issues/56)). Compiler-generated fields and types (backing fields, closures, state machines) are left alone too, while accessors of auto-properties and field-like events are publicized, so `{ get; private set; }` setters and non-public events (`+=`/`-=`) are usable. Publicization is deterministic: if the re-publicized DLL is identical to the one already in the redist it doesn't count as a change, so a game build that touched no redistributed file releases nothing — same as the plain variants. Consumers of a `.Publicized` package must set `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>` — see the README.
 - `anonymous`: `true` = download with Steam anonymous login (no credentials); `false` = use the account in `STEAM_USERNAME`/`STEAM_PASSWORD`. The **server** build downloads anonymously (the anonymous account has the dedicated-server subscription); the **client** app's depot is *not* available anonymously, so client variants require the account.
 - `loginId`: a unique 32-bit integer per variant, passed to DepotDownloader as `-loginid` so the per-source manifest probes can run concurrently on one account (see below).
 
@@ -129,7 +130,7 @@ This lets the redist faithfully follow upstream rollbacks instead of getting stu
 ## How to add a new variant
 
 1. Create the redist directory and its `.nuspec` under `redist/` (matching the existing layout).
-2. Add **one object** to `.github/variants.json` with all fields (`variant`, `appId`, `depotId`, `branch`, `dir`, `nuspec`, `preview`, `publicize`, `anonymous`, `loginId`). Give it a `loginId` not used by any other variant.
+2. Add **one object** to `.github/variants.json` with all fields (`variant`, `appId`, `depotId`, `branch`, `dir`, `nuspec`, `preview`, `publicize`, `anonymous`, `loginId`). Give it a `loginId` not used by any other variant, and set `preview` to `true` if and only if `branch` is non-empty. Check it locally with `python3 .github/scripts/validate_variants.py`.
 
 That's it — `redist-update`, `redist-publish`, and `redist-verify` all derive their matrices from that file. (The `workflow_dispatch` `variant` input is a free-form string validated against `variants.json`, so no dropdown to update.)
 

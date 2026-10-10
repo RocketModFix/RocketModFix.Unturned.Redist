@@ -16,6 +16,8 @@ or in your `.csproj`:
 <PackageReference Include="RocketModFix.Unturned.Redist.Server" Version="x.y.z" />
 ```
 
+> **Pin an exact version — don't float.** Some older preview builds were published as `3.26.3.107` / `3.26.4.100` (and `…-preview` of those), which sort above today's `3.26.3.x`. They're unlisted, but NuGet ignores listing when resolving floating versions, so `Version="*"`, `"*-*"` or `"3.26.*"` still restores those stale builds.
+
 ## Which package do I want?
 
 Choose by **side** (client or server). Use a **`.Publicized`** variant when your plugin needs to touch private/internal members — their visibility is rewritten to public.
@@ -37,11 +39,17 @@ Add `AllowUnsafeBlocks` to your plugin's `.csproj`:
 </PropertyGroup>
 ```
 
-The publicized DLL is a **compile-time reference only**. At runtime your plugin loads inside Unturned, which has its own original `Assembly-CSharp.dll` where those members are still private. Unturned runs on Mono, and `AllowUnsafeBlocks` is what lets the Mono runtime skip the access check for them. Without it you'll hit runtime errors like:
+The publicized DLL is a **compile-time reference only**. At runtime your plugin loads inside Unturned, which has its own original `Assembly-CSharp.dll` where those members are still private. Unturned runs on Mono, and `AllowUnsafeBlocks` is what lets the Mono runtime skip the access check for them: it makes the compiler mark your assembly with `SecurityPermission(SkipVerification)`, and Mono's JIT doesn't check member access for code in an assembly marked that way. Without it you'll hit runtime errors like:
 
 ```
 Field `SDG.Unturned.Provider:isDedicatedUGCInstalled' is inaccessible from method ...
 ```
+
+Things to know:
+
+- **The flag is per assembly.** Every DLL that touches publicized members needs it — including helper libraries you ship in `Rocket/Libraries` — and it must survive any ILRepack/obfuscation step.
+- **It only covers compiled code.** `dynamic` and reflection-based serializers (e.g. `XmlSerializer` over a type that uses a non-public game type) still apply their own public-only checks.
+- **Non-public members change more often than public ones.** After a game update a renamed private member shows up as `MissingFieldException`/`MissingMethodException` when your method is first run, so rebuild against the redist version that matches your server. Private `const` values are copied into your DLL at compile time.
 
 `virtual`/`abstract` members are intentionally **not** publicized — they keep their original accessibility, so you can still override them normally (e.g. `protected override void execute(...)` on a `Command`). Publicizing them would force the override to be `public`, which the compiler rejects with *"cannot change access rights"*.
 
